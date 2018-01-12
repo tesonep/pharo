@@ -173,16 +173,6 @@ ClassDescription >> allSlotsEverywhere [
 	^ aList asSet
 ]
 
-{ #category : #'organization updating' }
-ClassDescription >> applyChangesOfNewTraitCompositionReplacing: oldComposition [
-	| changedSelectors oldMethodDict |
-	oldMethodDict := self methodDict copy.
-	changedSelectors := super applyChangesOfNewTraitCompositionReplacing: oldComposition.
-	self noteRecategorizedSelectors: changedSelectors oldComposition: oldComposition.
-	self noteChangesFrom: oldMethodDict.
-	^ changedSelectors.
-]
-
 { #category : #authors }
 ClassDescription >> authors [
 	"Returns a bag representing the author frequency based on the latest version of the methods of the receiver."

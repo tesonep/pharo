@@ -75,12 +75,6 @@ Behavior >> >> selector [
 
 ]
 
-{ #category : #traits }
-Behavior >> addExclusionOf: aSymbol to: aTrait [
-	self setTraitComposition: (
-		self traitComposition copyWithExclusionOf: aSymbol to: aTrait)
-]
-
 { #category : #'obsolete subclasses' }
 Behavior >> addObsoleteSubclass: aClass [
 	"Weakly remember that aClass was a subclass of the receiver and is now obsolete"
@@ -108,42 +102,6 @@ Behavior >> addSelectorSilently: selector withMethod: compiledMethod [
 	self basicAddSelector: selector withMethod: compiledMethod.
 	self registerLocalSelector: selector.
 	self isTrait ifTrue: [ self notifyUsersOfChangedSelector: selector].
-]
-
-{ #category : #traits }
-Behavior >> addToComposition: aTrait [
-	self setTraitComposition: (self traitComposition copyTraitExpression
-		add: aTrait;
-		yourself)
-]
-
-{ #category : #traits }
-Behavior >> addTraitSelector: aSymbol withMethod: aCompiledMethod [
-	"Add aMethod with selector aSymbol to my
-	methodDict. aMethod must not be defined locally."
-
-	| source method |
-	[(self includesLocalSelector: aSymbol) not] assert.
-	self ensureLocalSelectors.
-		
-	source := aCompiledMethod getSourceReplacingSelectorWith: aSymbol.
-	method  := aCompiledMethod copy.
-	method selector: aSymbol.
-	method methodClass: self.
-		
-	"write source to changes file only if we have it (not available during bootstrap)"	
-	((Smalltalk globals includesKey: #SourceFiles) and: [ (Smalltalk globals at: #SourceFiles) notNil]) ifTrue: [ 
-		method putSource: source
-			withPreamble: [:f | f cr; nextPut: $!; nextChunkPut: 'Trait method'; cr]].
-	
-	method properties at: #traitSource put: aCompiledMethod.
-	
-	self basicAddSelector: aSymbol withMethod: method
-]
-
-{ #category : #traits }
-Behavior >> addUser: aClassOrTrait [
-	self traitUsers add: aClassOrTrait.
 ]
 
 { #category : #'adding/removing methods' }
@@ -416,18 +374,6 @@ Behavior >> allUnreferencedInstanceVariables [
 				(class whichSelectorsAccess: ivn asSymbol) notEmpty]]
 ]
 
-{ #category : #traits }
-Behavior >> applyChangesOfNewTraitCompositionReplacing: oldComposition [
-	| changedSelectors |
-	changedSelectors := self traitComposition
-		changedSelectorsComparedTo: oldComposition.
-	changedSelectors isEmpty ifFalse: [
-		self noteChangedSelectors: changedSelectors].
-	self traitComposition isEmpty ifTrue: [
-		self purgeLocalSelectors].
-	^changedSelectors
-]
-
 { #category : #'adding/removing methods' }
 Behavior >> basicAddSelector: selector withMethod: compiledMethod [ 
 	"Add the message selector with the corresponding compiled method to the 
@@ -632,13 +578,6 @@ Behavior >> classVarNames [
 	^#()
 ]
 
-{ #category : #traits }
-Behavior >> classesComposedWithMe [
-	self isTrait
-		ifTrue: [ ^ self traitUsers flatCollect: [ :u | u classesComposedWithMe ] ]
-		ifFalse: [ ^ {self} ]
-]
-
 { #category : #cleanup }
 Behavior >> cleanUp [
 	"Clean out any caches and other state that should be flushed when trying to get an image into a pristine state. Subclasses may override #cleanUp: to provide different levels of cleanliness"
@@ -830,16 +769,6 @@ Behavior >> emptyMethodDictionary [
 	^ MethodDictionary new
 ]
 
-{ #category : #traits }
-Behavior >> ensureLocalSelectors [
-	"Ensures that the instance variable localSelectors is effectively used to maintain
-	the set of local selectors.
-	This method must be called before any non-local selectors are added to the
-	method dictionary!"
-
-	self basicLocalSelectors ifNil: [self basicLocalSelectors: self selectors asSet]
-]
-
 { #category : #'accessing-properties' }
 Behavior >> ensureProperties [
 	^ ClassProperties at: self ifAbsentPut: WeakKeyDictionary new
@@ -875,24 +804,6 @@ Behavior >> firstPrecodeCommentFor:  selector [
 	method := self compiledMethodAt: selector asSymbol ifAbsent: [^ nil].
 	^method ast firstPrecodeComment.
 	
-]
-
-{ #category : #traits }
-Behavior >> flattenDown: aTrait [
-| selectors |
-	[self hasTraitComposition and: [self traitComposition allTraits includes: aTrait]] assert.
-	(self traitComposition transformationOfTrait: aTrait)
-		ifNotNil: [ :transformation | 
-			selectors := transformation selectors.
-	self basicLocalSelectors: (self basicLocalSelectors ifNil: Array new) asArray , selectors.
-	self removeFromComposition: aTrait. ].
-]
-
-{ #category : #traits }
-Behavior >> flattenDownAllTraits [
-	self traitComposition allTraits do: [:each | self flattenDown: each].
-	[ self traitComposition isEmpty ] assert.
-	self traitComposition: nil.
 ]
 
 { #category : #private }
@@ -1011,12 +922,6 @@ Behavior >> hasSelectorReferringTo: literal [
 
 	^self methods anySatisfy: [ :method | method hasLiteral: literal ]
 		
-]
-
-{ #category : #traits }
-Behavior >> hasTraitComposition [
-
-	^ self traitComposition notEmpty.
 ]
 
 { #category : #'testing class hierarchy' }
@@ -1611,31 +1516,6 @@ Behavior >> nonObsoleteClass [
 	^ self environment at: obsName asSymbol
 ]
 
-{ #category : #traits }
-Behavior >> noteChangedSelectors: aCollection [
-	"Start update of my methodDict (after changes to traits in traitComposition
-	or after a local method was removed from my methodDict). The argument 
-	is a collection of method selectors that may have been changed. Most of the time
-	aCollection only holds one selector. But when there are aliases involved 
-	there may be several method changes that have to be propagated to users."
-
-	| affectedSelectors |
-	affectedSelectors := IdentitySet new.
-	aCollection do: [:selector |
-		affectedSelectors addAll: (self updateMethodDictionarySelector: selector)].
-	self notifyUsersOfChangedSelectors: affectedSelectors.
-	^ affectedSelectors
-]
-
-{ #category : #traits }
-Behavior >> notifyUsersOfChangedSelector: aSelector [
-	self notifyUsersOfChangedSelectors: (Array with: aSelector)
-]
-
-{ #category : #traits }
-Behavior >> notifyUsersOfChangedSelectors: aCollection [
-]
-
 { #category : #accessing }
 Behavior >> numberOfInstanceVariables [
 	^ self instVarNames size
@@ -1739,11 +1619,6 @@ Behavior >> propertyAt: propName put: propValue [
 		ifAbsentPut: propValue
 ]
 
-{ #category : #traits }
-Behavior >> purgeLocalSelectors [
-	self basicLocalSelectors: nil
-]
-
 { #category : #accessing }
 Behavior >> realClass [
 
@@ -1756,23 +1631,11 @@ Behavior >> registerLocalSelector: aSymbol [
 		self basicLocalSelectors add: aSymbol]
 ]
 
-{ #category : #traits }
-Behavior >> removeAlias: aSymbol of: aTrait [
-	self setTraitComposition: (
-		self traitComposition copyWithoutAlias: aSymbol of: aTrait)
-]
-
 { #category : #'obsolete subclasses' }
 Behavior >> removeAllObsoleteSubclasses [
 	"Remove all the obsolete subclasses of the receiver"
 	self basicObsoleteSubclasses removeKey: self ifAbsent: [].
 
-]
-
-{ #category : #traits }
-Behavior >> removeFromComposition: aTrait [
-	self setTraitComposition: (self traitComposition copyTraitExpression
-		removeFromComposition: aTrait)
 ]
 
 { #category : #'accessing-properties' }
@@ -1835,17 +1698,6 @@ Behavior >> removeSelectorSilently: selector [
 	"Remove selector without sending system change notifications"
 
 	^ SystemAnnouncer uniqueInstance suspendAllWhile: [self removeSelector: selector].
-]
-
-{ #category : #traits }
-Behavior >> removeTraitSelector: aSymbol [
-	[(self includesLocalSelector: aSymbol) not] assert.
-	self basicRemoveSelector: aSymbol
-]
-
-{ #category : #traits }
-Behavior >> removeUser: aClassOrTrait [
-	self traitUsers remove: aClassOrTrait ifAbsent: []
 ]
 
 { #category : #enumerating }
@@ -1919,25 +1771,6 @@ Behavior >> setFormat: aFormatInstanceDescription [
 	format := aFormatInstanceDescription
 
 
-]
-
-{ #category : #traits }
-Behavior >> setTraitComposition: aTraitComposition [
-	| oldComposition |
-	(self hasTraitComposition not and: [aTraitComposition isEmpty]) ifTrue: [^self].
-	aTraitComposition assertValidUser: self.
-
-	oldComposition := self traitComposition.
-	self traitComposition: aTraitComposition.
-	self applyChangesOfNewTraitCompositionReplacing: oldComposition.
-	
-	oldComposition traits do: [:each | each removeUser: self].
-	aTraitComposition traits do: [:each | each addUser: self]
-]
-
-{ #category : #traits }
-Behavior >> setTraitCompositionFrom: aTraitExpression [
-	^ self setTraitComposition: aTraitExpression asTraitComposition
 ]
 
 { #category : #accessing }
@@ -2162,77 +1995,6 @@ Behavior >> thoroughWhichSelectorsReferTo: literal [
 	^ selectors
 ]
 
-{ #category : #traits }
-Behavior >> traitComposition [
-	self subclassResponsibility
-]
-
-{ #category : #traits }
-Behavior >> traitComposition: aTraitComposition [
-	"Compatibility purposes"
-]
-
-{ #category : #traits }
-Behavior >> traitCompositionIncludes: aTrait [
-	^self == aTrait or: 
-		[self hasTraitComposition and: 
-			[self traitComposition allTraits includes: aTrait]]
-]
-
-{ #category : #traits }
-Behavior >> traitCompositionString [
-	^self hasTraitComposition
-		ifTrue: [self traitComposition asString]
-		ifFalse: ['{}']
-]
-
-{ #category : #traits }
-Behavior >> traitOrClassOfSelector: aSymbol [
-	"Return the trait or the class which originally defines the method aSymbol
-	or return self if locally defined or if it is a conflict marker method.
-	This is primarly used by Debugger to determin the behavior in which a recompiled
-	method should be put. If a conflict method is recompiled it should be put into
-	the class, thus return self. Also see TraitComposition>>traitProvidingSelector:"
-	
-	((self includesLocalSelector: aSymbol) or: [
-		self hasTraitComposition not]) ifTrue: [^self].
-	^(self traitComposition traitProvidingSelector: aSymbol) ifNil: [self]
-]
-
-{ #category : #traits }
-Behavior >> traitTransformations [ 
-	^ self traitComposition transformations 
-]
-
-{ #category : #traits }
-Behavior >> traitUsers [
-	"Compatibility purposes"
-	^IdentitySet new.
-]
-
-{ #category : #traits }
-Behavior >> traitUsers: aCollection [
-	"Compatibility purposes"
-]
-
-{ #category : #traits }
-Behavior >> traits [
-	"Returns a collection of all traits used by the receiver"
-	^ self traitComposition traits
-]
-
-{ #category : #traits }
-Behavior >> traitsProvidingSelector: aSymbol [
-	| result |
-	result := OrderedCollection new.
-	self hasTraitComposition ifFalse: [^result].
-	(self traitComposition methodDescriptionsForSelector: aSymbol)
-		do: [:methodDescription | methodDescription selector = aSymbol ifTrue: [
-			result addAll: (methodDescription locatedMethods
-				collect: [:each | each methodClass])]].
-	^result
-]
-
 { #category : #accessing }
 Behavior >> typeOfClass [
 	"Answer a symbol uniquely describing the type of the receiver. c.f. kindOfSubclass"
@@ -2269,46 +2031,6 @@ Behavior >> unreferencedInstanceVariables [
 	^ self instVarNames reject: [:ivn | 
 		self withAllSubclasses anySatisfy: [:class | 
 			(class whichSelectorsAccess: ivn) notEmpty]]
-]
-
-{ #category : #traits }
-Behavior >> updateMethodDictionarySelector: aSymbol [
-	"A method with selector aSymbol in myself or my traitComposition has been changed.
-	Do the appropriate update to my methodDict (remove or update method) and
-	return all affected selectors of me so that my useres get notified."
-
-	| modifiedSelectors descriptions oldProtocol |
-	modifiedSelectors := IdentitySet new.
-	descriptions := self traitComposition methodDescriptionsForSelector: aSymbol.
-	descriptions do: [:methodDescription | | effectiveMethod selector |
-		selector := methodDescription selector.
-		(self includesLocalSelector: selector) ifFalse: [
-			methodDescription isEmpty
-				ifTrue: [
-					self removeTraitSelector: selector.
-					modifiedSelectors add: selector]
-				ifFalse: [
-					effectiveMethod := methodDescription effectiveMethod.
-					self addTraitSelector: selector withMethod: effectiveMethod.
-					
-					"If the method was not categorized yet, we categorize it "
-					oldProtocol := self organization categoryOfElement: selector.
-					(oldProtocol isNil or: [ oldProtocol = Protocol unclassified ]) 
-						ifTrue: [ self organization classify: selector under: methodDescription effectiveMethodCategory. ].
-					
-					modifiedSelectors add: selector]]].
-	^modifiedSelectors
-]
-
-{ #category : #traits }
-Behavior >> users [
-	"Compatibility purposes"
-	^IdentitySet new.
-]
-
-{ #category : #traits }
-Behavior >> users: aCollection [
-	"Compatibility purposes"
 ]
 
 { #category : #compiling }

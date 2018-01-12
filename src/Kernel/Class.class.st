@@ -214,15 +214,6 @@ Class >> anyUserOfClassVarNamed: aSymbol [
 	^nil
 ]
 
-{ #category : #traits }
-Class >> applyChangesOfNewTraitCompositionReplacing: oldComposition [
-
-	| changedSelectors |
-	changedSelectors := super applyChangesOfNewTraitCompositionReplacing: oldComposition.
-	self classSide noteNewBaseTraitCompositionApplied: self traitComposition.
-	^ changedSelectors
-]
-
 { #category : #'accessing parallel hierarchy' }
 Class >> baseClass [
 
@@ -838,18 +829,6 @@ Class >> name: aSymbol [
 	self setName: aSymbol
 ]
 
-{ #category : #'initialize-release' }
-Class >> name: aString traitComposition: aComposition methodDict: aMethodDict localSelectors: aSet organization: aClassOrganization [
-
-	"Used by copy"
-	
-	self name: aString.
-	self localSelectors: aSet.
-	self methodDict: aMethodDict.
-	self traitComposition: aComposition.
-	self organization: aClassOrganization
-]
-
 { #category : #'subclass creation' }
 Class >> newAnonymousSubclass [
 
@@ -1314,29 +1293,6 @@ Class >> superclass: aClass methodDictionary: mDict format: fmt [
 	"Basic initialization of the receiver"
 	super superclass: aClass methodDictionary: mDict format: fmt.
 	self subclasses: nil. 
-]
-
-{ #category : #accessing }
-Class >> traitComposition [
-
-	<localClassMethod> 
-    "This method is supposed to be local in Class because of a good reason.
-    We use this pragma to test if Class does not contain some accidental 
-    local selectors."
-
-	traitComposition ifNil: [traitComposition := TraitComposition new].
-	^traitComposition
-]
-
-{ #category : #accessing }
-Class >> traitComposition: aTraitComposition [
-
-	<localClassMethod> 
-    "This method is supposed to be local in Class because of a good reason.
-    We use this pragma to test if Class does not contain some accidental 
-    local selectors."
-	
-	traitComposition := aTraitComposition
 ]
 
 { #category : #'initialize-release' }

@@ -441,29 +441,6 @@ Metaclass >> subclassesDo: aBlock [
 	self theNonMetaClass subclasses do: [ :each | aBlock value: each theMetaClass ]
 ]
 
-{ #category : #accessing }
-Metaclass >> traitComposition [
-
-	<localMetaclassMethod> 
-    "This method is supposed to be local in Metaclass because of a good reason.
-    We use this pragma to test if Metaclass does not contain some accidental 
-    local selectors."
-
-	traitComposition ifNil: [traitComposition := TraitComposition new].
-	^traitComposition
-]
-
-{ #category : #accessing }
-Metaclass >> traitComposition: aTraitComposition [
-
-	<localMetaclassMethod> 
-    "This method is supposed to be local in Metaclass because of a good reason.
-    We use this pragma to test if Metaclass does not contain some accidental 
-    local selectors."
-
-	traitComposition := aTraitComposition
-]
-
 { #category : #copying }
 Metaclass >> veryDeepCopyWith: deepCopier [
 

@@ -1,6 +1,29 @@
 Extension { #name : #Metaclass }
 
 { #category : #'*Traits' }
+Metaclass >> traitComposition [
+
+	<localMetaclassMethod> 
+    "This method is supposed to be local in Metaclass because of a good reason.
+    We use this pragma to test if Metaclass does not contain some accidental 
+    local selectors."
+
+	traitComposition ifNil: [traitComposition := TraitComposition new].
+	^traitComposition
+]
+
+{ #category : #'*Traits' }
+Metaclass >> traitComposition: aTraitComposition [
+
+	<localMetaclassMethod> 
+    "This method is supposed to be local in Metaclass because of a good reason.
+    We use this pragma to test if Metaclass does not contain some accidental 
+    local selectors."
+
+	traitComposition := aTraitComposition
+]
+
+{ #category : #'*Traits' }
 Metaclass >> uses: aTraitCompositionOrArray [
 	| copyOfOldTrait newComposition |
 	copyOfOldTrait := self copy.

@@ -1,6 +1,15 @@
 Extension { #name : #Class }
 
 { #category : #'*Traits' }
+Class >> applyChangesOfNewTraitCompositionReplacing: oldComposition [
+
+	| changedSelectors |
+	changedSelectors := super applyChangesOfNewTraitCompositionReplacing: oldComposition.
+	self classSide noteNewBaseTraitCompositionApplied: self traitComposition.
+	^ changedSelectors
+]
+
+{ #category : #'*Traits' }
 Class >> immediateSubclass: aClassName uses: aTraitCompositionOrArray instanceVariableNames: instVarNames 
 	classVariableNames: classVarNames package: cat [
 	"Added to allow for a simplified subclass creation experience. "
@@ -28,6 +37,18 @@ Class >> immediateSubclass: aName uses: aTraitComposition instanceVariableNames:
 				classVariableNames: someClassVariableNames
 				poolDictionaries: someSharedPoolNames
 				package: aCategory ]
+]
+
+{ #category : #'*Traits' }
+Class >> name: aString traitComposition: aComposition methodDict: aMethodDict localSelectors: aSet organization: aClassOrganization [
+
+	"Used by copy"
+	
+	self name: aString.
+	self localSelectors: aSet.
+	self methodDict: aMethodDict.
+	self traitComposition: aComposition.
+	self organization: aClassOrganization
 ]
 
 { #category : #'*Traits' }
@@ -197,6 +218,29 @@ Class >> subclass: aName uses: aTraitComposition with: aBlock [
 			newClass setTraitComposition: aTraitComposition asTraitComposition.
 			SystemAnnouncer uniqueInstance classModificationAppliedTo: newClass.
 			newClass].
+]
+
+{ #category : #'*Traits' }
+Class >> traitComposition [
+
+	<localClassMethod> 
+    "This method is supposed to be local in Class because of a good reason.
+    We use this pragma to test if Class does not contain some accidental 
+    local selectors."
+
+	traitComposition ifNil: [traitComposition := TraitComposition new].
+	^traitComposition
+]
+
+{ #category : #'*Traits' }
+Class >> traitComposition: aTraitComposition [
+
+	<localClassMethod> 
+    "This method is supposed to be local in Class because of a good reason.
+    We use this pragma to test if Class does not contain some accidental 
+    local selectors."
+	
+	traitComposition := aTraitComposition
 ]
 
 { #category : #'*Traits' }
