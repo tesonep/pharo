@@ -221,29 +221,6 @@ Class >> subclass: aName uses: aTraitComposition with: aBlock [
 ]
 
 { #category : #'*Traits' }
-Class >> traitComposition [
-
-	<localClassMethod> 
-    "This method is supposed to be local in Class because of a good reason.
-    We use this pragma to test if Class does not contain some accidental 
-    local selectors."
-
-	traitComposition ifNil: [traitComposition := TraitComposition new].
-	^traitComposition
-]
-
-{ #category : #'*Traits' }
-Class >> traitComposition: aTraitComposition [
-
-	<localClassMethod> 
-    "This method is supposed to be local in Class because of a good reason.
-    We use this pragma to test if Class does not contain some accidental 
-    local selectors."
-	
-	traitComposition := aTraitComposition
-]
-
-{ #category : #'*Traits' }
 Class >> variableByteSubclass: className uses: aTraitCompositionOrArray instanceVariableNames: instVarNames 
 	classVariableNames: classVarNames category: cat [
 		"Added to allow for a simplified subclass creation experience. "

@@ -1295,6 +1295,29 @@ Class >> superclass: aClass methodDictionary: mDict format: fmt [
 	self subclasses: nil. 
 ]
 
+{ #category : #accessing }
+Class >> traitComposition [
+
+	<localClassMethod> 
+    "This method is supposed to be local in Class because of a good reason.
+    We use this pragma to test if Class does not contain some accidental 
+    local selectors."
+
+	traitComposition ifNil: [traitComposition := TraitComposition new].
+	^traitComposition
+]
+
+{ #category : #accessing }
+Class >> traitComposition: aTraitComposition [
+
+	<localClassMethod> 
+    "This method is supposed to be local in Class because of a good reason.
+    We use this pragma to test if Class does not contain some accidental 
+    local selectors."
+	
+	traitComposition := aTraitComposition
+]
+
 { #category : #'initialize-release' }
 Class >> unload [
 	"Sent when a the class is removed.  Does nothing, but may be overridden by (class-side) subclasses."

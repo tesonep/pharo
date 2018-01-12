@@ -982,7 +982,6 @@ Behavior >> initialize [
 	"no longer sending any messages, some of them crash the VM"
 	self methodDict: self emptyMethodDictionary.
 	self setFormat: Object format.
-	self traitComposition: nil.
 	self users: IdentitySet new.
 ]
 
