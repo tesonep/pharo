@@ -464,48 +464,6 @@ Metaclass >> traitComposition: aTraitComposition [
 	traitComposition := aTraitComposition
 ]
 
-{ #category : #composition }
-Metaclass >> uses: aTraitCompositionOrArray [
-	| copyOfOldTrait newComposition |
-	copyOfOldTrait := self copy.
-	newComposition := aTraitCompositionOrArray asTraitComposition.
-	self assertConsistantCompositionsForNew: newComposition.
-	self setTraitComposition: newComposition.
-	SystemAnnouncer uniqueInstance
-		traitDefinitionChangedFrom: copyOfOldTrait to: self;
-		classModificationAppliedTo: self
-]
-
-{ #category : #'initialize-release' }
-Metaclass >> uses: aTraitCompositionOrArray instanceVariableNames: instVarString [ 
-	| newComposition newMetaClass copyOfOldMetaClass |
-	
-	copyOfOldMetaClass := self copy.
-	newMetaClass := self instanceVariableNames: instVarString.
-	
-	newComposition := aTraitCompositionOrArray asTraitComposition.
-	newMetaClass assertConsistantCompositionsForNew: newComposition.
-	newMetaClass setTraitComposition: newComposition.
-	
-	SystemAnnouncer uniqueInstance
-		classDefinitionChangedFrom: copyOfOldMetaClass to: newMetaClass
-]
-
-{ #category : #'initialize-release' }
-Metaclass >> uses: aTraitCompositionOrArray slots: slotArray [ 
-	| newComposition newMetaClass copyOfOldMetaClass |
-	
-	copyOfOldMetaClass := self copy.
-	newMetaClass := self slots: slotArray.
-	
-	newComposition := aTraitCompositionOrArray asTraitComposition.
-	newMetaClass assertConsistantCompositionsForNew: newComposition.
-	newMetaClass setTraitComposition: newComposition.
-	
-	SystemAnnouncer uniqueInstance
-		classDefinitionChangedFrom: copyOfOldMetaClass to: newMetaClass
-]
-
 { #category : #copying }
 Metaclass >> veryDeepCopyWith: deepCopier [
 
