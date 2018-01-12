@@ -31,12 +31,20 @@ Class {
 		'changeComparers',
 		'changes'
 	],
-	#category : 'Shift-ClassBuilder'
+	#classVars : [
+		'BuilderEnhancer'
+	],
+	#category : #'Shift-ClassBuilder'
 }
 
 { #category : #'as yet unclassified' }
 ShiftClassBuilder class >> defaultBuildEnhancer [
-	^ ShOldTraitsBuilderEnhancer
+	^ BuilderEnhancer ifNil: [ ShDefaultBuilderEnhancer ]
+]
+
+{ #category : #accessing }
+ShiftClassBuilder class >> setDefaultBuilderEnhancer: aClass [ 
+	BuilderEnhancer := aClass
 ]
 
 { #category : #changes }
@@ -272,6 +280,11 @@ ShiftClassBuilder >> fillFor: aClass [
 		category: aClass category;
 		environment: aClass environment;
 		copyClassSlotsFromExistingClass
+]
+
+{ #category : #testing }
+ShiftClassBuilder >> hasToMigrateInstances [
+	^ self changes anySatisfy: [ :e | e hasToMigrateInstances ]
 ]
 
 { #category : #initialization }
