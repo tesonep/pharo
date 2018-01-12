@@ -13,7 +13,7 @@ BaselineOfTraits >> baseline: spec [
 		spec 
 			package: 'Traits';
 			package: 'Shift-ClassBuilder-OldTraits' with: [ spec requires: #('Traits') ];
-			package: 'Traits-Traits' with: [ spec requires: #('Traits-Traits') ];
+			package: 'Traits-Traits' with: [ spec requires: #('Shift-ClassBuilder-OldTraits') ];
 			
 			package: 'Kernel-Traits' with: [ spec requires: #('Traits-Traits') ];
 			package: 'AST-Core-Traits' with: [ spec requires: #('Traits-Traits') ];
