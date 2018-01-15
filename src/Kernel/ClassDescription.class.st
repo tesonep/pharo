@@ -1021,14 +1021,8 @@ ClassDescription >> organization: aClassOrg [
 
 { #category : #TOBEREMOVE }
 ClassDescription >> originOfMethod: aMethod [
-	| trait |
 
-	(self traitComposition isNil or: [ self traitComposition isEmpty ]) ifTrue: [ ^ aMethod ].
-
-	"Use the method dictionary because traits do not have method for accesing methods by selector"
-	trait := self traitComposition traitDefining: aMethod selector ifNone: [ ^ aMethod].
-	^ trait methodAt: aMethod selector ifAbsent: [ aMethod ].
-	
+	^ aMethod	
 
 ]
 
