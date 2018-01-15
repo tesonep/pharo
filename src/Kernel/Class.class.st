@@ -890,24 +890,6 @@ Class >> possibleVariablesFor: misspelled continuedFrom: oldResults [
 			[ ^ self superclass possibleVariablesFor: misspelled continuedFrom: results ]
 ]
 
-{ #category : #'subclass creation' }
-Class >> private_subclass: t instanceVariableNames: f classVariableNames: d poolDictionaries: s category: cat [ 
-	"This is the standard initialization message for creating a new class as a 
-	subclass of an existing class (the receiver)."
-	^ self classInstaller make: [ :builder |
-		builder
-			superclass: self;
-			name: t;
-			layoutClass: self classLayout class;
-			slots: f asSlotCollection;
-			sharedVariablesFromString: d;
-			sharedPools: s;
-			category: cat;
-			environment: self environment;
-			copyClassSlotsFromExistingClass ].
-
-]
-
 { #category : #'class variables' }
 Class >> readClassVariableNamed: aString [
 	"Answer the content of the Class Variable"
@@ -1197,22 +1179,27 @@ Class >> subclass: aSubclassSymbol instanceVariableNames: instVarNames classVari
 Class >> subclass: t instanceVariableNames: f classVariableNames: d poolDictionaries: s category: cat [
 	^ self
 		subclass: t
-		uses: {}
-		instanceVariableNames: f
-		classVariableNames: d
-		poolDictionaries: s
-		category: cat
-]
-
-{ #category : #'subclass creation' }
-Class >> subclass: t instanceVariableNames: f classVariableNames: d poolDictionaries: s package: cat [
-	^ self
-		subclass: t
-		uses: {}
 		instanceVariableNames: f
 		classVariableNames: d
 		poolDictionaries: s
 		package: cat
+]
+
+{ #category : #'subclass creation' }
+Class >> subclass: t instanceVariableNames: f classVariableNames: d poolDictionaries: s package: cat [
+
+	^ self classInstaller
+		make: [ :builder | 
+			builder
+				superclass: self;
+				name: t;
+				layoutClass: self classLayout class;
+				slots: f asSlotCollection;
+				sharedVariablesFromString: d;
+				sharedPools: s;
+				category: cat;
+				environment: self environment;
+				copyClassSlotsFromExistingClass ]
 ]
 
 { #category : #'subclass creation - slots' }
