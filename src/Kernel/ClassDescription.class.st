@@ -1023,6 +1023,19 @@ ClassDescription >> organization: aClassOrg [
 	self basicOrganization: aClassOrg.
 ]
 
+{ #category : #TOBEREMOVE }
+ClassDescription >> originOfMethod: aMethod [
+	| selector trait |
+
+	(self traitComposition isNil or: [ self traitComposition isEmpty ]) ifTrue: [ ^ aMethod ].
+
+	"Use the method dictionary because traits do not have method for accesing methods by selector"
+	selector := self traitComposition originSelectorOf: aMethod selector.
+	trait := self traitOrClassOfSelector: selector.
+	(trait includesSelector:selector) ifTrue:[ ^trait>> selector].
+	^ aMethod. 
+]
+
 { #category : #printing }
 ClassDescription >> printOn: aStream [ 
 	aStream nextPutAll: self name
