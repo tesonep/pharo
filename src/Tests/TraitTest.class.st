@@ -462,7 +462,7 @@ TraitTest >> testUsers [
 	self assert: self t3 traitUsers isEmpty.
 	self assert: self t5 traitUsers size = 1.
 	self assert: self t5 traitUsers anyOne = self c2.
-	self c2 setTraitCompositionFrom: self t1 + self t5.
+	self c2 setTraitComposition: self t1 + self t5.
 	self assert: self t5 traitUsers size = 1.
 	self assert: self t5 traitUsers anyOne = self c2.
 	self c2 setTraitComposition: self t2 asTraitComposition.
@@ -474,7 +474,7 @@ TraitTest >> testUsersWithClassChanges [
 	"This documents bug http://code.google.com/p/pharo/issues/detail?id=443"
 	"self debug: #testUsersWithClassChanges"
 	
-	self c2 setTraitCompositionFrom: self t5.
+	self c2 setTraitComposition: self t5 asTraitComposition.
 	self assert: self t5 traitUsers size = 1.
 	self assert: self t5 classSide traitUsers size = 1.
 	self assert: self c2 traits size = 1.

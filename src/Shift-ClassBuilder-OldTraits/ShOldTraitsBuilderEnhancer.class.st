@@ -54,8 +54,8 @@ ShOldTraitsBuilderEnhancer >> initializeBuilder: aBuilder [
 	aBuilder propertyAt: #traitComposition put: nil.
 	aBuilder propertyAt: #classTraitComposition put: nil	.
 	
-	aBuilder addChangeComparer: ShTraitCompositionChangedDetector.
-	aBuilder addChangeComparer: ShClassTraitCompositionChangedDetector.	
+	aBuilder addChangeComparer: TraitCompositionChangedDetector.
+	aBuilder addChangeComparer: ClassTraitCompositionChangedDetector.	
 ]
 
 { #category : #building }

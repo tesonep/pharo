@@ -7,7 +7,7 @@ Also I can configure the builder to add more comparers or do additional things.
 Class {
 	#name : #ShDefaultBuilderEnhancer,
 	#superclass : #Object,
-	#category : 'Shift-ClassBuilder'
+	#category : #'Shift-ClassBuilder'
 }
 
 { #category : #'class modifications' }
@@ -41,6 +41,11 @@ ShDefaultBuilderEnhancer >> configureClass: newClass superclass: superclass with
 { #category : #'class modifications' }
 ShDefaultBuilderEnhancer >> configureMetaclass: newMetaclass superclass: superclass withLayoutType: aLayoutType slots: classSlots [
 	newMetaclass superclass: superclass withLayoutType: aLayoutType slots: classSlots.
+]
+
+{ #category : #migrating }
+ShDefaultBuilderEnhancer >> hasToSkipSlot: aSlot [
+	^ Class hasSlotNamed: aSlot name
 ]
 
 { #category : #initialization }

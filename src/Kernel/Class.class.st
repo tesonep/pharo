@@ -969,10 +969,11 @@ Class >> removeFromSystem: logged [
 	| myCategory |
 	self release.
 	self unload.
-	self traitUsers do: [ :user | user removeFromComposition: self ].
+
 	self superclass ifNotNil:
 		["If we have no superclass there's nothing to be remembered"
 		self superclass addObsoleteSubclass: self].
+
 	myCategory := self category.
 	self environment forgetClass: self logged: logged.
 	self obsolete.
@@ -1280,29 +1281,6 @@ Class >> superclass: aClass methodDictionary: mDict format: fmt [
 	"Basic initialization of the receiver"
 	super superclass: aClass methodDictionary: mDict format: fmt.
 	self subclasses: nil. 
-]
-
-{ #category : #accessing }
-Class >> traitComposition [
-
-	<localClassMethod> 
-    "This method is supposed to be local in Class because of a good reason.
-    We use this pragma to test if Class does not contain some accidental 
-    local selectors."
-
-	traitComposition ifNil: [traitComposition := TraitComposition new].
-	^traitComposition
-]
-
-{ #category : #accessing }
-Class >> traitComposition: aTraitComposition [
-
-	<localClassMethod> 
-    "This method is supposed to be local in Class because of a good reason.
-    We use this pragma to test if Class does not contain some accidental 
-    local selectors."
-	
-	traitComposition := aTraitComposition
 ]
 
 { #category : #'initialize-release' }

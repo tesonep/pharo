@@ -937,11 +937,7 @@ ClassDescription >> notifyOfRecategorizedSelector: selector from: oldCategory to
 			SystemAnnouncer uniqueInstance 
 				methodRecategorized: method
 				oldProtocol: oldCategory ].
-	SystemAnnouncer uniqueInstance suspendAllWhile: [
-		self 
-			notifyUsersOfRecategorizedSelector: selector 
-			from: oldCategory 
-			to: newCategory ]
+
 ]
 
 { #category : #private }
@@ -1025,15 +1021,15 @@ ClassDescription >> organization: aClassOrg [
 
 { #category : #TOBEREMOVE }
 ClassDescription >> originOfMethod: aMethod [
-	| selector trait |
+	| trait |
 
 	(self traitComposition isNil or: [ self traitComposition isEmpty ]) ifTrue: [ ^ aMethod ].
 
 	"Use the method dictionary because traits do not have method for accesing methods by selector"
-	selector := self traitComposition originSelectorOf: aMethod selector.
-	trait := self traitOrClassOfSelector: selector.
-	(trait includesSelector:selector) ifTrue:[ ^trait>> selector].
-	^ aMethod. 
+	trait := self traitComposition traitDefining: aMethod selector ifNone: [ ^ aMethod].
+	^ trait methodAt: aMethod selector ifAbsent: [ aMethod ].
+	
+
 ]
 
 { #category : #printing }

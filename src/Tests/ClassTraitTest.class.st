@@ -42,7 +42,7 @@ ClassTraitTest >> testConflictsAliasesAndExclusions [
 	self assert: self t5 classSide traitComposition asString 
 				= 'T1 classTrait + T2 classTrait'.
 	self t5 classSide 
-		setTraitCompositionFrom: (self t1 classTrait @ { (#m2ClassSideAlias1: -> #m2ClassSide:) } 
+		setTraitComposition: (self t1 classTrait @ { (#m2ClassSideAlias1: -> #m2ClassSide:) } 
 				+ ((self t2 classTrait) @ { (#m2ClassSideAlias2: -> #m2ClassSide:) } 
 				- { #m2ClassSide: })).
 	self deny: (self t5 classTrait >> #m2ClassSide:) isConflict.

@@ -5,7 +5,7 @@ I announce with a copy of the old class and the new class.
 Class {
 	#name : #ShClassChanged,
 	#superclass : #ShAbstractChange,
-	#category : 'Shift-Changes'
+	#category : #'Shift-Changes'
 }
 
 { #category : #announcing }

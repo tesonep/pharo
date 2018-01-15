@@ -99,7 +99,9 @@ ShiftClassBuilder >> builderEnhancer [
 
 { #category : #accessing }
 ShiftClassBuilder >> builderEnhancer: anObject [
-	builderEnhancer := anObject
+	builderEnhancer := anObject.
+	
+	builderEnhancer initializeBuilder: self
 ]
 
 { #category : #accessing }
