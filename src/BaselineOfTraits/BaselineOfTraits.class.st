@@ -11,28 +11,23 @@ BaselineOfTraits >> baseline: spec [
 	spec for: #common do: [
 
 		spec 
-			package: 'Traits';
-			package: 'Shift-ClassBuilder-OldTraits' with: [ spec requires: #('Traits') ];
-			package: 'Traits-Traits' with: [ spec requires: #('Shift-ClassBuilder-OldTraits') ];
+			package: 'TraitsV2';
 			
-			package: 'Kernel-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'AST-Core-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'Collections-Abstract-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'Transcript-Core-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'SUnit-Core-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'CodeImport-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'RPackage-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'OpalCompiler-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'Slot-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'CodeExport-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'System-Sources-Traits' with: [ spec requires: #('Traits-Traits') ];
-			package: 'System-Support-Traits' with: [ spec requires: #('Traits-Traits') ].
+			package: 'Kernel-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'AST-Core-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'Collections-Abstract-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'Transcript-Core-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'SUnit-Core-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'CodeImport-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'RPackage-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'OpalCompiler-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'Slot-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'CodeExport-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'System-Sources-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'System-Support-Traits' with: [ spec requires: #('TraitsV2') ].
 
 
-		spec group: 'core' with: #(
-					'Traits'
-					'Shift-ClassBuilder-OldTraits'
-					'Traits-Traits' ).
+		spec group: 'core' with: #('TraitsV2' ).
 					
 		spec group: 'traits-in-kernel' with: #(
 					'Kernel-Traits'
