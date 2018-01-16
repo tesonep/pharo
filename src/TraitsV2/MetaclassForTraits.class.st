@@ -7,10 +7,18 @@ Class {
 	#category : #TraitsV2
 }
 
+{ #category : #'accessing method dictionary' }
+MetaclassForTraits >> addSelectorSilently: selector withMethod: compiledMethod [
+	super addSelectorSilently: selector withMethod: compiledMethod.
+	self rebuildMethodDictionary.
+	
+	self users do: [ :e | e rebuildMethodDictionary ]
+]
+
 { #category : #users }
 MetaclassForTraits >> addUser: aClass [ 
 	
-	users add: aClass
+	self users add: aClass
 ]
 
 { #category : #'fileIn/Out' }
@@ -25,10 +33,18 @@ MetaclassForTraits >> definition [
 	]
 ]
 
+{ #category : #initialization }
+MetaclassForTraits >> rebuildMethodDictionary [
+
+	super rebuildMethodDictionary.
+	self users do: [ :e | e rebuildMethodDictionary ]
+
+]
+
 { #category : #users }
 MetaclassForTraits >> removeUser: aClass [
-
-	users remove: aClass ifAbsent: [  ]
+	
+	self users remove: aClass ifAbsent: [  ]
 ]
 
 { #category : #accessing }
@@ -38,7 +54,8 @@ MetaclassForTraits >> traitUsers [
 
 { #category : #accessing }
 MetaclassForTraits >> users [
-	^ users
+
+	^ users ifNil: [ users := IdentitySet new ]
 ]
 
 { #category : #accessing }

@@ -2,7 +2,7 @@ Class {
 	#name : #TraitedMetaclass,
 	#superclass : #Metaclass,
 	#instVars : [
-		'myMethodDict',
+		'localMethods',
 		'composition'
 	],
 	#category : #TraitsV2
@@ -10,7 +10,7 @@ Class {
 
 { #category : #accessing }
 TraitedMetaclass class >> traitedClassTrait [
-	^ (TaCompositionElement for: TraitedClassTrait) -- #methodDict
+	^ (TaCompositionElement for: TraitedClass) -- #methodDict
 ]
 
 { #category : #'accessing method dictionary' }
@@ -34,26 +34,48 @@ TraitedMetaclass >> compile: selector from: oldClass [
 	self basicAddSelector: selector withMethod: newMethod.
 ]
 
-{ #category : #accessing }
-TraitedMetaclass >> composition: anObject [
-	composition := anObject
-]
-
 { #category : #initialization }
 TraitedMetaclass >> initialize [
 	super initialize.
-	myMethodDict := MethodDictionary new.
-	composition := {} asTraitComposition.
+	localMethods := MethodDictionary new.
+	composition := TaEmptyComposition new.
 ]
 
-{ #category : #initialization }
-TraitedMetaclass >> methodDict [
-	^ myMethodDict
+{ #category : #'initialize-release' }
+TraitedMetaclass >> instanceVariableNames: instVarString [ 
+	"Declare additional named variables for my instance."
+	| theClass builderEnhancer |
+	theClass := self theNonMetaClass.
+		
+	builderEnhancer := TraitBuilderEnhancer new.
+	builderEnhancer traitComposition: theClass traitComposition asTraitComposition.
+	builderEnhancer classTraitComposition: self traitComposition asTraitComposition.	
+	
+	theClass := theClass classInstaller update: theClass to: [ :builder |
+		builder
+			superclass: theClass superclass;
+			builderEnhancer: builderEnhancer;
+			metaclassClass: self class;
+			name: theClass name;
+			layoutClass: theClass classLayout class;
+			slots: theClass slots;
+			sharedVariablesFromString: theClass classVariablesString;
+			sharedPools: theClass sharedPoolsString;
+			traitComposition: theClass traitComposition;
+			category: theClass category asString;
+			classSlots: instVarString asSlotCollection ].
+	^ theClass theMetaClass
 ]
 
-{ #category : #initialization }
-TraitedMetaclass >> methods [
-	^ myMethodDict values
+{ #category : #testing }
+TraitedMetaclass >> isRejectedMethod: e [
+	^ (localMethods includesKey: e) or: [ (superclass methodDict includesKey: e) and: [ (Class methodDict includesKey: e) not ] ]
+]
+
+{ #category : #accessing }
+TraitedMetaclass >> localSelectors [
+	
+	^ localMethods keys
 ]
 
 { #category : #adding }
@@ -65,19 +87,18 @@ TraitedMetaclass >> new [
 
 { #category : #initialization }
 TraitedMetaclass >> rebuildMethodDictionary [
-	| selectors compositionToUse |
-	compositionToUse := (superclass isKindOf: self class)
+	| selectors toUse |
+
+	toUse := (superclass isKindOf: self class)
 		ifTrue: [ self traitComposition ]
-		ifFalse: [ self class traitedClassTrait + self traitComposition ].
+		ifFalse: [ self traitComposition + self class traitedClassTrait ].
 
-	selectors := compositionToUse selectors
-		reject: [ :e | myMethodDict keys includes: e ].
+	localMethods := MethodDictionary new.
+	methodDict valuesDo: [ :m | (m propertyAt: #sourceTrait) ifNil: [ localMethods at: m selector put: m ]].
 
-	selectors do: [ :e | compositionToUse compile: e into: self ].
+	selectors := toUse selectors reject: [ :e | self isRejectedMethod: e ].
+	selectors do: [ :e | toUse compile: e into: self ].
 
-	methodDict := myMethodDict copy.
-
-	selectors do: [ :e | myMethodDict removeKey: e ifAbsent: [  ] ]
 ]
 
 { #category : #'accessing method dictionary' }
@@ -95,6 +116,12 @@ TraitedMetaclass >> slots [
 { #category : #accessing }
 TraitedMetaclass >> traitComposition [
 	^ composition
+]
+
+{ #category : #accessing }
+TraitedMetaclass >> traitComposition: aComposition [
+
+	composition := aComposition
 ]
 
 { #category : #initialization }

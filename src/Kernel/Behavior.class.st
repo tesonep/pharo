@@ -843,24 +843,6 @@ Behavior >> firstPrecodeCommentFor:  selector [
 	
 ]
 
-{ #category : #TOBEREMOVE }
-Behavior >> flattenDown: aTrait [
-| selectors |
-	[self hasTraitComposition and: [self traitComposition allTraits includes: aTrait]] assert.
-	(self traitComposition transformationOfTrait: aTrait)
-		ifNotNil: [ :transformation | 
-			selectors := transformation selectors.
-	self basicLocalSelectors: (self basicLocalSelectors ifNil: Array new) asArray , selectors.
-	self removeFromComposition: aTrait. ].
-]
-
-{ #category : #TOBEREMOVE }
-Behavior >> flattenDownAllTraits [
-	self traitComposition allTraits do: [:each | self flattenDown: each].
-	[ self traitComposition isEmpty ] assert.
-	self traitComposition: nil.
-]
-
 { #category : #private }
 Behavior >> flushCache [
 	"Tell the virtual machine to remove the contents of its method lookup caches, if it has any.  This must be done when the system 	modifies the class hierarchy so that message lookups reflect the revised organization.  c.f. Symbol>>flushCache & 	CompiledMethod>>flushCache.  Essential. See MethodDictionary class comment."
@@ -982,7 +964,7 @@ Behavior >> hasSelectorReferringTo: literal [
 { #category : #TOBEREMOVE }
 Behavior >> hasTraitComposition [
 
-	^ self traitComposition isEmpty not.
+	^ false
 ]
 
 { #category : #'testing class hierarchy' }
@@ -994,9 +976,7 @@ Behavior >> includesBehavior: aClass [
 
 { #category : #'testing method dictionary' }
 Behavior >> includesLocalSelector: aSymbol [
-	^self basicLocalSelectors 
-		ifNil: [self includesSelector: aSymbol]
-		ifNotNil: [self localSelectors includes: aSymbol]
+	^ self includesSelector: aSymbol
 ]
 
 { #category : #'testing method dictionary' }
@@ -1431,17 +1411,6 @@ Behavior >> localMethods [
 ]
 
 { #category : #'accessing method dictionary' }
-Behavior >> localSelectors [
-	"Return a set of selectors defined locally.
-	The instance variable is lazily initialized. If it is nil then there
-	are no non-local selectors"
-
-	^ self basicLocalSelectors 
-		ifNil: [self selectors asSet]
-		ifNotNil: [self basicLocalSelectors].
-]
-
-{ #category : #'accessing method dictionary' }
 Behavior >> localSelectors: aSet [ 
 	self basicLocalSelectors: aSet
 ]
@@ -1609,9 +1578,7 @@ Behavior >> obsolete [
 	e.g., zap the method dictionary if can be done safely."
 	self canZapMethodDictionary
 		ifTrue: [self methodDict: self emptyMethodDictionary].
-	self hasTraitComposition ifTrue: [
-		self traitComposition traits do: [:each |
-			each removeUser: self]]
+
 ]
 
 { #category : #'obsolete subclasses' }
@@ -1620,6 +1587,13 @@ Behavior >> obsoleteSubclasses [
 	| obs |
 	obs := self basicObsoleteSubclasses at: self ifAbsent: [^ #()].
 	^ obs copyWithout: nil
+]
+
+{ #category : #testing }
+Behavior >> originOfMethod: aMethod [
+
+	^ self	
+
 ]
 
 { #category : #copying }
@@ -2072,19 +2046,6 @@ Behavior >> traitCompositionString [
 	^self hasTraitComposition
 		ifTrue: [self traitComposition asString]
 		ifFalse: ['{}']
-]
-
-{ #category : #TOBEREMOVE }
-Behavior >> traitOrClassOfSelector: aSymbol [
-	"Return the trait or the class which originally defines the method aSymbol
-	or return self if locally defined or if it is a conflict marker method.
-	This is primarly used by Debugger to determin the behavior in which a recompiled
-	method should be put. If a conflict method is recompiled it should be put into
-	the class, thus return self. Also see TraitComposition>>traitProvidingSelector:"
-	
-	((self includesLocalSelector: aSymbol) or: [
-		self hasTraitComposition not]) ifTrue: [^self].
-	^(self traitComposition traitProvidingSelector: aSymbol) ifNil: [self]
 ]
 
 { #category : #TOBEREMOVE }

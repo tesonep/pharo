@@ -25,8 +25,8 @@ TraitBuilderEnhancer >> classCreated: builder [
 	builder newMetaclass rebuildMethodDictionary.
 	builder newClass initializeTraitedClass.
 	
-	builder newClass composition: traitComposition.
-	builder newMetaclass composition: classTraitComposition.
+	builder newClass traitComposition: traitComposition.
+	builder newMetaclass traitComposition: classTraitComposition.
 
 	builder newClass rebuildMethodDictionary.
 	builder newMetaclass rebuildMethodDictionary.
@@ -66,16 +66,23 @@ TraitBuilderEnhancer >> configureClass: newClass superclass: superclass withLayo
 { #category : #'class modifications' }
 TraitBuilderEnhancer >> configureMetaclass: newMetaclass superclass: superclass withLayoutType: aLayoutType slots: classSlots [
 	| traitedClassSlots |
-	traitedClassSlots := ((superclass isKindOf: TraitedMetaclass) or: [ classSlots anySatisfy: [ :e | e name = #myMethodDict ] ])
+	
+	traitedClassSlots := (self hasRequiredSlots: classSlots , superclass allSlots)
 		ifTrue: [ #() ]
 		ifFalse: [ TraitedMetaclass traitedClassTrait slots  ].
 
 	newMetaclass superclass: superclass withLayoutType: aLayoutType slots: traitedClassSlots, classSlots , classTraitComposition slots
 ]
 
+{ #category : #testing }
+TraitBuilderEnhancer >> hasRequiredSlots: classSlots [
+	
+	^ TraitedMetaclass traitedClassTrait slots allSatisfy: [ :e | classSlots anySatisfy: [ :x | x name = e name ] ]
+]
+
 { #category : #migrating }
 TraitBuilderEnhancer >> hasToSkipSlot: aSlot [
-	^ (Class hasSlotNamed: aSlot name) or: [ TraitedClassTrait hasSlotNamed: aSlot name ]
+	^ (Class hasSlotNamed: aSlot name) or: [ TraitedClass hasSlotNamed: aSlot name ]
 ]
 
 { #category : #initialization }

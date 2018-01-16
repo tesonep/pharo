@@ -38,8 +38,18 @@ Class >> immediateSubclass: aName uses: aTraitComposition instanceVariableNames:
 ]
 
 { #category : #'*TraitsV2' }
+Class >> recreateWithoutComposition [
+	
+	"Nothing to do I am a normal class without traits"
+	
+	^ self
+]
+
+{ #category : #'*TraitsV2' }
 Class >> setTraitComposition: aTraitComposition [
 	| builderEnhancer |
+
+	aTraitComposition isEmpty ifTrue: [ self recreateWithoutComposition ].
 
 	builderEnhancer := TraitBuilderEnhancer new.
 	builderEnhancer traitComposition: aTraitComposition asTraitComposition.
@@ -178,19 +188,6 @@ Class >> subclass: aSubclassSymbol uses: aTraitCompositionOrArray slots: slotDef
 		classVariables: classVarDefinition
 		poolDictionaries: someSharedPoolNames
 		category: aCategorySymbol
-]
-
-{ #category : #'*TraitsV2' }
-Class >> traitComposition [
-	self flag: #todo.
-
-	"Compatibility old code."
-
-	traitComposition
-		ifNotNil: [ traitComposition isEmpty
-				ifFalse: [ ^ traitComposition ] ].
-
-	^ TaEmptyComposition new
 ]
 
 { #category : #'*TraitsV2' }

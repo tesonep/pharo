@@ -1019,13 +1019,6 @@ ClassDescription >> organization: aClassOrg [
 	self basicOrganization: aClassOrg.
 ]
 
-{ #category : #TOBEREMOVE }
-ClassDescription >> originOfMethod: aMethod [
-
-	^ aMethod	
-
-]
-
 { #category : #printing }
 ClassDescription >> printOn: aStream [ 
 	aStream nextPutAll: self name

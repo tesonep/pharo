@@ -40,3 +40,14 @@ TaRemoveMethod >> removedSelectors: anObject [
 TaRemoveMethod >> selectors [
 	^ inner selectors reject: [ :e | removedSelectors includes: e ]
 ]
+
+{ #category : #printing }
+TaRemoveMethod >> traitCompositionExpression [
+	
+	^ String streamContents: [ :s |
+	  s 
+		nextPutAll: self inner traitCompositionExpression ;
+		nextPutAll: ' - '.
+		removedSelectors printAsSelfEvaluatingFormOn: s.
+	]
+]

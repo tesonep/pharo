@@ -37,6 +37,7 @@ TaEmptyComposition >> @= anAssociation [
 { #category : #operations }
 TaEmptyComposition >> addToSequence: sequence [
 	"I am empty I will not add my self to anybody"
+	^ sequence
 ]
 
 { #category : #users }

@@ -7,31 +7,33 @@ Class {
 	#category : #'TraitsV2-Compositions'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #'instance creation' }
 TaSequence class >> with: initialValue [
 	^ self new 
 		addMember: initialValue;
 		yourself.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'instance creation' }
 TaSequence class >> withAll: initialMembers [
+
+	initialMembers ifEmpty: [ ^ TaEmptyComposition new ].
+
 	^ self new 
-		addAll: initialMembers
+		addAll: initialMembers;
 		yourself.
 ]
 
 { #category : #operations }
 TaSequence >> + anotherTalent [
-	anotherTalent addToSequence: self.
+	^ anotherTalent addToSequence: self copyTraitExpression.
+	
 ]
 
 { #category : #operations }
 TaSequence >> , anotherTalent [
-	anotherTalent addToSequence: self.
-	^ self members size = 1
-		ifTrue: [ members anyOne ]
-		ifFalse: [ self ]
+	^ anotherTalent addToSequence: self copy.
+
 ]
 
 { #category : #operations }
@@ -46,17 +48,18 @@ TaSequence >> addAll: aCollection [
 ]
 
 { #category : #adding }
-TaSequence >> addMember: anotherTalent [
-	self validateDuplications: anotherTalent.
-	self validateSlots: anotherTalent.
-	self validateMethods: anotherTalent.
+TaSequence >> addMember: aTrait [
+	self validateDuplications: aTrait.
+	self validateSlots: aTrait.
 	
-	members add: anotherTalent
+	members add: aTrait
 ]
 
 { #category : #operations }
 TaSequence >> addToSequence: sequence [
 	members do:[:e |sequence addMember: e].
+	^ sequence
+
 ]
 
 { #category : #users }
@@ -82,12 +85,23 @@ TaSequence >> classComposition [
 
 { #category : #accessing }
 TaSequence >> compiledMethodAt: aSelector [
-	^(members detect:[:e | e selectors includes: aSelector ]) compiledMethodAt:aSelector.
+	^(members reverse detect:[:e | e selectors includes: aSelector ]) compiledMethodAt:aSelector.
 ]
 
 { #category : #copying }
 TaSequence >> copyTraitExpression [
 	^ self class withAll: (members collect:#copyTraitExpression)
+]
+
+{ #category : #copying }
+TaSequence >> copyWithoutTrait: aTrait [
+	| newMembers |
+
+	newMembers := members collect: [ :e | e copyWithoutTrait: aTrait ] thenReject: #isEmpty.
+
+	^ self class withAll: newMembers
+	
+
 ]
 
 { #category : #initialization }
@@ -134,7 +148,7 @@ TaSequence >> slots [
 
 { #category : #accessing }
 TaSequence >> sourceCodeAt: selector [
-	^ (members detect: [ :e | e selectors includes: selector ]) sourceCodeAt: selector
+	^ (members reverse detect: [ :e | e selectors includes: selector ]) sourceCodeAt: selector
 ]
 
 { #category : #printing }
@@ -159,7 +173,7 @@ TaSequence >> traits [
 { #category : #validations }
 TaSequence >> validateDuplications: anElement [
 	(members noneSatisfy: [ :e | e = anElement ])
-		ifFalse:[self error:'Could not include the same talent twice'].
+		ifFalse:[self error:'Could not include the same traits twice'].
 ]
 
 { #category : #validations }

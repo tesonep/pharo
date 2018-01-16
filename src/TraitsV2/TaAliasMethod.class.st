@@ -59,6 +59,12 @@ TaAliasMethod >> copyTraitExpression [
 
 ]
 
+{ #category : #copying }
+TaAliasMethod >> copyWithoutTrait: aTrait [
+ 
+	^ self inner = aTrait ifTrue: [ TaEmptyComposition new ] ifFalse: [ self copy ]
+]
+
 { #category : #testing }
 TaAliasMethod >> hasAliasForNew: aSelector [
 	^ aliases includesKey: aSelector

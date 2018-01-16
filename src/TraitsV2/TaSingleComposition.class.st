@@ -81,7 +81,7 @@ TaSingleComposition >> slots [
 
 { #category : #accessing }
 TaSingleComposition >> traitDefining: selector [
-	^ inner
+	^ inner traitDefining: selector
 ]
 
 { #category : #querying }

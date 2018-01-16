@@ -22,10 +22,17 @@ Trait class >> @ anArray [
 	^ self asTraitComposition @ anArray
 ]
 
+{ #category : #'accessing method dictionary' }
+Trait class >> addSelectorSilently: selector withMethod: compiledMethod [
+	super addSelectorSilently: selector withMethod: compiledMethod.
+	self rebuildMethodDictionary.
+
+]
+
 { #category : #users }
 Trait class >> addUser: aClass [ 
 
-	users add: aClass
+	self users add: aClass
 ]
 
 { #category : #'class variables' }
@@ -37,6 +44,12 @@ Trait class >> allClassVarNames [
 { #category : #accessing }
 Trait class >> asTraitComposition [
 	^ TaCompositionElement for: self.
+]
+
+{ #category : #'accessing parallel hierarchy' }
+Trait class >> classTrait [
+
+	^ TaClassCompositionElement for: self
 ]
 
 { #category : #'filein/out' }
@@ -67,6 +80,11 @@ Trait class >> definitionForNautilus [
 Trait class >> definitionForNautilusWithSlots [
 
 	^ self definition
+]
+
+{ #category : #'class initialization' }
+Trait class >> initialize [
+	users := IdentitySet new.
 ]
 
 { #category : #testing }
@@ -107,6 +125,7 @@ Trait class >> named: aName uses: aTraitCompositionOrCollection category: aStrin
 Trait class >> named: aName uses: aTraitCompositionOrCollection slots: someSlots category: aCategory env: anEnvironment [ 
 
 	| trait builderEnhancer |
+
 	builderEnhancer := TraitBuilderEnhancer new.
 	builderEnhancer traitComposition: aTraitCompositionOrCollection asTraitComposition.
 	builderEnhancer classTraitComposition: aTraitCompositionOrCollection asTraitComposition classComposition.
@@ -123,16 +142,36 @@ Trait class >> named: aName uses: aTraitCompositionOrCollection slots: someSlots
 				sharedPools: '';
 				category: aCategory;
 				classSlots: #() ].
-		
-	trait users: IdentitySet new.
-	trait class users: IdentitySet new.
+			
+	self assert: [ trait class class = MetaclassForTraits ].
+	
 	^ trait
 ]
 
-{ #category : #users }
+{ #category : #'accessing method dictionary' }
+Trait class >> rebuildMethodDictionary [
+
+	self doRebuildMethodDictionary.
+	self users do: [ :e | e rebuildMethodDictionary ]
+
+]
+
+{ #category : #accessing }
+Trait class >> removeFromSystem: logged [
+
+	self flag: #todo.
+
+	self users do: [ :e | 
+		(e canUnderstand: #removeFromComposition) ifTrue:[
+		e removeFromComposition: self ]].
+	super removeFromSystem: logged.
+
+]
+
+{ #category : #removing }
 Trait class >> removeUser: aClass [ 
-	users ifNil: [ users := IdentitySet new ].
-	users remove: aClass ifAbsent: [ ].
+
+	self users remove: aClass ifAbsent: [ ].
 	
 	
 ]
@@ -142,9 +181,9 @@ Trait class >> traitUsers [
 	^ self users
 ]
 
-{ #category : #accessing }
+{ #category : #TOBEREMOVE }
 Trait class >> users [
-	^ users
+	^ users ifNil: [ users := IdentitySet new ]
 ]
 
 { #category : #accessing }

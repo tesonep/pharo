@@ -15,8 +15,14 @@ TaAbstractComposition >> , anotherTalent [
 ]
 
 { #category : #operations }
-TaAbstractComposition >> - anArrayOfSelectors [
-	^ TaRemoveMethod remove: anArrayOfSelectors to: self.
+TaAbstractComposition >> - anArrayOrASymbol [
+	| anArray |
+	
+	anArray := anArrayOrASymbol isArray
+		ifTrue: [ anArrayOrASymbol ]
+		ifFalse: [ {anArrayOrASymbol} ].
+		
+	^ TaRemoveMethod remove: anArray to: self
 ]
 
 { #category : #operations }
@@ -48,6 +54,7 @@ TaAbstractComposition >> @= anAssociation [
 { #category : #operations }
 TaAbstractComposition >> addToSequence: sequence [
 	sequence addMember: self.
+	^ sequence
 ]
 
 { #category : #'transforming selectors' }

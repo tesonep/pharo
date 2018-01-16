@@ -15,9 +15,9 @@ TaCompositionElement class >> for: aClass [
 ]
 
 { #category : #operations }
-TaCompositionElement >> = anotherTalent [
-	^ (anotherTalent isKindOf: self class)
-		ifTrue: [ anotherTalent innerClass = self innerClass ]
+TaCompositionElement >> = aTrait [
+	^ (aTrait species = self species)
+		ifTrue: [ aTrait innerClass = self innerClass ]
 		ifFalse: [ ^ false ]
 ]
 
@@ -67,6 +67,12 @@ TaCompositionElement >> copySlot: aSlot [
 { #category : #copying }
 TaCompositionElement >> copyTraitExpression [
 	^ self shallowCopy.
+]
+
+{ #category : #copying }
+TaCompositionElement >> copyWithoutTrait: aTrait [ 
+	
+	^ self = aTrait ifTrue: [ TaEmptyComposition new ] ifFalse: [ self copy ]
 ]
 
 { #category : #'transforming selectors' }

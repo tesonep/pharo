@@ -700,21 +700,17 @@ CompiledMethod >> name [
 
 { #category : #accessing }
 CompiledMethod >> origin [
-	self properties 
-		at: #traitSource 
-		ifPresent: [ :traitMethod| ^ traitMethod origin].
-	^ self methodClass traitOrClassOfSelector: self selector
+	^ self methodClass originOfMethod: self
 ]
 
 { #category : #accessing }
 CompiledMethod >> originMethod [
-	| selector trait|
+	| origin |
 	
-	self properties 
-		at: #traitSource 
-		ifPresent: [ :traitMethod | ^ traitMethod ].
+	origin := self methodClass originOfMethod: self.
 	
-	self methodClass originOfMethod: self
+	^ (origin methodDict includesKey: self selector) 
+		ifTrue: [ origin >> self selector ] ifFalse: [ self ]
 ]
 
 { #category : #private }
