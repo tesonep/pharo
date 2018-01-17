@@ -27,7 +27,7 @@ BaselineOfTraits >> baseline: spec [
 			package: 'System-Support-Traits' with: [ spec requires: #('TraitsV2') ].
 
 
-		spec group: 'core' with: #('TraitsV2' ).
+		spec group: 'core' with: #('TraitsV2').
 					
 		spec group: 'traits-in-kernel' with: #(
 					'Kernel-Traits'

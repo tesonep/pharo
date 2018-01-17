@@ -42,7 +42,7 @@ TaRenameSlot >> oldName: anObject [
 	oldName := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 TaRenameSlot >> slots [
 	^ inner slots
 		collect: [ :e | 
@@ -53,7 +53,7 @@ TaRenameSlot >> slots [
 			slot ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 TaRenameSlot >> sourceCodeAt: aSelector [
 	| originalSourceCode parseTree |
 	originalSourceCode := super sourceCodeAt: aSelector.

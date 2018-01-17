@@ -27,6 +27,11 @@ TaRemoveMethod >> copyTraitExpression [
 ]
 
 { #category : #accessing }
+TaRemoveMethod >> methods [
+	^ inner methods reject: [ :e | removedSelectors includes: e selector ]
+]
+
+{ #category : #accessing }
 TaRemoveMethod >> removedSelectors [
 	^ removedSelectors
 ]
@@ -46,7 +51,7 @@ TaRemoveMethod >> traitCompositionExpression [
 	
 	^ String streamContents: [ :s |
 	  s 
-		nextPutAll: self inner traitCompositionExpression ;
+		nextPutAll: self inner traitCompositionExpressionWithParens ;
 		nextPutAll: ' - '.
 		removedSelectors printAsSelfEvaluatingFormOn: s.
 	]

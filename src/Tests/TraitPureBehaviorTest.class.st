@@ -84,7 +84,7 @@ TraitPureBehaviorTest >> testClassesWithTraits [
 	self deny: self c1 class hasTraitComposition.
 	self assert: self c2 class hasTraitComposition.
 
-	self assert: (self c2 class traitComposition size = 1).
+	self assert: (self c2 class traitComposition traits size = 1).
 	self assert: (self c2 class traitComposition includesTrait: self t5 classTrait)
 ]
 
@@ -98,7 +98,7 @@ TraitPureBehaviorTest >> testIsAliasSelector [
 	self deny: (self t6 isAliasSelector: #m22).
 
 	"indirectly"
-	self c1 setTraitCompositionFrom: self t6.
+	self c1 setTraitComposition: self t6.
 	self assert: (self c1 isAliasSelector: #m22Alias).
 	self deny: (self c1 isAliasSelector: #m22)
 ]
@@ -335,19 +335,17 @@ TraitPureBehaviorTest >> testSuperSends [
 
 { #category : #'testing-applying trait composition' }
 TraitPureBehaviorTest >> testTraitCompositionModifications [
-	self assert: self t6 methodDict size = 6.
+	self assert: self t6 methodDict size = 5.
 	self assert: (self t6 sourceCodeAt: #m22Alias) asString = 'm22Alias ^22'.
+	
 	self t6 setTraitComposition: self t2 asTraitComposition.
 	self assert: self t6 methodDict size = 2.
 	self deny: (self t6 methodDict includesKey: #m22Alias).
-	self t6 
-		setTraitCompositionFrom: self t1 @ { (#m13Alias -> #m13) } - { #m11. #m12 } 
-				+ self t2.
-	self assert: self t6 methodDict size = 4.
-	self 
-		assert: (self t6 selectors asSet includesAll: #(#m13 #m13Alias #m21 #m22 )).
-	self 
-		assert: (self t6 sourceCodeAt: #m13Alias) asString = 'm13Alias ^self m12'
+	
+	self t6 setTraitComposition: self t1 @ { (#m13Alias -> #m13) } - { #m11. #m12 } + self t2.
+	self assert: self t6 methodDict size = 3.
+	self assert: (self t6 selectors asSet includesAll: #(#m13Alias #m21 #m22 )).
+	self assert: (self t6 sourceCodeAt: #m13Alias) asString = 'm13Alias ^self m12'
 ]
 
 { #category : #'testing-applying trait composition' }

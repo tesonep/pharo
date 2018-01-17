@@ -961,12 +961,6 @@ Behavior >> hasSelectorReferringTo: literal [
 		
 ]
 
-{ #category : #TOBEREMOVE }
-Behavior >> hasTraitComposition [
-
-	^ false
-]
-
 { #category : #'testing class hierarchy' }
 Behavior >> includesBehavior: aClass [
 	
@@ -1121,17 +1115,6 @@ Behavior >> isAbstract [
 	^false
 ]
 
-{ #category : #'testing method dictionary' }
-Behavior >> isAliasSelector: aSymbol [
-	"Return true if the selector aSymbol is an alias defined
-	in my or in another composition somewhere deeper in 
-	the tree of traits compositions."
-
-	^(self includesLocalSelector: aSymbol) not
-		and: [self hasTraitComposition
-				and: [self traitComposition isAliasSelector: aSymbol]]
-]
-
 { #category : #testing }
 Behavior >> isAnonymous [
 	^true
@@ -1247,16 +1230,6 @@ Behavior >> isImmediateClass [
 	 system SmallIntegers are 31-bit signed integers and Characters are 30-bit
 	 unsigned character codes."
 	^self instSpec = 7
-]
-
-{ #category : #'testing method dictionary' }
-Behavior >> isLocalAliasSelector: aSymbol [
-	"Return true if the selector aSymbol is an alias defined
-	in my trait composition."
-
-	^(self includesLocalSelector: aSymbol) not
-		and: [self hasTraitComposition
-				and: [self traitComposition isLocalAliasSelector: aSymbol]]
 ]
 
 { #category : #testing }
@@ -1401,13 +1374,6 @@ Behavior >> localMethodNamed: selector ifAbsent: aBlock [
 	(self basicLocalSelectors includes: selector) ifTrue: [ ^method ].
 	
 	^aBlock value
-]
-
-{ #category : #'accessing method dictionary' }
-Behavior >> localMethods [
-	"returns the methods of classes excluding the ones of the traits that the class uses" 
-	 
-	^ self methods select: [:each | self includesLocalSelector: each selector].
 ]
 
 { #category : #'accessing method dictionary' }
@@ -2039,13 +2005,6 @@ Behavior >> thoroughWhichSelectorsReferTo: literal [
 	self selectorsAndMethodsDo: [ :sel :method |
 			(method hasSelector: literal specialSelectorIndex: specialIndex) ifTrue: [selectors add: sel]].
 	^ selectors
-]
-
-{ #category : #TOBEREMOVE }
-Behavior >> traitCompositionString [
-	^self hasTraitComposition
-		ifTrue: [self traitComposition asString]
-		ifFalse: ['{}']
 ]
 
 { #category : #TOBEREMOVE }

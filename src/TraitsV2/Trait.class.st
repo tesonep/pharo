@@ -22,13 +22,6 @@ Trait class >> @ anArray [
 	^ self asTraitComposition @ anArray
 ]
 
-{ #category : #'accessing method dictionary' }
-Trait class >> addSelectorSilently: selector withMethod: compiledMethod [
-	super addSelectorSilently: selector withMethod: compiledMethod.
-	self rebuildMethodDictionary.
-
-]
-
 { #category : #users }
 Trait class >> addUser: aClass [ 
 
@@ -49,7 +42,7 @@ Trait class >> asTraitComposition [
 { #category : #'accessing parallel hierarchy' }
 Trait class >> classTrait [
 
-	^ TaClassCompositionElement for: self
+	^ self class
 ]
 
 { #category : #'filein/out' }
@@ -85,6 +78,18 @@ Trait class >> definitionForNautilusWithSlots [
 { #category : #'class initialization' }
 Trait class >> initialize [
 	users := IdentitySet new.
+]
+
+{ #category : #testing }
+Trait class >> isBaseTrait [
+	
+	^ true
+]
+
+{ #category : #testing }
+Trait class >> isClassTrait [
+	
+	^ false
 ]
 
 { #category : #testing }

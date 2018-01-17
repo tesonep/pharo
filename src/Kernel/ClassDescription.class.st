@@ -778,13 +778,6 @@ ClassDescription >> isInstanceSide [
 	^self isClassSide not
 ]
 
-{ #category : #testing }
-ClassDescription >> isLocalMethodsProtocol: aProtocol [
-	aProtocol methods ifEmpty: [ ^true ].
-	
-	^aProtocol methods anySatisfy: [ :each | self isLocalSelector: each]
-]
-
 { #category : #'accessing parallel hierarchy' }
 ClassDescription >> isMeta [
 	^self isClassSide
@@ -1253,8 +1246,7 @@ ClassDescription >> tagsForMethods [
 		reject: [ :each | each name = Protocol unclassified | each isExtensionProtocol ].
 		
 	tags := OrderedCollection new.
-	allProtocols do: [ :each | 
-		(self isLocalMethodsProtocol: each) ifTrue: [ tags add: each name ]].
+	allProtocols do: [ :each | tags add: each name ].
 
 	^tags
 ]
@@ -1405,9 +1397,7 @@ ClassDescription >> updateOrganizationSelector: aSymbol oldCategory: oldCategory
 	| changedCategories composition |
 	changedCategories := IdentitySet new.
 	
-	composition := self hasTraitComposition
-		ifTrue: [ self traitComposition ]
-		ifFalse: [ TraitComposition new ].
+	composition := 	TraitComposition new.
 		
 	(composition methodDescriptionsForSelector: aSymbol)
 		do: [ :each | 

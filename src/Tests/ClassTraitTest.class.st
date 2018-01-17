@@ -57,11 +57,11 @@ ClassTraitTest >> testInitialization [
 	| classTrait |
 	classTrait := self t1 classTrait.
 	self assert: self t1 hasClassSide.
-	self assert: self t1 classTrait == classTrait.
+	self assert: self t1 classTrait = classTrait.
 	self assert: classTrait isClassTrait.
-	self assert: classTrait classSide == classTrait.
+	self assert: classTrait classSide = classTrait.
 	self deny: classTrait isBaseTrait.
-	self assert: classTrait baseTrait == self t1.
+	self assert: classTrait baseTrait = self t1.
 
 	"assert classtrait methods are propagated to users when setting traitComposition"
 	self assert: self t4 hasClassSide.
@@ -92,7 +92,7 @@ ClassTraitTest >> testUsers [
 		(self t6 classTrait) }).
 	self assert: self t5 classSide traitUsers size = 1.
 	self assert: self t5 classSide traitUsers anyOne = self c2 class.
-	self c2 setTraitCompositionFrom: self t1 + self t5.
+	self c2 setTraitComposition: self t1 + self t5.
 	self assert: self t5 classSide traitUsers size = 1.
 	self assert: self t5 classSide traitUsers anyOne = self c2 class.
 	self c2 setTraitComposition: self t2 asTraitComposition.

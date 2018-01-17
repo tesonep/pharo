@@ -53,6 +53,16 @@ TaSingleComposition >> inner: anObject [
 	inner := anObject
 ]
 
+{ #category : #testing }
+TaSingleComposition >> isAliasSelector: aSymbol [
+	^ inner isAliasSelector: aSymbol 
+]
+
+{ #category : #testing }
+TaSingleComposition >> isLocalAliasSelector: aSymbol [
+	^ inner isLocalAliasSelector: aSymbol 
+]
+
 { #category : #accessing }
 TaSingleComposition >> methods [
 	^ inner methods

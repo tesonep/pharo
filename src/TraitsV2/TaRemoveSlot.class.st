@@ -38,5 +38,5 @@ TaRemoveSlot >> slots [
 { #category : #printing }
 TaRemoveSlot >> traitCompositionExpression [
 
-	^ (self inner traitCompositionExpression , ' -- ' , slotName printString) asString
+	^ (self inner traitCompositionExpressionWithParens , ' -- ' , slotName printString) asString
 ]

@@ -26,7 +26,7 @@ TaSequence class >> withAll: initialMembers [
 
 { #category : #operations }
 TaSequence >> + anotherTalent [
-	^ anotherTalent addToSequence: self copyTraitExpression.
+	^ anotherTalent asTraitComposition addToSequence: self copyTraitExpression.
 	
 ]
 
@@ -115,6 +115,23 @@ TaSequence >> initializeObject: anObject [
 	members do: [ :e | e initializeObject: anObject ]
 ]
 
+{ #category : #testing }
+TaSequence >> isAliasSelector: aSelector [
+ 
+	^ self members anySatisfy: [ :e | e isAliasSelector: aSelector ]
+]
+
+{ #category : #testing }
+TaSequence >> isConflictingSelector: aSelector [
+
+	^ (self methods count: [ :e | e selector = aSelector ]) > 1
+]
+
+{ #category : #testing }
+TaSequence >> isLocalAliasSelector: aSymbol [
+	^ members anySatisfy: [ :e | e isLocalAliasSelector: aSymbol ]
+]
+
 { #category : #operations }
 TaSequence >> members [
 	^ members
@@ -148,7 +165,23 @@ TaSequence >> slots [
 
 { #category : #accessing }
 TaSequence >> sourceCodeAt: selector [
+	(self isConflictingSelector: selector) ifTrue: [ 
+		"^ self sourceCodeForConflictFor: selector"
+	].
+
 	^ (members reverse detect: [ :e | e selectors includes: selector ]) sourceCodeAt: selector
+]
+
+{ #category : #accessing }
+TaSequence >> sourceCodeForConflictFor: selector [
+
+	^ String
+		streamContents: [ :s | 
+			s
+				nextPutAll: selector asMethodPreamble;
+				cr;
+				tab;
+				nextPutAll: 'self traitConflict' ]
 ]
 
 { #category : #printing }
@@ -156,13 +189,12 @@ TaSequence >> traitCompositionExpression [
 	self isEmpty
 		ifTrue: [ ^ '{}' ].
 
-	^ ({members first traitCompositionExpression} , (members allButFirst
-		collect: #traitCompositionExpressionWithParens)) joinUsing: ' + '
+	^ (members collect: #traitCompositionExpressionWithParens) joinUsing: ' + '
 ]
 
 { #category : #accessing }
 TaSequence >> traitDefining: aSelector [
-	^ members detect: [ :e | e selectors includes: aSelector ]
+	^ (members detect: [ :e | e selectors includes: aSelector ]) traitDefining: aSelector
 ]
 
 { #category : #querying }
@@ -189,11 +221,8 @@ TaSequence >> validateMethods: aTrait [
 
 { #category : #validations }
 TaSequence >> validateSlots: anElement [
-	self slots
-		do: [ :e | 
-			anElement slots
-				do: [ :other | 
-					e name = other name
+	self slots do: [ :e | anElement slots do: [ :other | 
+					(e name = other name and: [ e ~= other ])
 						ifTrue: [ self error: 'The added talent duplicates an existing slot ' , e name printString ] ] ]
 ]
 

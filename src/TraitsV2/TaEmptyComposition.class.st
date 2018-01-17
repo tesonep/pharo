@@ -68,6 +68,12 @@ TaEmptyComposition >> copyTraitExpression [
 ]
 
 { #category : #testing }
+TaEmptyComposition >> isAliasSelector: aString [ 
+	
+	^ false
+]
+
+{ #category : #testing }
 TaEmptyComposition >> isEmpty [
 	^ true
 ]

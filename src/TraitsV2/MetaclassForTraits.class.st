@@ -7,18 +7,22 @@ Class {
 	#category : #TraitsV2
 }
 
-{ #category : #'accessing method dictionary' }
-MetaclassForTraits >> addSelectorSilently: selector withMethod: compiledMethod [
-	super addSelectorSilently: selector withMethod: compiledMethod.
-	self rebuildMethodDictionary.
+{ #category : #operations }
+MetaclassForTraits >> + anotherTrait [
 	
-	self users do: [ :e | e rebuildMethodDictionary ]
+	^ self asTraitComposition + anotherTrait asTraitComposition
 ]
 
 { #category : #users }
 MetaclassForTraits >> addUser: aClass [ 
 	
 	self users add: aClass
+]
+
+{ #category : #accessing }
+MetaclassForTraits >> baseTrait [
+	
+	^ self baseClass 
 ]
 
 { #category : #'fileIn/Out' }
@@ -31,6 +35,25 @@ MetaclassForTraits >> definition [
 			nextPutAll: 'uses: ';
 			nextPutAll: composition traitCompositionExpression.
 	]
+]
+
+{ #category : #testing }
+MetaclassForTraits >> isBaseTrait [
+	
+	^ false
+]
+
+{ #category : #testing }
+MetaclassForTraits >> isClassTrait [
+	
+	^ true
+]
+
+{ #category : #printing }
+MetaclassForTraits >> printOn: aStream [
+	aStream
+		nextPutAll: self baseClass name;
+		nextPutAll: ' classTrait'
 ]
 
 { #category : #initialization }

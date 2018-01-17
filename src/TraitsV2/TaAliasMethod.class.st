@@ -40,7 +40,12 @@ TaAliasMethod >> checkAssociations [
 			| old new |
 			new := assoc key.
 			old := assoc value.
-			(inner compiledMethodAt: old) ifNil: [ NotFound signalFor: old ] ]
+			new = old ifTrue: [ self error: 'The alias and the alieased are the same' ].
+			(self aliases includesKey: old) ifTrue: [ self error: 'An alias is refering other alias' ].
+			new numArgs = old numArgs ifFalse: [ self error: 'Number of parameters in aliases should be the same.' ].
+			"For now I am not checking that the aliased method exists, 
+			this is the same behavior than before.
+			(inner compiledMethodAt: old) ifNil: [ NotFound signalFor: old ]" ]
 ]
 
 { #category : #accessing }
@@ -65,6 +70,16 @@ TaAliasMethod >> copyWithoutTrait: aTrait [
 	^ self inner = aTrait ifTrue: [ TaEmptyComposition new ] ifFalse: [ self copy ]
 ]
 
+{ #category : #accessing }
+TaAliasMethod >> existingAliasedSelectors [
+	| innerSelectors |
+	innerSelectors := inner selectors.
+
+	^ self aliases associations
+		select: [ :a | innerSelectors includes: a value ]
+		thenCollect: [ :a | a key ]
+]
+
 { #category : #testing }
 TaAliasMethod >> hasAliasForNew: aSelector [
 	^ aliases includesKey: aSelector
@@ -73,6 +88,17 @@ TaAliasMethod >> hasAliasForNew: aSelector [
 { #category : #testing }
 TaAliasMethod >> hasAliasForOld: aSelector [
 	^ aliases values includes: aSelector
+]
+
+{ #category : #testing }
+TaAliasMethod >> isAliasSelector: aSelector [
+
+	^ (self aliases includesKey: aSelector) or: [ inner isAliasSelector: aSelector ]
+]
+
+{ #category : #testing }
+TaAliasMethod >> isLocalAliasSelector: aSymbol [
+	^ (self hasAliasForNew: aSymbol) or: [ inner isLocalAliasSelector: aSymbol ]
 ]
 
 { #category : #'instance creation' }
@@ -87,7 +113,7 @@ TaAliasMethod >> oldSelectorFor: aSelector [
 
 { #category : #accessing }
 TaAliasMethod >> selectors [
-	^ (inner selectors reject:[:e | self hasAliasForOld: e]) , self aliases keys. 
+	^ (inner selectors reject:[:e | self hasAliasForOld: e]) , self existingAliasedSelectors. 
 ]
 
 { #category : #accessing }
@@ -101,5 +127,12 @@ TaAliasMethod >> sourceCodeAt: aSelector [
 { #category : #printing }
 TaAliasMethod >> traitCompositionExpression [
 	
-	^ self inner traitCompositionExpression , ' @ ' , aliases associations printString
+	^ self inner traitCompositionExpressionWithParens , ' @ ' , aliases associations printString
+]
+
+{ #category : #accessing }
+TaAliasMethod >> traitDefining: aSelector [
+	^ (self hasAliasForNew: aSelector)
+		ifTrue: [ inner traitDefining: (self oldSelectorFor: aSelector) ]
+		ifFalse: [ inner traitDefining: aSelector ]
 ]

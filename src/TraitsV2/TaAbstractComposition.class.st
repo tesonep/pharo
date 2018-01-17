@@ -79,8 +79,12 @@ TaAbstractComposition >> classComposition [
 
 { #category : #operations }
 TaAbstractComposition >> compile: aSelector into: aClass [
-	aClass compile: aSelector from: self.
-	aClass >> aSelector propertyAt: #sourceTrait put: (self traitDefining: aSelector)
+	"It is probable the aliased method does not exists any more in the trait composition. This situation is checked when creating the trait composition."
+
+	[ aClass compile: aSelector from: self.
+	aClass >> aSelector propertyAt: #sourceTrait put: (self traitDefining: aSelector) ]
+		on: NotFound
+		do: [  ]
 ]
 
 { #category : #accessing }
@@ -155,6 +159,11 @@ TaAbstractComposition >> selectors [
 	self subclassResponsibility 
 ]
 
+{ #category : #comparing }
+TaAbstractComposition >> semanticallyEquals: another [
+	^ self selectors = another selectors and: [ self methods = another methods ]
+]
+
 { #category : #accessing }
 TaAbstractComposition >> slots [
 	self subclassResponsibility 
@@ -185,7 +194,7 @@ TaAbstractComposition >> traitDefining: selector [
 	^ self shouldBeImplemented.
 ]
 
-{ #category : #accessing }
+{ #category : #querying }
 TaAbstractComposition >> traitDefining: aSelector ifNone: aBlockClosure [ 
 	
 	[ ^ self traitDefining: aSelector ] on: NotFound do: [ ^ aBlockClosure value ]

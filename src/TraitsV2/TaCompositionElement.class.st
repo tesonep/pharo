@@ -97,9 +97,15 @@ TaCompositionElement >> innerClass: anObject [
 	innerClass := anObject
 ]
 
+{ #category : #testing }
+TaCompositionElement >> isAliasSelector: aString [ 
+	
+	^ innerClass traitComposition isAliasSelector: aString
+]
+
 { #category : #accessing }
 TaCompositionElement >> methods [
-	^innerClass methods , innerClass traitComposition methods
+	^innerClass methods
 ]
 
 { #category : #accessing }

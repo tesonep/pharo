@@ -2,25 +2,28 @@ Class {
 	#name : #TraitBuilderEnhancer,
 	#superclass : #ShDefaultBuilderEnhancer,
 	#instVars : [
+		'builder',
 		'traitComposition',
 		'classTraitComposition'
 	],
 	#category : #'TraitsV2-Class-Builder'
 }
 
-{ #category : #accessing }
+{ #category : #migrating }
 TraitBuilderEnhancer >> afterMigratingClass: aBuilder installer: anInstaller [
 	aBuilder newClass traitComposition addUser: aBuilder newClass.
-	aBuilder newMetaclass traitComposition addUser: aBuilder newMetaclass
+	aBuilder newMetaclass traitComposition addUser: aBuilder newMetaclass.
+	
+	aBuilder newClass rebuildMethodDictionary.
 ]
 
-{ #category : #accessing }
+{ #category : #migrating }
 TraitBuilderEnhancer >> beforeMigratingClass: aBuilder installer: anInstaller [
 	aBuilder oldClass ifNotNil: [ :x | x traitComposition removeUser: x ].
 	aBuilder oldMetaclass ifNotNil: [ :x | x traitComposition removeUser: x ]
 ]
 
-{ #category : #'class modifications' }
+{ #category : #events }
 TraitBuilderEnhancer >> classCreated: builder [
 	builder newMetaclass rebuildMethodDictionary.
 	builder newClass initializeTraitedClass.
@@ -49,35 +52,56 @@ TraitBuilderEnhancer >> classTraitCompositionOf: aBuilder [
 	^ classTraitComposition 
 ]
 
-{ #category : #accessing }
+{ #category : #utils }
 TraitBuilderEnhancer >> classTraitCompositionOfClass: aClass [ 
 	
 	^ aClass class traitComposition
 ]
 
 { #category : #'class modifications' }
+TraitBuilderEnhancer >> compileMethodsFor: aBuilder [
+	
+	super compileMethodsFor: aBuilder.
+	
+	aBuilder newClass rebuildMethodDictionary.
+]
+
+{ #category : #'class modifications' }
 TraitBuilderEnhancer >> configureClass: newClass superclass: superclass withLayoutType: layoutType slots: slots [
-	newClass
-		superclass: superclass
-		withLayoutType: layoutType
-		slots: slots , traitComposition slots
+	| resultingSlots |
+	
+	self validateTraitComposition: traitComposition ofClass: builder oldClass.
+	
+	resultingSlots := self eliminateDuplicates: slots , traitComposition slots withSuperclassSlots: superclass allSlots.
+	newClass superclass: superclass withLayoutType: layoutType slots: resultingSlots
 ]
 
 { #category : #'class modifications' }
 TraitBuilderEnhancer >> configureMetaclass: newMetaclass superclass: superclass withLayoutType: aLayoutType slots: classSlots [
-	| traitedClassSlots |
+	| traitedClassSlots resultingSlots |
 	
-	traitedClassSlots := (self hasRequiredSlots: classSlots , superclass allSlots)
-		ifTrue: [ #() ]
-		ifFalse: [ TraitedMetaclass traitedClassTrait slots  ].
+	self validateTraitComposition: classTraitComposition ofClass: builder oldMetaclass.
+	
+	traitedClassSlots := TraitedMetaclass traitedClassTrait slots.
+	resultingSlots := self
+		eliminateDuplicates: traitedClassSlots , classSlots , classTraitComposition slots
+		withSuperclassSlots: superclass allSlots.
 
-	newMetaclass superclass: superclass withLayoutType: aLayoutType slots: traitedClassSlots, classSlots , classTraitComposition slots
+	newMetaclass superclass: superclass withLayoutType: aLayoutType slots: resultingSlots
 ]
 
-{ #category : #testing }
-TraitBuilderEnhancer >> hasRequiredSlots: classSlots [
-	
-	^ TraitedMetaclass traitedClassTrait slots allSatisfy: [ :e | classSlots anySatisfy: [ :x | x name = e name ] ]
+{ #category : #utils }
+TraitBuilderEnhancer >> eliminateDuplicates: aSlotCollection withSuperclassSlots: superclassSlots [
+	| resultingSlots |
+	resultingSlots := OrderedCollection new.
+
+	aSlotCollection
+		do: [ :e | 
+			((resultingSlots noneSatisfy: [ :x | e name = x name ]) and: [ superclassSlots noneSatisfy: [ :x | e name = x name ] ])
+				ifTrue: [ resultingSlots add: e ] ].
+
+
+	^ resultingSlots asArray
 ]
 
 { #category : #migrating }
@@ -88,6 +112,8 @@ TraitBuilderEnhancer >> hasToSkipSlot: aSlot [
 { #category : #initialization }
 TraitBuilderEnhancer >> initializeBuilder: aBuilder [
 	super initializeBuilder: aBuilder.
+	
+	builder := aBuilder.
 	
 	aBuilder addChangeComparer: TraitCompositionChangedDetector.
 	aBuilder addChangeComparer: ClassTraitCompositionChangedDetector.	
@@ -109,8 +135,14 @@ TraitBuilderEnhancer >> traitCompositionOf: aBuilder [
 	^ traitComposition
 ]
 
-{ #category : #accessing }
+{ #category : #utils }
 TraitBuilderEnhancer >> traitCompositionOfClass: aClass [ 
 	
 	^ aClass traitComposition
+]
+
+{ #category : #validating }
+TraitBuilderEnhancer >> validateTraitComposition: aTraitComposition ofClass: aClass [ 
+
+	^ (aTraitComposition allTraits includes: aClass) ifTrue: [ self error: 'Cyclic Trait composition' ]
 ]

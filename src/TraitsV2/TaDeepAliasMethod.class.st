@@ -4,7 +4,7 @@ Class {
 	#category : #'TraitsV2-Compositions'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #rewriting }
 TaDeepAliasMethod >> rewriteText: aSelector [
 	| stream |
 	aSelector numArgs == 0
