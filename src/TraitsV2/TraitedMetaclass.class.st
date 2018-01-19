@@ -10,7 +10,7 @@ Class {
 
 { #category : #accessing }
 TraitedMetaclass class >> traitedClassTrait [
-	^ (TaCompositionElement for: TraitedClass) -- #methodDict
+	^ (TaCompositionElement for: TraitedClass)
 ]
 
 { #category : #'accessing method dictionary' }
