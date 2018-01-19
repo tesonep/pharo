@@ -15,18 +15,25 @@ Windows VMs do now support the stdioHandles primitive if they are not compiled s
 Class {
 	#name : #Stdio,
 	#superclass : #Object,
-	#classVars : [
+	#instVars : [
 		'Stderr',
 		'Stdin',
 		'Stdout'
+	],
+	#classVars : [
+		'DefaultInstance'
 	],
 	#category : #'Files-Core'
 }
 
 { #category : #'system startup' }
 Stdio class >> cleanStdioHandles [
+	^ self default cleanStdioHandles
+]
 
-	Stderr := Stdin := Stdout := nil
+{ #category : #accessing }
+Stdio class >> default [
+	^ DefaultInstance ifNil: [ DefaultInstance := self new ]
 ]
 
 { #category : #'initialize-release' }
@@ -35,8 +42,41 @@ Stdio class >> initialize [
 		registerSystemClassNamed: self name
 ]
 
+{ #category : #accessing }
+Stdio class >> reset [
+	DefaultInstance := nil
+]
+
+{ #category : #'system startup' }
+Stdio class >> startUp: resuming [
+	resuming ifTrue: [ self cleanStdioHandles ].
+]
+
 { #category : #stdio }
-Stdio class >> standardIOStreamNamed: moniker forWrite: forWrite [
+Stdio class >> stderr [
+	^ self default stderr
+
+]
+
+{ #category : #stdio }
+Stdio class >> stdin [
+	^ self default stdin
+]
+
+{ #category : #stdio }
+Stdio class >> stdout [
+	^ self default stdout
+
+]
+
+{ #category : #'system startup' }
+Stdio >> cleanStdioHandles [
+
+	Stderr := Stdin := Stdout := nil
+]
+
+{ #category : #private }
+Stdio >> standardIOStreamNamed: moniker forWrite: forWrite [
 	"Create if necessary and store default stdin, stdout and other files based on the their names"
 	
 	| handle |
@@ -54,32 +94,26 @@ Stdio class >> standardIOStreamNamed: moniker forWrite: forWrite [
 	^ StdioStream handle: handle file: (File named: moniker) forWrite: forWrite.
 ]
 
-{ #category : #'system startup' }
-Stdio class >> startUp: resuming [
-
-	resuming ifTrue: [ self cleanStdioHandles ].
-]
-
 { #category : #accessing }
-Stdio class >> stderr [
+Stdio >> stderr [
 
 	^ Stderr ifNil: [ Stderr := self standardIOStreamNamed: #stderr forWrite: true ].
 ]
 
 { #category : #accessing }
-Stdio class >> stdin [
+Stdio >> stdin [
 
 	^ Stdin ifNil: [ Stdin := self standardIOStreamNamed: #stdin forWrite: false ].
 ]
 
 { #category : #stdio }
-Stdio class >> stdioHandles [
+Stdio >> stdioHandles [
 	<primitive: 'primitiveFileStdioHandles' module: 'FilePlugin' error: ec>
 	self primitiveFailed
 ]
 
 { #category : #accessing }
-Stdio class >> stdout [
+Stdio >> stdout [
 
 	^ Stdout ifNil: [ Stdout := self standardIOStreamNamed: #stdout forWrite: true ].
 ]
