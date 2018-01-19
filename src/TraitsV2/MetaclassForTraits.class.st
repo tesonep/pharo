@@ -13,10 +13,20 @@ MetaclassForTraits >> + anotherTrait [
 	^ self asTraitComposition + anotherTrait asTraitComposition
 ]
 
+{ #category : #composition }
+MetaclassForTraits >> @ anArray [
+	^ self asTraitComposition @ anArray
+]
+
 { #category : #users }
 MetaclassForTraits >> addUser: aClass [ 
 	
 	self users add: aClass
+]
+
+{ #category : #converting }
+MetaclassForTraits >> asTraitComposition [
+	^ TaClassCompositionElement for: self
 ]
 
 { #category : #accessing }
@@ -58,7 +68,6 @@ MetaclassForTraits >> printOn: aStream [
 
 { #category : #initialization }
 MetaclassForTraits >> rebuildMethodDictionary [
-
 	super rebuildMethodDictionary.
 	self users do: [ :e | e rebuildMethodDictionary ]
 

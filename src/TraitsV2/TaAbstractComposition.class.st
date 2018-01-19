@@ -6,12 +6,12 @@ Class {
 
 { #category : #operations }
 TaAbstractComposition >> + anotherTalent [
-	^ (TaSequence with: self) + anotherTalent
+	^ (TaSequence with: self) + anotherTalent asTraitComposition
 ]
 
 { #category : #operations }
 TaAbstractComposition >> , anotherTalent [
-	^ (TaSequence with: self) , anotherTalent
+	^ (TaSequence with: self) , anotherTalent asTraitComposition
 ]
 
 { #category : #operations }
@@ -161,7 +161,10 @@ TaAbstractComposition >> selectors [
 
 { #category : #comparing }
 TaAbstractComposition >> semanticallyEquals: another [
-	^ self selectors = another selectors and: [ self methods = another methods ]
+	^ self selectors = another selectors
+		and: [ self methods = another methods
+				and: [ self selectors
+						allSatisfy: [ :e | (self sourceCodeAt: e) = (another sourceCodeAt: e) ] ] ]
 ]
 
 { #category : #accessing }

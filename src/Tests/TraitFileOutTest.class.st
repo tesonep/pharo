@@ -59,6 +59,7 @@ TraitFileOutTest >> testFileOutCategory [
 	"self run: #testFileOutCategory"
 
 	| file |
+		
 	self class environment organization fileOutCategory: self categoryName.
 	self class environment organization removeSystemCategory: self categoryName.
 	self deny: (Smalltalk globals keys asSet includesAnyOf: #(#CA #CB #TA #TB #TC #TD)).
@@ -67,7 +68,7 @@ TraitFileOutTest >> testFileOutCategory [
 	file fileIn ] ensure: [ file close ].
 	self assertCollection: Smalltalk globals keys asSet includesAll: #(#CA #CB #TA #TB #TC #TD).
 	ta := Smalltalk globals at: #TA.
-	self assert: ta traitComposition asString equals: 'TB @ {#cc->#c} - {#c} + (TC @ {#cc->#c} - {#c})'.
+	self assert: ta traitComposition asString equals:  '((TB + TC) @ {#cc->#c}) - {#c}'.
 	self assertCollection: ta selectors asSet includesAll: #(#a #b #cc).
 	cb := Smalltalk globals at: #CB.
 	self assert: cb traitComposition asString equals: 'TA'.

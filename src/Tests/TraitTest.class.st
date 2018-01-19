@@ -262,7 +262,7 @@ TraitTest >> testLocalMethodWithSameCodeInTrait [
 		each hasTraitComposition ifTrue: [
 			each selectorsDo: [ :selector |
 				(each includesLocalSelector: selector) ifTrue: [
-					(each traitComposition traitProvidingSelector: selector) ifNotNil: [ :trait |
+					(each traitComposition traitDefining: selector) ifNotNil: [ :trait |
 						(trait selectors includes: selector) ifTrue: [
 							self deny: (trait >> selector = (each >> selector)) ] ] ] ] ] ]
 ]

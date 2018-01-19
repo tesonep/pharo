@@ -214,6 +214,11 @@ TraitedMetaclass >> slots: slotCollection [
 	^ theClass theMetaClass
 ]
 
+{ #category : #'as yet unclassified' }
+TraitedMetaclass >> slotsWithoutTraits [
+	^ self slots reject: [ :e | TraitedClass slots anySatisfy: [ :x | x name = e name ] ] 
+]
+
 { #category : #accessing }
 TraitedMetaclass >> traitComposition [
 	^ composition

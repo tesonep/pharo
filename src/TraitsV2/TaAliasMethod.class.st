@@ -50,8 +50,6 @@ TaAliasMethod >> checkAssociations [
 
 { #category : #accessing }
 TaAliasMethod >> compiledMethodAt: aSelector [
-	(self hasAliasForOld: aSelector)
-		ifTrue: [ NotFound signalFor: aSelector ].
 
 	^ (self hasAliasForNew: aSelector)
 		ifTrue: [ inner compiledMethodAt: (self oldSelectorFor: aSelector) ]
@@ -113,7 +111,7 @@ TaAliasMethod >> oldSelectorFor: aSelector [
 
 { #category : #accessing }
 TaAliasMethod >> selectors [
-	^ (inner selectors reject:[:e | self hasAliasForOld: e]) , self existingAliasedSelectors. 
+	^ inner selectors , self existingAliasedSelectors. 
 ]
 
 { #category : #accessing }

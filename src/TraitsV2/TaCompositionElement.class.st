@@ -44,9 +44,10 @@ TaCompositionElement >> allTraits [
 	^ { innerClass } , innerClass traitComposition allTraits.
 ]
 
-{ #category : #accessing }
+{ #category : #'transforming selectors' }
 TaCompositionElement >> classComposition [
-	^ TaClassCompositionElement for: innerClass theMetaClass
+
+	^ TaClassCompositionElement for: innerClass class
 ]
 
 { #category : #accessing }

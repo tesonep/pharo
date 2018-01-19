@@ -199,7 +199,7 @@ TraitedClass >> recreateWithoutComposition [
 				sharedVariables: self classVariablesString;
 				sharedPools: self sharedPoolsString;
 				category: self category;
-				copyClassSlotsFromExistingClass ]	
+				classSlots: self class slotsWithoutTraits ]	
 ]
 
 { #category : #'trait-composition' }

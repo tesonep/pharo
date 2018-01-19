@@ -7,8 +7,13 @@ Class {
 { #category : #accessing }
 TaClassCompositionElement >> methods [
 	"As I am representing a ClassTrait I have to filter the methods that are in all the class traits"
-	^ innerClass methods
-		reject: [ :e | TraitedClass selectors anySatisfy: [ :x | x = e selector ] ]
+	^ super methods reject: [ :e | TraitedClass selectors anySatisfy: [ :x | x = e selector ] ]
+]
+
+{ #category : #accessing }
+TaClassCompositionElement >> selectors [
+	"As I am representing a ClassTrait I have to filter the methods that are in all the class traits"
+	^ super selectors reject: [ :e | TraitedClass selectors includes: e ]
 ]
 
 { #category : #accessing }

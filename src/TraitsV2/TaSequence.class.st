@@ -165,9 +165,8 @@ TaSequence >> slots [
 
 { #category : #accessing }
 TaSequence >> sourceCodeAt: selector [
-	(self isConflictingSelector: selector) ifTrue: [ 
-		"^ self sourceCodeForConflictFor: selector"
-	].
+	(self isConflictingSelector: selector) 
+		ifTrue: [ ^ self sourceCodeForConflictFor: selector ].
 
 	^ (members reverse detect: [ :e | e selectors includes: selector ]) sourceCodeAt: selector
 ]

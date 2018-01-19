@@ -49,7 +49,7 @@ Class >> recreateWithoutComposition [
 Class >> setTraitComposition: aTraitComposition [
 	| builderEnhancer |
 
-	aTraitComposition asTraitComposition isEmpty ifTrue: [ self recreateWithoutComposition ].
+	aTraitComposition asTraitComposition isEmpty ifTrue: [ ^ self recreateWithoutComposition ].
 
 	builderEnhancer := TraitBuilderEnhancer new.
 	builderEnhancer traitComposition: aTraitComposition asTraitComposition.
