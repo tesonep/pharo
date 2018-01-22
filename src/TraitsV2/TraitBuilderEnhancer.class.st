@@ -24,9 +24,9 @@ TraitBuilderEnhancer >> beforeMigratingClass: aBuilder installer: anInstaller [
 ]
 
 { #category : #events }
-TraitBuilderEnhancer >> classCreated: builder [
+TraitBuilderEnhancer >> classCreated: aBuilder [
 	builder newMetaclass rebuildMethodDictionary.
-	builder newClass initializeTraitedClass.
+	builder newClass rebuildMethodDictionary.
 	
 	builder newClass traitComposition: traitComposition.
 	builder newMetaclass traitComposition: classTraitComposition.
@@ -78,14 +78,10 @@ TraitBuilderEnhancer >> configureClass: newClass superclass: superclass withLayo
 
 { #category : #'class modifications' }
 TraitBuilderEnhancer >> configureMetaclass: newMetaclass superclass: superclass withLayoutType: aLayoutType slots: classSlots [
-	| traitedClassSlots resultingSlots |
-	
+	| resultingSlots |
 	self validateTraitComposition: classTraitComposition ofClass: builder oldMetaclass.
-	
-	traitedClassSlots := TraitedMetaclass traitedClassTrait slots.
-	resultingSlots := self
-		eliminateDuplicates: traitedClassSlots , classSlots , classTraitComposition slots
-		withSuperclassSlots: superclass allSlots.
+
+	resultingSlots := self eliminateDuplicates: classSlots , classTraitComposition slots withSuperclassSlots: superclass allSlots.
 
 	newMetaclass superclass: superclass withLayoutType: aLayoutType slots: resultingSlots
 ]

@@ -3,7 +3,9 @@ Class {
 	#superclass : #Metaclass,
 	#instVars : [
 		'localMethods',
-		'composition'
+		'composition',
+		'baseLocalMethods',
+		'baseComposition'
 	],
 	#category : #TraitsV2
 }
@@ -41,31 +43,24 @@ TraitedMetaclass >> allTraits [
 	^ self traitComposition allTraits
 ]
 
-{ #category : #compiling }
-TraitedMetaclass >> compile: selector from: oldClass [
-	"Compile the method associated with selector in the receiver's method dictionary."
+{ #category : #accessing }
+TraitedMetaclass >> baseComposition [
+	^ baseComposition
+]
 
-	| method newMethod sourceCode trailer |
-	method := oldClass compiledMethodAt: selector.
-	sourceCode := oldClass sourceCodeAt: selector.
-	trailer := method trailer.
-	
-	(trailer sourceCode = sourceCode) ifFalse: [ trailer sourceCode: sourceCode  ].
+{ #category : #accessing }
+TraitedMetaclass >> baseComposition: anObject [
+	baseComposition := anObject
+]
 
-	newMethod := self compiler
-				source: sourceCode;
-				class: self;
-				failBlock: [^ self];
-				compiledMethodTrailer: trailer;
-				compile.   "Assume OK after proceed from SyntaxError"
-	selector == newMethod selector ifFalse: [self error: 'selector changed!'].
-		
-	self basicAddSelector: selector withMethod: newMethod.
-			
-	self organization protocolOrganizer
-		classify: selector
-		inProtocolNamed: method category.		
+{ #category : #accessing }
+TraitedMetaclass >> baseLocalMethods [
+	^ baseLocalMethods
+]
 
+{ #category : #accessing }
+TraitedMetaclass >> baseLocalMethods: anObject [
+	baseLocalMethods := anObject
 ]
 
 { #category : #testing }
@@ -84,6 +79,9 @@ TraitedMetaclass >> initialize [
 	super initialize.
 	localMethods := MethodDictionary new.
 	composition := TaEmptyComposition new.
+	
+	baseComposition := TaEmptyComposition new.
+	baseLocalMethods := MethodDictionary new.
 ]
 
 { #category : #'initialize-release' }
@@ -169,7 +167,7 @@ TraitedMetaclass >> rebuildMethodDictionary [
 	methodDict valuesDo: [ :m | (m propertyAt: #sourceTrait) ifNil: [ localMethods at: m selector put: m ]].
 
 	selectors := toUse selectors reject: [ :e | self isRejectedMethod: e ].
-	selectors do: [ :e | toUse compile: e into: self ].
+	selectors do: [ :e | toUse installSelector: e into: self ].
 	
 	removedSelectors := methodDict keys reject: [ :aSelector | (selectors includes: aSelector) or: [ localMethods includesKey: aSelector] ].
 	removedSelectors do: [ :aSelector | methodDict removeKey: aSelector ].

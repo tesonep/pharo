@@ -1,11 +1,6 @@
 Class {
 	#name : #TraitedClass,
 	#superclass : #Object,
-	#instVars : [
-		'methodDict',
-		'localMethods',
-		'composition'
-	],
 	#category : #TraitsV2
 }
 
@@ -66,45 +61,18 @@ TraitedClass >> allTraits [
 	^ self traitComposition allTraits
 ]
 
-{ #category : #compiling }
-TraitedClass >> compile: selector from: oldClass [
-	"Compile the method associated with selector in the receiver's method dictionary."
-
-	| method newMethod sourceCode trailer |
-	method := oldClass compiledMethodAt: selector.
-	sourceCode := oldClass sourceCodeAt: selector.
-	trailer := method trailer.
-	
-	(trailer sourceCode = sourceCode) ifFalse: [ trailer sourceCode: sourceCode  ].
-
-	newMethod := self compiler
-				source: sourceCode;
-				class: self;
-				failBlock: [^ self];
-				compiledMethodTrailer: trailer;
-				compile.   "Assume OK after proceed from SyntaxError"
-	selector == newMethod selector ifFalse: [self error: 'selector changed!'].
-		
-	self basicAddSelector: selector withMethod: newMethod.
-
-	self organization protocolOrganizer
-		classify: selector
-		inProtocolNamed: method category.		
-
-]
-
 { #category : #initialization }
 TraitedClass >> doRebuildMethodDictionary [
 	| selectors removedSelectors |
 
-	localMethods := MethodDictionary new.
-	methodDict valuesDo: [ :m | (m propertyAt: #sourceTrait) ifNil: [ localMethods at: m selector put: m ]].
+	self localMethodDict: MethodDictionary new.
+	self methodDict valuesDo: [ :m | (m propertyAt: #sourceTrait) ifNil: [ self localMethodDict at: m selector put: m ]].
 
-	selectors := composition selectors reject: [ :e | (localMethods includesKey: e) ].
-	selectors do: [ :e | composition compile: e into: self ].
+	selectors := self traitComposition selectors reject: [ :e | (self localMethodDict includesKey: e) ].
+	selectors do: [ :e | self traitComposition installSelector: e into: self ].
 
-	removedSelectors := methodDict keys reject: [ :aSelector | (selectors includes: aSelector) or: [ localMethods includesKey: aSelector] ].
-	removedSelectors do: [ :aSelector | methodDict removeKey: aSelector ].
+	removedSelectors := self methodDict keys reject: [ :aSelector | (selectors includes: aSelector) or: [ self localMethodDict includesKey: aSelector] ].
+	removedSelectors do: [ :aSelector | self methodDict removeKey: aSelector ].
 
 	self theMetaClass rebuildMethodDictionary
 ]
@@ -117,15 +85,7 @@ TraitedClass >> hasTraitComposition [
 
 { #category : #testing }
 TraitedClass >> includesLocalSelector: aSymbol [
-	^ localMethods includesKey: aSymbol
-]
-
-{ #category : #initialization }
-TraitedClass >> initializeTraitedClass [
-	localMethods := MethodDictionary new.
-	composition := TaEmptyComposition new.
-	
-	self rebuildMethodDictionary.
+	^ self localMethodDict includesKey: aSymbol
 ]
 
 { #category : #testing }
@@ -159,21 +119,31 @@ TraitedClass >> isLocalSelector: aSelector [
 ]
 
 { #category : #accessing }
+TraitedClass >> localMethodDict [
+	^ self class baseLocalMethods
+]
+
+{ #category : #accessing }
+TraitedClass >> localMethodDict: aMethodDictionary [
+	^ self class baseLocalMethods: aMethodDictionary 
+]
+
+{ #category : #accessing }
 TraitedClass >> localMethods [
 	"returns the methods of classes excluding the ones of the traits that the class uses" 
 	 
-	^ localMethods values
+	^ self localMethodDict values
 ]
 
 { #category : #'accessing method dictionary' }
 TraitedClass >> localSelectors [
 	
-	^ localMethods keys
+	^ self localMethodDict keys
 ]
 
 { #category : #testing }
 TraitedClass >> originOfMethod: aMethod [
-	(localMethods includesKey: aMethod selector)
+	(self localMethodDict includesKey: aMethod selector)
 		ifTrue: [ ^ self ].
 
 	^ (self traitComposition traitDefining: aMethod selector ifNone: [ ^ self ]) innerClass
@@ -205,7 +175,7 @@ TraitedClass >> recreateWithoutComposition [
 { #category : #'trait-composition' }
 TraitedClass >> removeFromComposition: aTrait [
 
-	self setTraitComposition: (composition copyWithoutTrait: aTrait asTraitComposition)
+	self setTraitComposition: (self traitComposition copyWithoutTrait: aTrait asTraitComposition)
 ]
 
 { #category : #removing }
@@ -244,7 +214,7 @@ TraitedClass >> removeSlot: aSlot [
 
 { #category : #initialization }
 TraitedClass >> slots [
-	^ super slots reject:[ :e  | composition slots includes:e ]
+	^ super slots reject:[ :e  | self traitComposition slots includes:e ]
 ]
 
 { #category : #'accessing tags' }
@@ -269,12 +239,13 @@ TraitedClass >> tagsForMethods [
 { #category : #accessing }
 TraitedClass >> traitComposition [
 
-	^ composition
+	^ self class baseComposition
 ]
 
 { #category : #accessing }
 TraitedClass >> traitComposition: anObject [
-	composition := anObject
+	
+	self class baseComposition: anObject
 ]
 
 { #category : #accessing }

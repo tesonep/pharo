@@ -78,6 +78,12 @@ TaSequence >> allTraits [
 	^ members flatCollect: #allTraits
 ]
 
+{ #category : #testing }
+TaSequence >> changesSourceCode: aSelector [
+ 
+	^ self members anySatisfy: [ :e | e changesSourceCode: aSelector ]
+]
+
 { #category : #operations }
 TaSequence >> classComposition [
 	^ self class withAll: (members collect:#classComposition)

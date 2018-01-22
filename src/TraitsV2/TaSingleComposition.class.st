@@ -28,6 +28,12 @@ TaSingleComposition >> allTraits [
 	^ inner allTraits
 ]
 
+{ #category : #testing }
+TaSingleComposition >> changesSourceCode: aSelector [ 
+	
+	^ inner changesSourceCode: aSelector
+]
+
 { #category : #accessing }
 TaSingleComposition >> classComposition [
 	^ inner classComposition

@@ -1,6 +1,12 @@
 Extension { #name : #Metaclass }
 
 { #category : #'*TraitsV2' }
+Metaclass >> setTraitComposition: aTraitCompositionOrArray [
+	
+	^ self uses: aTraitCompositionOrArray slots: self slots.
+]
+
+{ #category : #'*TraitsV2' }
 Metaclass >> uses: aTraitCompositionOrArray [
 	
 	^ self uses: aTraitCompositionOrArray slots: #().

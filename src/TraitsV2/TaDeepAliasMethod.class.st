@@ -4,6 +4,12 @@ Class {
 	#category : #'TraitsV2-Compositions'
 }
 
+{ #category : #testing }
+TaDeepAliasMethod >> changesSourceCode: aSelector [ 
+	
+	^ true
+]
+
 { #category : #rewriting }
 TaDeepAliasMethod >> rewriteText: aSelector [
 	| stream |

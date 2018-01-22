@@ -44,6 +44,14 @@ TaCompositionElement >> allTraits [
 	^ { innerClass } , innerClass traitComposition allTraits.
 ]
 
+{ #category : #testing }
+TaCompositionElement >> changesSourceCode: aSelector [
+
+	^ false 
+	
+
+]
+
 { #category : #'transforming selectors' }
 TaCompositionElement >> classComposition [
 

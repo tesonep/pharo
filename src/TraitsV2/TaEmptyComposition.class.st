@@ -51,6 +51,12 @@ TaEmptyComposition >> allTraits [
 	^ #()
 ]
 
+{ #category : #testing }
+TaEmptyComposition >> changesSourceCode: aString [ 
+	
+	^ false
+]
+
 { #category : #operations }
 TaEmptyComposition >> classComposition [
 	^ self class new.
