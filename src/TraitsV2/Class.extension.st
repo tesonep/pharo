@@ -1,17 +1,6 @@
 Extension { #name : #Class }
 
 { #category : #'*TraitsV2' }
-Class >> applyChangesOfNewTraitCompositionReplacing: oldComposition [
-
-	| changedSelectors |
-	
-	self halt.
-	changedSelectors := super applyChangesOfNewTraitCompositionReplacing: oldComposition.
-	self classSide noteNewBaseTraitCompositionApplied: self traitComposition.
-	^ changedSelectors
-]
-
-{ #category : #'*TraitsV2' }
 Class >> immediateSubclass: aClassName uses: aTraitCompositionOrArray instanceVariableNames: instVarNames 
 	classVariableNames: classVarNames package: cat [
 	"Added to allow for a simplified subclass creation experience. "

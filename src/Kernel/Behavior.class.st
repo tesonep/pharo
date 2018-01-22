@@ -75,12 +75,6 @@ Behavior >> >> selector [
 
 ]
 
-{ #category : #TOBEREMOVE }
-Behavior >> addExclusionOf: aSymbol to: aTrait [
-	self setTraitComposition: (
-		self traitComposition copyWithExclusionOf: aSymbol to: aTrait)
-]
-
 { #category : #'obsolete subclasses' }
 Behavior >> addObsoleteSubclass: aClass [
 	"Weakly remember that aClass was a subclass of the receiver and is now obsolete"
@@ -108,30 +102,6 @@ Behavior >> addSelectorSilently: selector withMethod: compiledMethod [
 	self basicAddSelector: selector withMethod: compiledMethod.
 	self registerLocalSelector: selector.
 
-]
-
-{ #category : #TOBEREMOVE }
-Behavior >> addTraitSelector: aSymbol withMethod: aCompiledMethod [
-	"Add aMethod with selector aSymbol to my
-	methodDict. aMethod must not be defined locally."
-
-	| source method |
-	[(self includesLocalSelector: aSymbol) not] assert.
-	self ensureLocalSelectors.
-		
-	source := aCompiledMethod getSourceReplacingSelectorWith: aSymbol.
-	method  := aCompiledMethod copy.
-	method selector: aSymbol.
-	method methodClass: self.
-		
-	"write source to changes file only if we have it (not available during bootstrap)"	
-	((Smalltalk globals includesKey: #SourceFiles) and: [ (Smalltalk globals at: #SourceFiles) notNil]) ifTrue: [ 
-		method putSource: source
-			withPreamble: [:f | f cr; nextPut: $!; nextChunkPut: 'Trait method'; cr]].
-	
-	method properties at: #traitSource put: aCompiledMethod.
-	
-	self basicAddSelector: aSymbol withMethod: method
 ]
 
 { #category : #'adding/removing methods' }
@@ -606,13 +576,6 @@ Behavior >> classVarNames [
 	"Answer a collection of the receiver's class variable names."
 
 	^#()
-]
-
-{ #category : #TOBEREMOVE }
-Behavior >> classesComposedWithMe [
-	self isTrait
-		ifTrue: [ ^ self traitUsers flatCollect: [ :u | u classesComposedWithMe ] ]
-		ifFalse: [ ^ {self} ]
 ]
 
 { #category : #cleanup }
@@ -1511,27 +1474,6 @@ Behavior >> nonObsoleteClass [
 	^ self environment at: obsName asSymbol
 ]
 
-{ #category : #TOBEREMOVE }
-Behavior >> noteChangedSelectors: aCollection [
-	"Start update of my methodDict (after changes to traits in traitComposition
-	or after a local method was removed from my methodDict). The argument 
-	is a collection of method selectors that may have been changed. Most of the time
-	aCollection only holds one selector. But when there are aliases involved 
-	there may be several method changes that have to be propagated to users."
-
-	| affectedSelectors |
-	affectedSelectors := IdentitySet new.
-	aCollection do: [:selector |
-		affectedSelectors addAll: (self updateMethodDictionarySelector: selector)].
-	self notifyUsersOfChangedSelectors: affectedSelectors.
-	^ affectedSelectors
-]
-
-{ #category : #TOBEREMOVE }
-Behavior >> notifyUsersOfChangedSelector: aSelector [
-	self notifyUsersOfChangedSelectors: (Array with: aSelector)
-]
-
 { #category : #accessing }
 Behavior >> numberOfInstanceVariables [
 	^ self instVarNames size
@@ -1640,11 +1582,6 @@ Behavior >> propertyAt: propName put: propValue [
 		ifAbsentPut: propValue
 ]
 
-{ #category : #TOBEREMOVE }
-Behavior >> purgeLocalSelectors [
-	self basicLocalSelectors: nil
-]
-
 { #category : #accessing }
 Behavior >> realClass [
 
@@ -1704,12 +1641,6 @@ Behavior >> removeSelectorSilently: selector [
 	"Remove selector without sending system change notifications"
 
 	^ SystemAnnouncer uniqueInstance suspendAllWhile: [self removeSelector: selector].
-]
-
-{ #category : #TOBEREMOVE }
-Behavior >> removeTraitSelector: aSymbol [
-	[(self includesLocalSelector: aSymbol) not] assert.
-	self basicRemoveSelector: aSymbol
 ]
 
 { #category : #enumerating }
@@ -2007,16 +1938,6 @@ Behavior >> thoroughWhichSelectorsReferTo: literal [
 	^ selectors
 ]
 
-{ #category : #TOBEREMOVE }
-Behavior >> traitTransformations [ 
-	^ self traitComposition transformations 
-]
-
-{ #category : #TOBEREMOVE }
-Behavior >> traits [
-	^ #()
-]
-
 { #category : #accessing }
 Behavior >> typeOfClass [
 	"Answer a symbol uniquely describing the type of the receiver. c.f. kindOfSubclass"
@@ -2053,11 +1974,6 @@ Behavior >> unreferencedInstanceVariables [
 	^ self instVarNames reject: [:ivn | 
 		self withAllSubclasses anySatisfy: [:class | 
 			(class whichSelectorsAccess: ivn) notEmpty]]
-]
-
-{ #category : #TOBEREMOVE }
-Behavior >> users [
-	^ #()
 ]
 
 { #category : #compiling }

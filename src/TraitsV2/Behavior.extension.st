@@ -40,3 +40,13 @@ Behavior >> localSelectors [
 Behavior >> traitCompositionString [
 	^ '{}'
 ]
+
+{ #category : #'*TraitsV2' }
+Behavior >> traits [
+	^ #()
+]
+
+{ #category : #'*TraitsV2' }
+Behavior >> users [
+	^ #()
+]

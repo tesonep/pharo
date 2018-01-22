@@ -960,18 +960,6 @@ ClassDescription >> notifyRepackage: selector method: compiledMethod oldProtocol
 	SystemAnnouncer uniqueInstance methodRecategorized: compiledMethod oldProtocol: oldProtocol
 ]
 
-{ #category : #'users notification' }
-ClassDescription >> notifyUsersOfChangedSelectors: aCollection [
-	self traitUsers do: [:each |
-		each noteChangedSelectors: aCollection]
-]
-
-{ #category : #'users notification' }
-ClassDescription >> notifyUsersOfRecategorizedSelector: element from: oldCategory to: newCategory [
-	self traitUsers do: [:each |
-		each noteRecategorizedSelector: element from: oldCategory to: newCategory]
-]
-
 { #category : #private }
 ClassDescription >> numberOfMethods [
 	"count all methods that are local (not comming from a trait)"
