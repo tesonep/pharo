@@ -62,6 +62,11 @@ TaAbstractComposition >> aliasSelector: selector [
 	^ self shouldBeImplemented
 ]
 
+{ #category : #accessing }
+TaAbstractComposition >> allSelectors [
+	^ self selectors
+]
+
 { #category : #querying }
 TaAbstractComposition >> allTraits [
 	^ self subclassResponsibility 
@@ -179,7 +184,7 @@ TaAbstractComposition >> installSelector: aSelector into: aClass [
 
 	[ 	
 		(self needsRecompilation: aSelector) 
-			ifTrue:[ aClass compile: aSelector into: aClass	]
+			ifTrue:[ self compile: aSelector into: aClass	]
 			ifFalse:[ self copyMethod: aSelector into: aClass ].
 			
 	 	aClass >> aSelector propertyAt: #sourceTrait put: (self traitDefining: aSelector) ]

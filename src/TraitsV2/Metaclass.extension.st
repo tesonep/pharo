@@ -23,6 +23,9 @@ Metaclass >> uses: aTraitCompositionOrArray slots: slotArray [
 	| theClass builderEnhancer |
 	theClass := self theNonMetaClass.
 
+	(aTraitCompositionOrArray asTraitComposition isEmpty and: [ theClass traitComposition isEmpty ])
+		ifTrue: [ ^ self slots: slotArray ].
+
 	builderEnhancer := TraitBuilderEnhancer new.
 	builderEnhancer traitComposition: theClass traitComposition asTraitComposition.
 	builderEnhancer classTraitComposition: aTraitCompositionOrArray asTraitComposition.
