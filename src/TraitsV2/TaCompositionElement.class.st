@@ -161,7 +161,7 @@ TaCompositionElement >> traitDefining: selector [
 	| newSelector |
 	newSelector := self dealiasSelector: selector.
 	
-	^ innerClass methods
+	^ innerClass localMethods
 		detect: [ :e | e selector = newSelector ]
 		ifFound: [ :e | self ]
 		ifNone: [ innerClass traitComposition traitDefining: newSelector ]
