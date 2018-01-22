@@ -14,6 +14,7 @@ BaselineOfTraits >> baseline: spec [
 			package: 'TraitsV2';
 			
 			package: 'Kernel-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'Traits-Traits' with: [ spec requires: #('TraitsV2') ];
 			package: 'AST-Core-Traits' with: [ spec requires: #('TraitsV2') ];
 			package: 'Collections-Abstract-Traits' with: [ spec requires: #('TraitsV2') ];
 			package: 'Transcript-Core-Traits' with: [ spec requires: #('TraitsV2') ];
