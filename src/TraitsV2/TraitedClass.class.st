@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #accessing }
+TraitedClass class >> isTrait [
+	^ true
+]
+
+{ #category : #accessing }
 TraitedClass class >> traitComposition [
 	
 	^ TaEmptyComposition new

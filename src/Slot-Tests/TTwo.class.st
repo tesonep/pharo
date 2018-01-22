@@ -1,8 +1,6 @@
-"
-I am a trait used for testing.
-"
-Trait {
+Class {
 	#name : #TTwo,
+	#superclass : #Trait,
 	#category : #'Slot-Tests'
 }
 

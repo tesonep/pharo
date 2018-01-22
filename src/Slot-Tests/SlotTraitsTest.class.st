@@ -10,8 +10,8 @@ SlotTraitsTest >> testClassWithClassTrait [
 	self assert: TOne traitUsers isEmpty.
 	self assert: TOne classTrait traitUsers isEmpty.
 	
-	aClass := self make: [ :builder | 
-		builder classTraitComposition: TOne ].
+	aClass := self make: [ :builder | ].
+	aClass class setTraitComposition: TOne.
 	
 	self assert: TOne traitUsers asArray equals: { aClass class }.
 	self assert: TOne classTrait traitUsers isEmpty.
@@ -26,31 +26,14 @@ SlotTraitsTest >> testClassWithTrait [
 	self assert: TOne traitUsers isEmpty.
 	self assert: TOne classTrait traitUsers isEmpty.
 	
-	aClass := self make: [ :builder | 
-		builder traitComposition: TOne ].
+	aClass := self make: [ :builder | ]. 
+	aClass setTraitComposition: TOne.
 	
 	self assert: TOne traitUsers asArray equals: { aClass }.
-	self assert: TOne classTrait traitUsers isEmpty.
+	self assert: TOne classTrait traitUsers asArray equals: { aClass class }.
 	
 	self assert: (aClass canUnderstand: #one).
 	self assert: aClass new one equals: 1.
-]
-
-{ #category : #tests }
-SlotTraitsTest >> testClassWithTrait2 [
-
-	self assert: TOne traitUsers isEmpty.
-	self assert: TOne classTrait traitUsers isEmpty.
-	
-	aClass := self make: [ :builder | 
-		builder traitComposition: TOne classTrait ].
-	
-	self assert: TOne traitUsers isEmpty.
-	self assert: TOne classTrait traitUsers asArray equals: { aClass }.
-	
-	self deny: (aClass canUnderstand: #one).
-	self assert: (aClass canUnderstand: #classOne).
-	self assert: aClass new classOne equals: 1.
 ]
 
 { #category : #tests }

@@ -127,6 +127,15 @@ Trait class >> named: aName uses: aTraitCompositionOrCollection category: aStrin
 ]
 
 { #category : #'instance creation' }
+Trait class >> named: aSymbol uses: aTraitCompositionOrCollection package: aString [
+	^ self
+		named: aSymbol
+		uses: aTraitCompositionOrCollection
+		category: aString
+		env: self environment
+]
+
+{ #category : #'instance creation' }
 Trait class >> named: aName uses: aTraitCompositionOrCollection slots: someSlots category: aCategory env: anEnvironment [ 
 
 	| trait builderEnhancer |

@@ -36,7 +36,7 @@ Metaclass >> uses: aTraitCompositionOrArray slots: slotArray [
 			builder
 				superclass: theClass superclass;
 				builderEnhancer: builderEnhancer;
-				metaclassClass: self class;
+				metaclassClass: TraitedMetaclass;
 				name: theClass name;
 				layoutClass: theClass classLayout class;
 				slots: theClass slots;

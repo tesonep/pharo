@@ -1,17 +1,16 @@
-"
-I am a trait used for testing.
-"
-Trait {
+Class {
 	#name : #TOne,
+	#superclass : #Trait,
 	#category : #'Slot-Tests'
 }
 
 { #category : #testing }
-TOne classSide >> classOne [
+TOne class >> classOne [
 	^ 1
 ]
 
 { #category : #testing }
 TOne >> one [
 	^ 1
+
 ]
