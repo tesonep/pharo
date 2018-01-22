@@ -10,6 +10,11 @@ Class {
 	#category : #'Shift-ClassBuilder'
 }
 
+{ #category : #testing }
+ShDefaultBuilderEnhancer class >> isApplicableFor: aBuilder [
+	^ false
+]
+
 { #category : #'class modifications' }
 ShDefaultBuilderEnhancer >> afterMethodsCompiled: builder [
 ]
@@ -50,6 +55,15 @@ ShDefaultBuilderEnhancer >> hasToSkipSlot: aSlot [
 
 { #category : #initialization }
 ShDefaultBuilderEnhancer >> initializeBuilder: aBuilder [
+
+	aBuilder addChangeComparer: ShSharedPoolChangeDetector.
+	aBuilder addChangeComparer: ShSharedVariablesChangeDetector.
+	aBuilder addChangeComparer: ShSlotChangeDetector.
+	aBuilder addChangeComparer: ShLayoutChangeDetector.
+	aBuilder addChangeComparer: ShBitLayoutChangeDetector.
+	aBuilder addChangeComparer: ShClassSlotChangeDetector.
+	aBuilder addChangeComparer: ShSuperclassChangedDetector.
+
 ]
 
 { #category : #events }

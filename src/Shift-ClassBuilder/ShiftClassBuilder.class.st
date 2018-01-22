@@ -60,6 +60,8 @@ ShiftClassBuilder >> addChangeComparer: aChangeComparer [
 { #category : #building }
 ShiftClassBuilder >> build [	
 	self tryToFillOldClass.
+	self detectBuilderEnhancer.
+	
 	self validateSuperclass.
 	self compareWithOldClass.
 
@@ -136,7 +138,7 @@ ShiftClassBuilder >> classSlots: aSlotCollection [
 
 { #category : #accessing }
 ShiftClassBuilder >> classTraitComposition [
-	^ extensibleProperties at: #classTraitComposition
+	^ extensibleProperties at: #classTraitComposition ifAbsent: {}
 ]
 
 { #category : #accessing }
@@ -239,6 +241,18 @@ ShiftClassBuilder >> createSharedVariables [
 	
 ]
 
+{ #category : #initialization }
+ShiftClassBuilder >> detectBuilderEnhancer [
+	
+	| builderEnhancerClass |
+	
+	builderEnhancerClass := ShDefaultBuilderEnhancer allSubclasses detect: [ :e | e isApplicableFor: self ] ifNone: [ self class defaultBuildEnhancer ].
+	builderEnhancer := builderEnhancerClass new.
+	
+	builderEnhancer initializeBuilder: self.
+	
+]
+
 { #category : #'reflective operations' }
 ShiftClassBuilder >> doesNotUnderstand: aMessage [
 	| selector variable setter|
@@ -294,7 +308,6 @@ ShiftClassBuilder >> initialize [
 	super initialize.
 	
 	superclassName := #Object.
-	builderEnhancer := self class defaultBuildEnhancer new.
 
 	layoutDefinition := ShLayoutDefinition new.
 	layoutDefinition builder: self.
@@ -303,15 +316,8 @@ ShiftClassBuilder >> initialize [
 	
 	changeComparers := OrderedCollection new.
 	changes := Set new.
-	
-	self addChangeComparer: ShSharedPoolChangeDetector.
-	self addChangeComparer: ShSharedVariablesChangeDetector.
-	self addChangeComparer: ShSlotChangeDetector.
-	self addChangeComparer: ShLayoutChangeDetector.
-	self addChangeComparer: ShBitLayoutChangeDetector.
-	self addChangeComparer: ShClassSlotChangeDetector.
-	self addChangeComparer: ShSuperclassChangedDetector.
-	
+
+	builderEnhancer := self class defaultBuildEnhancer new.	
 	builderEnhancer initializeBuilder: self.
 ]
 
@@ -444,7 +450,7 @@ ShiftClassBuilder >> superclassName: anObject [
 
 { #category : #accessing }
 ShiftClassBuilder >> traitComposition [
-	^ extensibleProperties at: #traitComposition
+	^ extensibleProperties at: #traitComposition ifAbsent: {}
 ]
 
 { #category : #accessing }

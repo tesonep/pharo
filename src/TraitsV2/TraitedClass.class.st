@@ -40,20 +40,15 @@ TraitedClass >> addSelector: selector withMethod: compiledMethod notifying: requ
 { #category : #adding }
 TraitedClass >> addSlot: aSlot [
 
-	| builderEnhancer |
-	builderEnhancer := TraitBuilderEnhancer new.
-	builderEnhancer traitComposition: self traitComposition asTraitComposition.
-	builderEnhancer classTraitComposition: self class traitComposition asTraitComposition.
-
 	^self classInstaller update: self to: [ :builder |
 		builder
 			superclass: self superclass;
-			builderEnhancer: builderEnhancer;
-			metaclassClass: self class class;
 			name: self getName;
 			layoutClass: self classLayout class;
 			slots: (self slots copyWith: aSlot);
 			classSlots: self class classLayout slots;
+			traitComposition: self traitComposition asTraitComposition;
+			classTraitComposition: self class traitComposition asTraitComposition;	
 			sharedVariablesFromString: self classVariablesString;
 			sharedPools: self sharedPoolsString;
 			category: self category;
@@ -163,21 +158,6 @@ TraitedClass >> rebuildMethodDictionary [
 ]
 
 { #category : #'trait-composition' }
-TraitedClass >> recreateWithoutComposition [
-	
-	^ self classInstaller
-		make: [ :builder | 
-			builder
-				name: self name;
-				superclass: self superclass;
-				slots: self slots;
-				sharedVariables: self classVariablesString;
-				sharedPools: self sharedPoolsString;
-				category: self category;
-				classSlots: self class slotsWithoutTraits ]	
-]
-
-{ #category : #'trait-composition' }
 TraitedClass >> removeFromComposition: aTrait [
 
 	self setTraitComposition: (self traitComposition copyWithoutTrait: aTrait asTraitComposition)
@@ -191,21 +171,13 @@ TraitedClass >> removeSelector: aSelector [
 
 { #category : #removing }
 TraitedClass >> removeSlot: aSlot [ 
-
-	| builderEnhancer |
 	
 	(self classLayout slots includes: aSlot)
 		ifFalse: [self error: aSlot name , ' is not one of my slots'].
 		
-	builderEnhancer := TraitBuilderEnhancer new.
-	builderEnhancer traitComposition: self traitComposition asTraitComposition.
-	builderEnhancer classTraitComposition: self class traitComposition asTraitComposition.
-
 	^self classInstaller update: self to: [ :builder |
 		builder
 			superclass: self superclass;
-			builderEnhancer: builderEnhancer;
-			metaclassClass: self class class;
 			name: self name;
 			layoutClass: self classLayout class;
 			slots: (self classLayout slots copyWithout: aSlot);
@@ -213,6 +185,8 @@ TraitedClass >> removeSlot: aSlot [
 			sharedVariablesFromString: self classVariablesString;
 			sharedPools: self sharedPoolsString;
 			category: self category;
+			traitComposition: self traitComposition asTraitComposition;
+			classTraitComposition: self class traitComposition asTraitComposition;
 			environment: self environment]
 	
 ]

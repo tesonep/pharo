@@ -27,33 +27,18 @@ Class >> immediateSubclass: aName uses: aTraitComposition instanceVariableNames:
 ]
 
 { #category : #'*TraitsV2' }
-Class >> recreateWithoutComposition [
-	
-	"Nothing to do I am a normal class without traits"
-	
-	^ self
-]
-
-{ #category : #'*TraitsV2' }
 Class >> setTraitComposition: aTraitComposition [
-	| builderEnhancer |
-
-	aTraitComposition asTraitComposition isEmpty ifTrue: [ ^ self recreateWithoutComposition ].
-
-	builderEnhancer := TraitBuilderEnhancer new.
-	builderEnhancer traitComposition: aTraitComposition asTraitComposition.
-	builderEnhancer classTraitComposition: aTraitComposition asTraitComposition classComposition.
 		
 	^ self classInstaller
 		make: [ :builder | 
 			builder
-				metaclassClass: TraitedMetaclass;
-				builderEnhancer: builderEnhancer;
 				name: self name;
 				superclass: superclass;
 				slots: self slots;
 				sharedVariables: self classVariablesString;
 				sharedPools: self sharedPoolsString;
+				traitComposition: aTraitComposition asTraitComposition;
+				classTraitComposition: aTraitComposition asTraitComposition classComposition;
 				category: self category;
 				copyClassSlotsFromExistingClass ]
 ]
@@ -134,21 +119,17 @@ Class >> subclass: aSubclassSymbol uses: aTraitCompositionOrArray layout: layout
 
 { #category : #'*TraitsV2' }
 Class >> subclass: subclassName uses: aTraitComposition layout: aLayout slots: someSlots classVariables: someClassVariables poolDictionaries: somePoolDictionaries category: aCategory [
-	| builderEnhancer |
-	builderEnhancer := TraitBuilderEnhancer new.
-	builderEnhancer traitComposition: aTraitComposition asTraitComposition.
-	builderEnhancer classTraitComposition: aTraitComposition asTraitComposition classComposition.
 	
 	^ self classInstaller
 		make: [ :builder | 
 			builder
-				metaclassClass: TraitedMetaclass;
-				builderEnhancer: builderEnhancer;
 				name: subclassName;
 				superclass: self;
 				slots: someSlots;
 				sharedVariables: someClassVariables;
 				sharedPools: somePoolDictionaries;
+				traitComposition: aTraitComposition asTraitComposition;
+				classTraitComposition: aTraitComposition asTraitComposition classComposition;
 				category: aCategory;
 				copyClassSlotsFromExistingClass ]
 ]

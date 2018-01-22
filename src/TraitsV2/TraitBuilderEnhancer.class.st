@@ -2,12 +2,22 @@ Class {
 	#name : #TraitBuilderEnhancer,
 	#superclass : #ShDefaultBuilderEnhancer,
 	#instVars : [
-		'builder',
-		'traitComposition',
-		'classTraitComposition'
+		'builder'
 	],
 	#category : #'TraitsV2-Class-Builder'
 }
+
+{ #category : #testing }
+TraitBuilderEnhancer class >> isApplicableFor: aBuilder [
+	
+	aBuilder superclassName = #Trait ifTrue: [ ^ true ].
+	aBuilder superclass = Trait ifTrue: [ ^ true ].
+
+	aBuilder traitComposition asTraitComposition isEmpty ifFalse: [ ^ true ].
+	aBuilder classTraitComposition asTraitComposition isEmpty ifFalse: [ ^ true ].
+
+	^ false
+]
 
 { #category : #migrating }
 TraitBuilderEnhancer >> afterMigratingClass: aBuilder installer: anInstaller [
@@ -28,8 +38,8 @@ TraitBuilderEnhancer >> classCreated: aBuilder [
 	builder newMetaclass rebuildMethodDictionary.
 	builder newClass rebuildMethodDictionary.
 	
-	builder newClass traitComposition: traitComposition.
-	builder newMetaclass traitComposition: classTraitComposition.
+	builder newClass traitComposition: self traitComposition.
+	builder newMetaclass traitComposition: self classTraitComposition.
 
 	builder newClass rebuildMethodDictionary.
 	builder newMetaclass rebuildMethodDictionary.
@@ -38,18 +48,13 @@ TraitBuilderEnhancer >> classCreated: aBuilder [
 
 { #category : #accessing }
 TraitBuilderEnhancer >> classTraitComposition [
-	^ classTraitComposition
-]
-
-{ #category : #accessing }
-TraitBuilderEnhancer >> classTraitComposition: anObject [
-	classTraitComposition := anObject
+	^ builder classTraitComposition
 ]
 
 { #category : #accessing }
 TraitBuilderEnhancer >> classTraitCompositionOf: aBuilder [ 
 	
-	^ classTraitComposition 
+	^ aBuilder classTraitComposition 
 ]
 
 { #category : #utils }
@@ -69,19 +74,23 @@ TraitBuilderEnhancer >> compileMethodsFor: aBuilder [
 { #category : #'class modifications' }
 TraitBuilderEnhancer >> configureClass: newClass superclass: superclass withLayoutType: layoutType slots: slots [
 	| resultingSlots |
-	
-	self validateTraitComposition: traitComposition ofClass: builder oldClass.
-	
-	resultingSlots := self eliminateDuplicates: slots , traitComposition slots withSuperclassSlots: superclass allSlots.
+	self validateTraitComposition: self traitComposition ofClass: builder oldClass.
+
+	resultingSlots := self
+		eliminateDuplicates: slots , self traitComposition slots
+		withSuperclassSlots: superclass allSlots.
+
 	newClass superclass: superclass withLayoutType: layoutType slots: resultingSlots
 ]
 
 { #category : #'class modifications' }
 TraitBuilderEnhancer >> configureMetaclass: newMetaclass superclass: superclass withLayoutType: aLayoutType slots: classSlots [
 	| resultingSlots |
-	self validateTraitComposition: classTraitComposition ofClass: builder oldMetaclass.
+	self validateTraitComposition: self classTraitComposition ofClass: builder oldMetaclass.
 
-	resultingSlots := self eliminateDuplicates: classSlots , classTraitComposition slots withSuperclassSlots: superclass allSlots.
+	resultingSlots := self
+		eliminateDuplicates: classSlots , self classTraitComposition slots
+		withSuperclassSlots: superclass allSlots.
 
 	newMetaclass superclass: superclass withLayoutType: aLayoutType slots: resultingSlots
 ]
@@ -102,33 +111,32 @@ TraitBuilderEnhancer >> eliminateDuplicates: aSlotCollection withSuperclassSlots
 
 { #category : #migrating }
 TraitBuilderEnhancer >> hasToSkipSlot: aSlot [
-	^ (Class hasSlotNamed: aSlot name) or: [ TraitedClass hasSlotNamed: aSlot name ]
+	^ Class hasSlotNamed: aSlot name
 ]
 
 { #category : #initialization }
 TraitBuilderEnhancer >> initializeBuilder: aBuilder [
 	super initializeBuilder: aBuilder.
-	
+
 	builder := aBuilder.
-	
+
 	aBuilder addChangeComparer: TraitCompositionChangedDetector.
-	aBuilder addChangeComparer: ClassTraitCompositionChangedDetector.	
+	aBuilder addChangeComparer: ClassTraitCompositionChangedDetector.
+
+	aBuilder superclass = Trait
+		ifTrue: [ aBuilder metaclassClass: MetaclassForTraits ]
+		ifFalse: [ aBuilder metaclassClass: TraitedMetaclass ]
 ]
 
 { #category : #accessing }
 TraitBuilderEnhancer >> traitComposition [
-	^ traitComposition
-]
-
-{ #category : #accessing }
-TraitBuilderEnhancer >> traitComposition: anObject [
-	traitComposition := anObject
+	^ builder traitComposition
 ]
 
 { #category : #accessing }
 TraitBuilderEnhancer >> traitCompositionOf: aBuilder [ 
 	
-	^ traitComposition
+	^ aBuilder traitComposition
 ]
 
 { #category : #utils }

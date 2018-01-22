@@ -138,23 +138,19 @@ Trait class >> named: aSymbol uses: aTraitCompositionOrCollection package: aStri
 { #category : #'instance creation' }
 Trait class >> named: aName uses: aTraitCompositionOrCollection slots: someSlots category: aCategory env: anEnvironment [ 
 
-	| trait builderEnhancer |
+	| trait |
 
-	builderEnhancer := TraitBuilderEnhancer new.
-	builderEnhancer traitComposition: aTraitCompositionOrCollection asTraitComposition.
-	builderEnhancer classTraitComposition: aTraitCompositionOrCollection asTraitComposition classComposition.
-	
 	trait:= self classInstaller
 		make: [ :builder | 
 			builder
-				metaclassClass: MetaclassForTraits;
-				builderEnhancer: builderEnhancer;
 				name: aName;
 				superclass: self;
 				slots: someSlots;
 				sharedVariables: '';
 				sharedPools: '';
 				category: aCategory;
+				traitComposition: aTraitCompositionOrCollection asTraitComposition;
+				classTraitComposition: aTraitCompositionOrCollection asTraitComposition classComposition;
 				classSlots: #() ].
 			
 	self assert: [ trait class class = MetaclassForTraits ].

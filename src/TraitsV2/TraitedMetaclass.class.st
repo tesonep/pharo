@@ -189,18 +189,12 @@ TraitedMetaclass >> slots [
 { #category : #'initialize-release' }
 TraitedMetaclass >> slots: slotCollection [ 
 
-	| theClass builderEnhancer |
+	| theClass |
 	theClass := self theNonMetaClass.
 		
-	builderEnhancer := TraitBuilderEnhancer new.
-	builderEnhancer traitComposition: theClass traitComposition asTraitComposition.
-	builderEnhancer classTraitComposition: self traitComposition asTraitComposition.	
-	
 	theClass := theClass classInstaller update: theClass to: [ :builder |
 		builder
 			superclass: theClass superclass;
-			builderEnhancer: builderEnhancer;
-			metaclassClass: self class;
 			name: theClass name;
 			layoutClass: theClass classLayout class;
 			slots: theClass slots;
@@ -208,6 +202,8 @@ TraitedMetaclass >> slots: slotCollection [
 			sharedPools: theClass sharedPoolsString;
 			traitComposition: theClass traitComposition;
 			category: theClass category asString;
+			traitComposition: theClass traitComposition asTraitComposition;
+			classTraitComposition: self traitComposition asTraitComposition;
 			classSlots: slotCollection ].
 	^ theClass theMetaClass
 ]

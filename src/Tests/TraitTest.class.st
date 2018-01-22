@@ -62,9 +62,9 @@ TraitTest >> testAllClassVarNames [
 TraitTest >> testComposedBy [
 	"tests the #isComposedBy: aTrait method"
 	
-	self assert: (Trait3 isComposedBy: Trait2).
-	self deny: (Trait2 isComposedBy: Trait3).
-	self deny: (Trait3 isComposedBy: Object).
+	self assert: (Trait3x isComposedBy: Trait2x).
+	self deny: (Trait2x isComposedBy: Trait3x).
+	self deny: (Trait3x isComposedBy: Object).
 	
 ]
 
