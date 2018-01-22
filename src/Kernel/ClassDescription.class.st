@@ -860,22 +860,6 @@ ClassDescription >> noteAddedSelector: aSelector meta: isMeta [
 	"A hook allowing some classes to react to adding of certain selectors"
 ]
 
-{ #category : #'organization updating' }
-ClassDescription >> noteChangesFrom: oldMethodDict [
-	"create notifications about the changes made to the method dictionary"
-	"additions have already been notified in #addTraitSelector:withMethod:"
-		
-	" deal with removal / updates relative to the old method dictionary"
-	oldMethodDict keysAndValuesDo: [ :selector :oldMethod|
-		self methodDict 
-			at: selector
-			ifPresent: [ :currentMethod|
-				currentMethod == oldMethod
-					ifFalse: [ self noteMethodChanged: oldMethod to: currentMethod]]
-			ifAbsent: [ self noteMethodRemoved: oldMethod ]].
-	
-]
-
 { #category : #compiling }
 ClassDescription >> noteCompilationOf: aSelector meta: isMeta [
 	"A hook allowing some classes to react to recompilation of certain selectors"
@@ -884,41 +868,6 @@ ClassDescription >> noteCompilationOf: aSelector meta: isMeta [
 { #category : #compiling }
 ClassDescription >> noteCompilationOfMethod: aCompiledMethod meta: isMeta [
 	self noteCompilationOf: aCompiledMethod selector meta: isMeta
-]
-
-{ #category : #'organization updating' }
-ClassDescription >> noteMethodAdded: aMethod [
-	SystemAnnouncer uniqueInstance
-		methodAdded: aMethod
-]
-
-{ #category : #'organization updating' }
-ClassDescription >> noteMethodChanged: oldMethod to: newMethod [
-	self flag: #todo. "oldProtocol is not set properly here"
-	SystemAnnouncer uniqueInstance methodChangedFrom: oldMethod to: newMethod oldProtocol: Protocol unclassified
-]
-
-{ #category : #'organization updating' }
-ClassDescription >> noteMethodRemoved: oldMethod [
-	self flag: #todo. "protocol and origin are not set properly here"
-	SystemAnnouncer uniqueInstance methodRemoved: oldMethod protocol: oldMethod protocol origin: oldMethod origin
-]
-
-{ #category : #'organization updating' }
-ClassDescription >> noteRecategorizedSelector: aSymbol from: oldCategoryOrNil to: newCategoryOrNil [
-	| changedCategories |
-	changedCategories := self updateOrganizationSelector: aSymbol oldCategory: oldCategoryOrNil newCategory: newCategoryOrNil.
-	changedCategories do: [:each |
-		(self organization isEmptyCategoryNamed: each) ifTrue: [self organization removeCategory: each]]
-]
-
-{ #category : #'organization updating' }
-ClassDescription >> noteRecategorizedSelectors: aCollection oldComposition: aTraitComposition [
-	
-	aCollection do: [:each | | oldCategory newCategory | 
-		oldCategory := self organization categoryOfElement: each.
-		newCategory := (self traitComposition methodDescriptionForSelector: each) effectiveMethodCategory.
-		self noteRecategorizedSelector: each from: oldCategory to: newCategory]
 ]
 
 { #category : #'organization updating' }
@@ -1074,9 +1023,10 @@ ClassDescription >> removeSelector: selector [
 	priorMethod := self compiledMethodAt: selector ifAbsent: [^ nil].
 	origin := priorMethod origin.
 	priorProtocol := self whichCategoryIncludesSelector: selector.
+	self organization removeElement: selector.
+	
 	super removeSelector: selector.
-	SystemAnnouncer uniqueInstance 
-		suspendAllWhile: [self updateOrganizationSelector: selector oldCategory: priorProtocol newCategory: nil].
+		
 	SystemAnnouncer uniqueInstance methodRemoved: priorMethod protocol: priorProtocol origin: origin
 ]
 
@@ -1325,76 +1275,6 @@ ClassDescription >> updateInstancesFrom: oldClass [
 	crashingBlock value.
 	"
 
-]
-
-{ #category : #'organization updating' }
-ClassDescription >> updateOrganizationDescription: each oldCategory: newCategoryOrNil newCategory: oldCategoryOrNil changed: changedCategories [
-	| sel effectiveCategory currentCategory |
-	
-	sel := each selector.
-	(self includesLocalSelector: sel) ifTrue: [ ^ self ].
-	
-	currentCategory := self organization categoryOfElement: sel.
-	effectiveCategory := each 
-		effectiveMethodCategoryCurrent: currentCategory 
-		new: newCategoryOrNil.
-	
-	effectiveCategory 
-		ifNil: [ 
-			currentCategory ifNotNil: [ changedCategories add: currentCategory ].
-			self organization removeElement: sel.
-			^ self ].
-		
-	(currentCategory isNil 
-		or: [ currentCategory == Protocol ambiguous 
-		or: [ currentCategory == oldCategoryOrNil ] ])
-	ifFalse: [ ^ self ].
-	
-	(currentCategory ~~ effectiveCategory)
-		ifTrue: [ 
-			currentCategory ifNotNil: [ changedCategories add: currentCategory ].
-			self organization classify: sel under: effectiveCategory suppressIfDefault: false ]
-]
-
-{ #category : #'organization updating' }
-ClassDescription >> updateOrganizationDescription: aTraitMethodDescription oldCategory: oldCategoryOrNil newCategory: newCategoryOrNil changedCategories: changedCategories [
-	| sel effectiveCategory currentCategory |
-	sel := aTraitMethodDescription selector.
-	
-	(self includesLocalSelector: sel) ifTrue: [ ^ self ].
-	 
-	currentCategory := self organization categoryOfElement: sel.
-	effectiveCategory := aTraitMethodDescription effectiveMethodCategoryCurrent: currentCategory new: newCategoryOrNil.
-	
-	effectiveCategory ifNil: [ 
-		currentCategory ifNotNil: [ changedCategories add: currentCategory ].
-		^ self organization removeElement: sel ].
-		
-	((currentCategory isNil 
-		or: [ 
-				currentCategory == Protocol ambiguous 
-				or: [ currentCategory == oldCategoryOrNil ] ])
-		and: [ currentCategory ~~ effectiveCategory ])
-		ifTrue: [ 
-			currentCategory ifNotNil: [ changedCategories add: currentCategory ].
-			self organization classify: sel under: effectiveCategory suppressIfDefault: false ]
-]
-
-{ #category : #'organization updating' }
-ClassDescription >> updateOrganizationSelector: aSymbol oldCategory: oldCategoryOrNil newCategory: newCategoryOrNil [
-	| changedCategories composition |
-	changedCategories := IdentitySet new.
-	
-	composition := 	TraitComposition new.
-		
-	(composition methodDescriptionsForSelector: aSymbol)
-		do: [ :each | 
-			self
-				updateOrganizationDescription: each
-				oldCategory: oldCategoryOrNil
-				newCategory: newCategoryOrNil
-				changedCategories: changedCategories ].
-	^ changedCategories
 ]
 
 { #category : #'pool variable' }
