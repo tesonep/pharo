@@ -7,6 +7,11 @@ ClassDescription >> asTraitComposition [
 ]
 
 { #category : #'*TraitsV2' }
+ClassDescription >> baseComposition [
+	^ TaEmptyComposition new
+]
+
+{ #category : #'*TraitsV2' }
 ClassDescription >> traitComposition [
 	^ TaEmptyComposition new
 ]
