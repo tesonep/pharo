@@ -1,6 +1,11 @@
 Extension { #name : #Metaclass }
 
 { #category : #'*TraitsV2' }
+Metaclass >> baseLocalMethods [
+	^ self baseClass methodDict
+]
+
+{ #category : #'*TraitsV2' }
 Metaclass >> setTraitComposition: aTraitCompositionOrArray [
 	
 	^ self uses: aTraitCompositionOrArray slots: self slots.

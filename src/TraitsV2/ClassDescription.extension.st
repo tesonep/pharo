@@ -12,11 +12,6 @@ ClassDescription >> baseComposition [
 ]
 
 { #category : #'*TraitsV2' }
-ClassDescription >> baseLocalMethods [
-	^ self baseClass methodDict
-]
-
-{ #category : #'*TraitsV2' }
 ClassDescription >> traitComposition [
 	^ TaEmptyComposition new
 ]
