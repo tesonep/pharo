@@ -117,6 +117,11 @@ TaAliasMethod >> originSelectorOf: aSelector [
 	
 ]
 
+{ #category : #querying }
+TaAliasMethod >> reverseAlias: aSelector [
+	^ (inner reverseAlias: aSelector) , (aliases associations select: [ :a | a value = aSelector ] thenCollect: #key)
+]
+
 { #category : #accessing }
 TaAliasMethod >> selectors [
 	^ inner selectors , self existingAliasedSelectors. 

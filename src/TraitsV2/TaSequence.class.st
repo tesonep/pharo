@@ -179,6 +179,12 @@ TaSequence >> removeUser: aClass [
 	self members do: [ :m | m removeUser: aClass] 
 ]
 
+{ #category : #querying }
+TaSequence >> reverseAlias: aSelector [
+	
+	^ self members flatCollect: [ :e | e reverseAlias: aSelector ]
+]
+
 { #category : #accessing }
 TaSequence >> selectorForConflict: selector [
 	| args keywords |

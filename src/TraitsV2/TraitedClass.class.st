@@ -24,7 +24,7 @@ TraitedClass >> addAndClassifySelector: selector withMethod: compiledMethod inPr
 		inProtocol: category
 		notifying: requestor.
 
-	self rebuildMethodDictionary.
+	TraitChange addSelector: selector on: self.
 	^ r
 	
 ]
@@ -33,7 +33,7 @@ TraitedClass >> addAndClassifySelector: selector withMethod: compiledMethod inPr
 TraitedClass >> addSelector: selector withMethod: compiledMethod notifying: requestor [
 	| r |
 	r := super addSelector: selector withMethod: compiledMethod notifying: requestor.
-	self rebuildMethodDictionary.
+	TraitChange addSelector: selector on: self..
 	^ r
 ]
 
@@ -166,7 +166,7 @@ TraitedClass >> removeFromComposition: aTrait [
 { #category : #removing }
 TraitedClass >> removeSelector: aSelector [
 	super removeSelector: aSelector.	
-	self rebuildMethodDictionary.
+	TraitChange removeSelector: aSelector on: self.
 ]
 
 { #category : #removing }
@@ -230,6 +230,12 @@ TraitedClass >> traitComposition: anObject [
 { #category : #accessing }
 TraitedClass >> traitCompositionString [
 	^ self traitComposition asString
+]
+
+{ #category : #accessing }
+TraitedClass >> traitUsers [
+	
+	^ #()
 ]
 
 { #category : #accessing }

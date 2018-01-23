@@ -134,6 +134,12 @@ TaCompositionElement >> removeUser: aClass [
 	innerClass removeUser: aClass
 ]
 
+{ #category : #querying }
+TaCompositionElement >> reverseAlias: aSelector [
+	
+	^ #()
+]
+
 { #category : #accessing }
 TaCompositionElement >> selectors [
 	" I get all the selectors of the methods in this talent, if there is a #initializeTalent selector I rename it to #initializeTalent_NameOfTalent"

@@ -56,3 +56,9 @@ TaRemoveMethod >> traitCompositionExpression [
 		removedSelectors printAsSelfEvaluatingFormOn: s.
 	]
 ]
+
+{ #category : #accessing }
+TaRemoveMethod >> traitDefining: aSelector [
+	(removedSelectors includes: aSelector ) ifTrue:[NotFound signalFor: aSelector].
+	^ inner traitDefining: aSelector
+]

@@ -242,6 +242,12 @@ TaAbstractComposition >> printOn: aStream [
 	aStream nextPutAll: self traitCompositionExpression
 ]
 
+{ #category : #querying }
+TaAbstractComposition >> reverseAlias: aSelector [
+	
+	self subclassResponsibility
+]
+
 { #category : #accessing }
 TaAbstractComposition >> selectors [
 	self subclassResponsibility 

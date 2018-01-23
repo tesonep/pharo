@@ -95,6 +95,12 @@ TaEmptyComposition >> removeUser: aClass [
 	"Nothing to do.... I am empty"
 ]
 
+{ #category : #querying }
+TaEmptyComposition >> reverseAlias: aSelector [
+	
+	^ #()
+]
+
 { #category : #accessing }
 TaEmptyComposition >> selectors [
 	^#()

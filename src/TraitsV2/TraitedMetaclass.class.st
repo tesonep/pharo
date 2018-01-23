@@ -24,7 +24,7 @@ TraitedMetaclass >> addAndClassifySelector: selector withMethod: compiledMethod 
 		inProtocol: category
 		notifying: requestor.
 
-	self rebuildMethodDictionary.
+	TraitChange addSelector: selector on: self.
 	^ r
 	
 ]
@@ -33,7 +33,7 @@ TraitedMetaclass >> addAndClassifySelector: selector withMethod: compiledMethod 
 TraitedMetaclass >> addSelector: selector withMethod: compiledMethod notifying: requestor [
 	| r |
 	r := super addSelector: selector withMethod: compiledMethod notifying: requestor.
-	self rebuildMethodDictionary.
+	TraitChange addSelector: selector on: self.
 	^ r
 ]
 
@@ -126,6 +126,11 @@ TraitedMetaclass >> isRejectedMethod: e [
 ]
 
 { #category : #accessing }
+TraitedMetaclass >> localMethodDict [
+	^ localMethods
+]
+
+{ #category : #accessing }
 TraitedMetaclass >> localMethods [
 	"returns the methods of classes excluding the ones of the traits that the class uses" 
 	 
@@ -177,7 +182,7 @@ TraitedMetaclass >> rebuildMethodDictionary [
 { #category : #'accessing method dictionary' }
 TraitedMetaclass >> removeSelector: aSelector [
 	super removeSelector: aSelector.
-	self rebuildMethodDictionary.
+	TraitChange removeSelector: aSelector on: self.
 ]
 
 { #category : #initialization }
@@ -222,6 +227,12 @@ TraitedMetaclass >> traitComposition [
 TraitedMetaclass >> traitComposition: aComposition [
 
 	composition := aComposition
+]
+
+{ #category : #accessing }
+TraitedMetaclass >> traitUsers [
+
+	^ #()
 ]
 
 { #category : #initialization }

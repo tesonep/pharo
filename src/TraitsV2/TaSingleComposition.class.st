@@ -92,6 +92,12 @@ TaSingleComposition >> removeUser: aClass [
 	inner removeUser: aClass
 ]
 
+{ #category : #querying }
+TaSingleComposition >> reverseAlias: aSelector [
+	
+	^ inner reverseAlias: aSelector
+]
+
 { #category : #accessing }
 TaSingleComposition >> selectors [
 	^ inner selectors
