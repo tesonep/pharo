@@ -104,7 +104,7 @@ TaSequence >> classComposition [
 { #category : #accessing }
 TaSequence >> compiledMethodAt: aSelector [
 	
-	^(members detect:[:e | e selectors includes: aSelector ]) compiledMethodAt:aSelector.
+	^ (self memberForSelector: aSelector) compiledMethodAt: aSelector
 ]
 
 { #category : #copying }
@@ -143,12 +143,22 @@ TaSequence >> isAliasSelector: aSelector [
 { #category : #testing }
 TaSequence >> isConflictingSelector: aSelector [
 
-	^ (self methods count: [ :e | e selector = aSelector ]) > 1
+	^ (self methods count: [ :e | e selector = aSelector and: [ e isRequired not ] ]) > 1
 ]
 
 { #category : #testing }
 TaSequence >> isLocalAliasSelector: aSymbol [
 	^ members anySatisfy: [ :e | e isLocalAliasSelector: aSymbol ]
+]
+
+{ #category : #accessing }
+TaSequence >> memberForSelector: aSelector [
+
+	"I first look for a valid member, if not, I will return the first"
+	^ members
+		detect:
+			[ :e | (e selectors includes: aSelector) and: [ (e compiledMethodAt: aSelector) isRequired not ] ]
+		ifNone: [ members detect: [ :e | e selectors includes: aSelector ] ]
 ]
 
 { #category : #operations }
@@ -223,7 +233,7 @@ TaSequence >> sourceCodeAt: selector [
 	(self isConflictingSelector: selector) 
 		ifTrue: [ ^ self sourceCodeForConflictFor: selector ].
 
-	^ (members reverse detect: [ :e | e selectors includes: selector ]) sourceCodeAt: selector
+	^ (self memberForSelector: selector) sourceCodeAt: selector
 ]
 
 { #category : #accessing }
@@ -248,7 +258,7 @@ TaSequence >> traitCompositionExpression [
 
 { #category : #accessing }
 TaSequence >> traitDefining: aSelector [
-	^ (members detect: [ :e | e selectors includes: aSelector ]) traitDefining: aSelector
+	^ (self memberForSelector: aSelector) traitDefining: aSelector
 ]
 
 { #category : #querying }
