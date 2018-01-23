@@ -12,6 +12,9 @@ TraitBuilderEnhancer class >> isApplicableFor: aBuilder [
 	
 	aBuilder superclassName = #Trait ifTrue: [ ^ true ].
 	aBuilder superclass = Trait ifTrue: [ ^ true ].
+	
+	aBuilder oldClass class class = TraitedMetaclass ifTrue: [ ^ true ].
+	aBuilder superclass class class = TraitedMetaclass ifTrue: [ ^ true ].
 
 	aBuilder traitComposition asTraitComposition isEmpty ifFalse: [ ^ true ].
 	aBuilder classTraitComposition asTraitComposition isEmpty ifFalse: [ ^ true ].
