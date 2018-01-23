@@ -115,7 +115,7 @@ TraitedClass >> isLocalMethodsProtocol: aProtocol [
 { #category : #testing }
 TraitedClass >> isLocalSelector: aSelector [
 	
-	^ localMethods includesKey: aSelector
+	^ self localMethodDict includesKey: aSelector
 ]
 
 { #category : #accessing }

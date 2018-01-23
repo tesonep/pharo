@@ -78,10 +78,19 @@ TaSequence >> allTraits [
 	^ members flatCollect: #allTraits
 ]
 
+{ #category : #accessing }
+TaSequence >> categoryOfMethod: method withSelector: selector [
+
+	(self isConflictingSelector: selector) ifTrue: [ ^ Protocol ambiguous ].
+
+	^ method category
+]
+
 { #category : #testing }
 TaSequence >> changesSourceCode: aSelector [
- 
-	^ self members anySatisfy: [ :e | e changesSourceCode: aSelector ]
+	"If the selector has conflicts it should be recompiled"
+	^ (self isConflictingSelector: aSelector)
+		or: [ self members anySatisfy: [ :e | e changesSourceCode: aSelector ] ]
 ]
 
 { #category : #operations }
@@ -91,7 +100,8 @@ TaSequence >> classComposition [
 
 { #category : #accessing }
 TaSequence >> compiledMethodAt: aSelector [
-	^(members reverse detect:[:e | e selectors includes: aSelector ]) compiledMethodAt:aSelector.
+	
+	^(members detect:[:e | e selectors includes: aSelector ]) compiledMethodAt:aSelector.
 ]
 
 { #category : #copying }
@@ -153,10 +163,40 @@ TaSequence >> name [
 	^ '_' join: (members collect:#name) 
 ]
 
+{ #category : #querying }
+TaSequence >> originSelectorOf: aSelector [
+
+	^ (self traitDefining: aSelector) originSelectorOf: aSelector
+
+]
+
 { #category : #users }
 TaSequence >> removeUser: aClass [ 
 	
 	self members do: [ :m | m removeUser: aClass] 
+]
+
+{ #category : #accessing }
+TaSequence >> selectorForConflict: selector [
+	| args keywords |
+	args := selector numArgs.
+
+	args = 0
+		ifTrue: [ ^ selector ].
+
+	selector isBinary ifTrue: [ ^ String streamContents: 
+		[ :s | s nextPutAll: selector; nextPutAll: ' anObject' ] ].
+
+	^ String
+		streamContents: [ :stream | 
+					keywords := selector keywords.
+					1 to: args do: [ :argumentNumber | 
+						stream
+							nextPutAll: (keywords at: argumentNumber);
+							space;
+							nextPutAll: 'arg';
+							nextPutAll: argumentNumber asString;
+							space ] ] 
 ]
 
 { #category : #accessing }
@@ -183,7 +223,7 @@ TaSequence >> sourceCodeForConflictFor: selector [
 	^ String
 		streamContents: [ :s | 
 			s
-				nextPutAll: selector asMethodPreamble;
+				nextPutAll: (self selectorForConflict: selector);
 				cr;
 				tab;
 				nextPutAll: 'self traitConflict' ]

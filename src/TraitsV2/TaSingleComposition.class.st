@@ -79,6 +79,13 @@ TaSingleComposition >> name [
 	^ inner name
 ]
 
+{ #category : #querying }
+TaSingleComposition >> originSelectorOf: aSelector [
+
+	^ inner originSelectorOf: aSelector
+
+]
+
 { #category : #users }
 TaSingleComposition >> removeUser: aClass [ 
 

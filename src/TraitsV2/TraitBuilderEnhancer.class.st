@@ -51,13 +51,13 @@ TraitBuilderEnhancer >> classCreated: aBuilder [
 
 { #category : #accessing }
 TraitBuilderEnhancer >> classTraitComposition [
-	^ builder classTraitComposition
+	^ builder classTraitComposition asTraitComposition
 ]
 
 { #category : #accessing }
 TraitBuilderEnhancer >> classTraitCompositionOf: aBuilder [ 
 	
-	^ aBuilder classTraitComposition 
+	^ aBuilder classTraitComposition asTraitComposition
 ]
 
 { #category : #utils }
@@ -133,13 +133,13 @@ TraitBuilderEnhancer >> initializeBuilder: aBuilder [
 
 { #category : #accessing }
 TraitBuilderEnhancer >> traitComposition [
-	^ builder traitComposition
+	^ builder traitComposition asTraitComposition
 ]
 
 { #category : #accessing }
 TraitBuilderEnhancer >> traitCompositionOf: aBuilder [ 
 	
-	^ aBuilder traitComposition
+	^ aBuilder traitComposition asTraitComposition
 ]
 
 { #category : #utils }

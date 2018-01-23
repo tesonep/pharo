@@ -122,6 +122,12 @@ TaCompositionElement >> name [
 	^ innerClass name
 ]
 
+{ #category : #querying }
+TaCompositionElement >> originSelectorOf: aSelector [ 
+	
+	^ aSelector
+]
+
 { #category : #users }
 TaCompositionElement >> removeUser: aClass [ 
 	

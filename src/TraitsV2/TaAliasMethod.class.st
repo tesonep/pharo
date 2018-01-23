@@ -109,6 +109,14 @@ TaAliasMethod >> oldSelectorFor: aSelector [
 	^ aliases at: aSelector
 ]
 
+{ #category : #querying }
+TaAliasMethod >> originSelectorOf: aSelector [
+
+	^ aliases at: aSelector ifAbsent: [ aSelector ]
+	
+	
+]
+
 { #category : #accessing }
 TaAliasMethod >> selectors [
 	^ inner selectors , self existingAliasedSelectors. 

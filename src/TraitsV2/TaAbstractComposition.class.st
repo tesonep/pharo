@@ -77,6 +77,12 @@ TaAbstractComposition >> asTraitComposition [
 	^ self
 ]
 
+{ #category : #accessing }
+TaAbstractComposition >> categoryOfMethod: method withSelector: selector [
+
+	^ method category
+]
+
 { #category : #testing }
 TaAbstractComposition >> changesSourceCode: aSelector [
 	"Checks if a selector should be compiled because its code has been rewritten."
@@ -112,7 +118,7 @@ TaAbstractComposition >> compile: selector into: aClass [
 
 	aClass organization protocolOrganizer
 		classify: selector
-		inProtocolNamed: method category.		
+		inProtocolNamed: (self categoryOfMethod: method withSelector: selector).		
 
 ]
 
@@ -222,6 +228,12 @@ TaAbstractComposition >> needsRecompilation: aSelector [
 	
 	^ self slots isEmpty not or: [ self changesSourceCode: aSelector ]
 
+]
+
+{ #category : #querying }
+TaAbstractComposition >> originSelectorOf: aSelector [ 
+	
+	^ self subclassResponsibility
 ]
 
 { #category : #printing }
