@@ -69,13 +69,14 @@ EpMonitor class >> reset [
 			self current: nil ]
 ]
 
-{ #category : #initialization }
+{ #category : #controlling }
 EpMonitor class >> restart [
 	"
 	self restart
 	"
 
 	self reset.
+	OmSessionStore enable.
 	self current enable.
 ]
 
