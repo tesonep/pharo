@@ -66,7 +66,8 @@ EpMonitor class >> reset [
 
 	current
 		ifNotNil: [ self current disable.
-			self current: nil ]
+			self current: nil.
+			Smalltalk garbageCollect ]
 ]
 
 { #category : #initialization }
