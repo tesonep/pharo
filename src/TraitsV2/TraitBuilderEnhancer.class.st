@@ -33,8 +33,18 @@ TraitBuilderEnhancer >> afterMigratingClass: aBuilder installer: anInstaller [
 
 { #category : #migrating }
 TraitBuilderEnhancer >> beforeMigratingClass: aBuilder installer: anInstaller [
-	aBuilder oldClass ifNotNil: [ :x | x traitComposition removeUser: x ].
-	aBuilder oldMetaclass ifNotNil: [ :x | x traitComposition removeUser: x ]
+	aBuilder oldClass ifNil: [ ^ self ].
+
+	aBuilder oldClass traitComposition removeUser: aBuilder oldClass.
+	aBuilder oldMetaclass traitComposition removeUser: aBuilder oldMetaclass.
+	
+	"If it is a Trait we should migrate the users "
+	aBuilder newClass isTrait ifFalse: [ ^ self ].	
+	aBuilder newClass users: aBuilder oldClass users.
+	aBuilder newMetaclass users: aBuilder oldMetaclass users.
+	 
+	
+	
 ]
 
 { #category : #events }

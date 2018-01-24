@@ -891,6 +891,8 @@ spec group: #default with: #(
 	
 	"Importing tests of Shift"
 	'Shift'
+	"Importing tests of Traits"
+	'Traits'
 ).
 
 ]

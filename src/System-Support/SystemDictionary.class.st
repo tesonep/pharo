@@ -53,41 +53,10 @@ SystemDictionary >> allClasses [
 ]
 
 { #category : #'classes and traits' }
-SystemDictionary >> allClassesAndTraits [
-	"Return all the classes and traits defined in the Smalltalk SystemDictionary"
-
-	^ self classAndTraitNames collect: [:each | self at: each]
-]
-
-{ #category : #'classes and traits' }
-SystemDictionary >> allClassesAndTraitsDo: aBlock [
-	"Evaluate the argument, aBlock, for each class and trait in the system."
-	
-	^self classAndTraitNames do: [:each | aBlock value: (self at: each)]
-	
-	
-
-]
-
-{ #category : #'classes and traits' }
 SystemDictionary >> allClassesDo: aBlock [
 	"Evaluate the argument, aBlock, for each class in the system."
 
 	^self classNames do: [:name | aBlock value: (self at: name)]
-]
-
-{ #category : #'classes and traits' }
-SystemDictionary >> allTraits [
-	"Return all traits defined in the Smalltalk SystemDictionary"
-
-	^ self traitNames collect: [:each | self at: each]
-]
-
-{ #category : #'classes and traits' }
-SystemDictionary >> allTraitsDo: aBlock [
-	"Evaluate the argument, aBlock, for each trait in the system."
-
-	^self traitNames do: [:name | aBlock value: (self at: name)]
 ]
 
 { #category : #'dictionary access' }
@@ -107,15 +76,6 @@ SystemDictionary >> bindingOf: varName [
 	"SystemDictionaries includes symbols only"
 	
 	^ super bindingOf: varName asSymbol
-]
-
-{ #category : #'class and trait names' }
-SystemDictionary >> classAndTraitNames [
-	"Answer a sorted collection of all class and trait (not including class-traits) names. Do not bother to sort"
-
-	
-	^self classNames, self traitNames
-	
 ]
 
 { #category : #'classes and traits' }
@@ -364,17 +324,6 @@ SystemDictionary >> renameClassNamed: oldName as: newName [
 			self crTrace: 'Class-rename for ' , oldName , ' ignored because ' , oldName , ' does not exist.'.
 			^ self ].
 	oldClass rename: newName
-]
-
-{ #category : #'class and trait names' }
-SystemDictionary >> traitNames [
-	"Answer a SortedCollection of all traits (not including class-traits) names."
-	
-	^self nonClassNames select: [ :name |
-			self
-				at: name
-				ifPresent: [ :global | (global isTrait) and: [global isObsolete not]]
-				ifAbsent: [ false ] ]
 ]
 
 { #category : #copying }

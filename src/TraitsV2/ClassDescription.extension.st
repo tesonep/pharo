@@ -1,6 +1,11 @@
 Extension { #name : #ClassDescription }
 
 { #category : #'*TraitsV2' }
+ClassDescription >> addToComposition: aTrait [
+	self setTraitComposition: self traitComposition + aTrait
+]
+
+{ #category : #'*TraitsV2' }
 ClassDescription >> asTraitComposition [
 
 	^ TaCompositionElement for: self

@@ -149,8 +149,8 @@ BasicBehaviorClassMetaclassTest >> testObjectAllSubclasses [
 	| n2 |
 	n2 := Object allSubclasses size.
 	self assert: n2 = (Object allSubclasses
-			select: [:cls | cls class class == Metaclass
-					or: [cls class == Metaclass]]) size
+			select: [:cls | (cls class isKindOf: Metaclass)
+					or: [cls isKindOf: Metaclass]]) size
 ]
 
 { #category : #tests }

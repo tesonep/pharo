@@ -75,9 +75,9 @@ ShiftClassBuilder >> build [
 	self oldClass ifNotNil: [ 
 			self newClass basicCategory: self oldClass basicCategory.
 			self copyOrganization.
-			builderEnhancer compileMethodsFor: self. ].
+			self builderEnhancer compileMethodsFor: self. ].
 
-	builderEnhancer afterMethodsCompiled: self.
+	self builderEnhancer afterMethodsCompiled: self.
 	
 	self installSlots.
 	
@@ -96,7 +96,7 @@ ShiftClassBuilder >> buildEnvironment: anObject [
 
 { #category : #accessing }
 ShiftClassBuilder >> builderEnhancer [
-	^ builderEnhancer
+	^ builderEnhancer ifNil: [ self detectBuilderEnhancer ]
 ]
 
 { #category : #accessing }
@@ -208,7 +208,7 @@ ShiftClassBuilder >> createClass [
 	newClass := newMetaclass new.
 	newClass setName: self name.
 
-	builderEnhancer 
+	self builderEnhancer 
 		configureClass: newClass
 		superclass: self superclass
 		withLayoutType: self layoutDefinition layoutClass
@@ -216,25 +216,25 @@ ShiftClassBuilder >> createClass [
 
 	newClass environment: self buildEnvironment environment.
 	
-	builderEnhancer classCreated: self.
+	self builderEnhancer classCreated: self.
 ]
 
 { #category : #building }
 ShiftClassBuilder >> createMetaclass [
 	newMetaclass := self metaclassClass new.
 	
-	builderEnhancer 
+	self builderEnhancer 
 		configureMetaclass: newMetaclass 	
 		superclass: (superclass ifNil: [ Class ] ifNotNil: [ superclass class ])
 		withLayoutType: FixedLayout
 		slots: self layoutDefinition classSlots.
 		
-	builderEnhancer metaclassCreated: self.
+	self builderEnhancer metaclassCreated: self.
 ]
 
 { #category : #building }
 ShiftClassBuilder >> createSharedVariables [
-	builderEnhancer 
+	self builderEnhancer 
 		on: newClass
 		declareClassVariables: self layoutDefinition sharedVariables
 		sharing: self layoutDefinition sharedPoolsString.
@@ -250,7 +250,7 @@ ShiftClassBuilder >> detectBuilderEnhancer [
 	builderEnhancer := builderEnhancerClass new.
 	
 	builderEnhancer initializeBuilder: self.
-	
+	^ builderEnhancer
 ]
 
 { #category : #'reflective operations' }
@@ -295,7 +295,11 @@ ShiftClassBuilder >> fillFor: aClass [
 		sharedPools: aClass sharedPoolsString;
 		category: aClass category;
 		environment: aClass environment;
-		copyClassSlotsFromExistingClass
+		copyClassSlotsFromExistingClass;
+		oldClass: aClass.
+		
+	self builderEnhancer fillBuilder: self from: aClass.
+
 ]
 
 { #category : #testing }
@@ -316,9 +320,6 @@ ShiftClassBuilder >> initialize [
 	
 	changeComparers := OrderedCollection new.
 	changes := Set new.
-
-	builderEnhancer := self class defaultBuildEnhancer new.	
-	builderEnhancer initializeBuilder: self.
 ]
 
 { #category : #building }

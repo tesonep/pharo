@@ -177,7 +177,7 @@ MCClassDefinitionTest >> testValidTraitComposition [
 	self assert: (Smalltalk hasClassNamed: 'MCMockClassC').
 	cls := Smalltalk at: #MCMockClassC.
 	self assert: (cls includesSelector: #c1).
-	self assert: ((Smalltalk at: #MCMockClassC) traitComposition allTraits includes: Trait1x)
+	self assert: ((Smalltalk at: #MCMockClassC) traitComposition allTraits includes: Trait1)
 ]
 
 { #category : #tests }
@@ -230,8 +230,8 @@ MCClassDefinitionTest >> testValidTraitComposition3 [
 	cls := Smalltalk at: #MCMockClassC.
 	self assert: (cls includesSelector: #c1).
 	self assert: (cls includesSelector: #c2).
-	self assert: ((Smalltalk at: #MCMockClassC) traitComposition allTraits includes: Trait1x).
-	self assert: ((Smalltalk at: #MCMockClassC) traitComposition allTraits includes: Trait2x)
+	self assert: ((Smalltalk at: #MCMockClassC) traitComposition allTraits includes: Trait1).
+	self assert: ((Smalltalk at: #MCMockClassC) traitComposition allTraits includes: Trait2)
 ]
 
 { #category : #tests }

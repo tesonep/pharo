@@ -5,6 +5,14 @@ Class {
 }
 
 { #category : #baselines }
+BaselineOfTraits class >> corePackages [
+	| groups |
+
+	groups := self packagesOfGroupNamed: 'core-traits'.
+	^ groups flatCollect: [ :e | self packagesOfGroupNamed: e ].
+]
+
+{ #category : #baselines }
 BaselineOfTraits >> baseline: spec [
 	<baseline>
 
@@ -31,11 +39,11 @@ BaselineOfTraits >> baseline: spec [
 		spec group: 'core' with: #('TraitsV2').
 					
 		spec group: 'traits-in-kernel' with: #(
+					'Traits-Traits'
 					'Kernel-Traits'
 					'AST-Core-Traits'
 					'Collections-Abstract-Traits'
 					'Transcript-Core-Traits'
-					'SUnit-Core-Traits'
 					'CodeImport-Traits'
 					'RPackage-Traits'
 					'OpalCompiler-Traits'
@@ -43,8 +51,9 @@ BaselineOfTraits >> baseline: spec [
 					'CodeExport-Traits'
 					'System-Sources-Traits'
 					'System-Support-Traits' ).
-				
-		spec group: 'default' with: #(core 'traits-in-kernel').
+		
+		spec group: 'core-traits' with: #(core 'traits-in-kernel').		
+		spec group: 'default' with: #('core-traits' 'SUnit-Core-Traits').
 		spec group: 'trait-tests' with: #('default' TraitsV2-Tests).		
 	 ].		
 

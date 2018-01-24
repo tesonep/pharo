@@ -276,6 +276,11 @@ TaAbstractComposition >> sourceCodeAt: selector [
 		ifFalse: [ method getSourceReplacingSelectorWith: selector ]
 ]
 
+{ #category : #comparing }
+TaAbstractComposition >> syntacticallyEquals: another [
+	^ self semanticallyEquals: another
+]
+
 { #category : #printing }
 TaAbstractComposition >> traitCompositionExpression [
 
