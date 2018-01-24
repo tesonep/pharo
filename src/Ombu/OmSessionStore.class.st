@@ -14,9 +14,6 @@ Class {
 		'headReference',
 		'storeNameStrategy'
 	],
-	#classVars : [
-		'IsEnabled'
-	],
 	#classInstVars : [
 		'storeNameStrategy',
 		'defaultBaseLocator'
@@ -37,30 +34,13 @@ OmSessionStore class >> defaultBaseLocator: aFileLocator [
 	defaultBaseLocator := aFileLocator
 ]
 
-{ #category : #protocol }
-OmSessionStore class >> disable [
-	IsEnabled := false
-]
-
-{ #category : #protocol }
-OmSessionStore class >> enable [
-	IsEnabled := true.
-	self refreshInstances
-]
-
 { #category : #initialization }
 OmSessionStore class >> initialize [
 	"
 	self initialize
 	"
-	IsEnabled := true.
 	SessionManager default registerUserClassNamed: self name
 
-]
-
-{ #category : #testing }
-OmSessionStore class >> isEnabled [
-	^ IsEnabled 
 ]
 
 { #category : #'instance creation' }
@@ -80,14 +60,6 @@ OmSessionStore class >> newWithBaseLocator: aBaseDirectory [
 { #category : #private }
 OmSessionStore class >> refreshInstances [
 	self allInstancesDo: #store
-]
-
-{ #category : #'system startup' }
-OmSessionStore class >> startUp [
-	"The #store accessor refreshes each instance since it will discover that the Session changed"
-
-	self isEnabled
-		ifTrue: [ self refreshInstances ]
 ]
 
 { #category : #accessing }
@@ -172,12 +144,6 @@ OmSessionStore >> imagePathString [
 	"Answer the full path name for the current image."
 
 	^ SmalltalkImage current primImagePath
-]
-
-{ #category : #initialization }
-OmSessionStore >> initialize [
-	super initialize .
-	self halt.
 ]
 
 { #category : #initialization }

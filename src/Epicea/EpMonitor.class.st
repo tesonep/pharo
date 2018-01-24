@@ -76,7 +76,6 @@ EpMonitor class >> restart [
 	"
 
 	self reset.
-	OmSessionStore enable.
 	self current enable.
 ]
 
