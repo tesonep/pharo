@@ -64,12 +64,12 @@ EpMonitor class >> reset [
 	self reset
 	"
 
-	self current
+	current
 		ifNotNil: [ self current disable.
 			self current: nil ]
 ]
 
-{ #category : #controlling }
+{ #category : #initialization }
 EpMonitor class >> restart [
 	"
 	self restart
