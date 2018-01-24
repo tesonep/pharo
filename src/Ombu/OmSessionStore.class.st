@@ -34,15 +34,6 @@ OmSessionStore class >> defaultBaseLocator: aFileLocator [
 	defaultBaseLocator := aFileLocator
 ]
 
-{ #category : #initialization }
-OmSessionStore class >> initialize [
-	"
-	self initialize
-	"
-	SessionManager default registerUserClassNamed: self name
-
-]
-
 { #category : #'instance creation' }
 OmSessionStore class >> new [
 
@@ -55,11 +46,6 @@ OmSessionStore class >> newWithBaseLocator: aBaseDirectory [
 	^ self basicNew
 		initializeWithBaseLocator: aBaseDirectory
 		yourself
-]
-
-{ #category : #private }
-OmSessionStore class >> refreshInstances [
-	self allInstancesDo: #store
 ]
 
 { #category : #accessing }
