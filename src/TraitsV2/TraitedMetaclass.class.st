@@ -63,6 +63,32 @@ TraitedMetaclass >> baseLocalMethods: anObject [
 	baseLocalMethods := anObject
 ]
 
+{ #category : #'fileIn/Out' }
+TraitedMetaclass >> definition [
+	"Refer to the comment in ClassDescription|definition."
+
+	^ String streamContents: 
+		[:strm |
+		strm print: self.
+		self hasTraitComposition ifTrue: [
+			strm
+				crtab;
+				nextPutAll: 'uses: ';
+				print: self traitComposition ].
+		
+		(self usesSpecialSlot or: [ Slot showSlotClassDefinition ])
+			ifFalse: [  
+						strm
+							crtab;
+							nextPutAll: 'instanceVariableNames: ';
+							store: self instanceVariablesString]
+			ifTrue: [ 
+						strm
+							crtab;
+							nextPutAll: 'slots: ';
+							nextPutAll: self slotDefinitionString]]
+]
+
 { #category : #testing }
 TraitedMetaclass >> hasTraitComposition [
 	
@@ -122,7 +148,7 @@ TraitedMetaclass >> isLocalSelector: aSelector [
 
 { #category : #testing }
 TraitedMetaclass >> isRejectedMethod: e [
-	^ (localMethods includesKey: e) or: [ (superclass methodDict includesKey: e) and: [ (Class methodDict includesKey: e) not ] ]
+	^ (localMethods includesKey: e) or: [ (Class canUnderstand: e) and: [ (TraitedClass methodDict includesKey: e) not ] ] 
 ]
 
 { #category : #accessing }
@@ -148,6 +174,16 @@ TraitedMetaclass >> new [
 	| newClass |
 	newClass := super new.
 	^newClass.
+]
+
+{ #category : #testing }
+TraitedMetaclass >> originMethod: aMethod [
+	(localMethods includesKey: aMethod selector)
+		ifTrue: [ ^ localMethods at: aMethod selector ].
+	
+	^ [ self traitComposition compiledMethodAt: aMethod selector ]
+		on: NotFound
+		do: [ aMethod ]
 ]
 
 { #category : #testing }
@@ -227,6 +263,11 @@ TraitedMetaclass >> traitComposition [
 TraitedMetaclass >> traitComposition: aComposition [
 
 	composition := aComposition
+]
+
+{ #category : #accessing }
+TraitedMetaclass >> traitCompositionString [
+	^ self traitComposition asString
 ]
 
 { #category : #accessing }

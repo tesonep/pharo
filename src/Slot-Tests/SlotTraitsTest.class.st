@@ -166,7 +166,11 @@ SlotTraitsTest >> testTraitUsersAfterClassReshape [
 	
 	
 	"reshape the super class"
-	aClass slots:  #( x y z ).
+	aClass := self make: [ :builder | 
+		builder
+			name: self aClassName;
+			slots: #( x y z )].
+
 			
 	self assert: TOne traitUsers asArray equals: { anotherClass }.
 	self assert: TOne classTrait traitUsers asArray equals: { anotherClass class }.
@@ -205,9 +209,11 @@ SlotTraitsTest >> testTraitUsersAfterMetaclassReshape [
 	self assert: (anotherClass canUnderstand: #one).
 	self deny: (aClass class canUnderstand: #two).
 	self assert: (anotherClass class canUnderstand: #two).
-	
-	"reshape the super class"
-	aClass slots: #( x y z ).		
+		
+	aClass := self make: [ :builder | 
+		builder
+			name: self aClassName;
+			slots: #( x y z ) ].	
 	
 	self assert: TOne traitUsers asArray            equals: { anotherClass }.
 	self assert: TOne classTrait traitUsers asArray equals: { anotherClass class }.

@@ -139,7 +139,8 @@ TaAbstractComposition >> copyMethod: aSelector into: aClass [
 	newMethod methodClass: aClass.
 		
 	"write source to changes file only if we have it (not available during bootstrap)"	
-	((Smalltalk globals includesKey: #SourceFiles) and: [ (Smalltalk globals at: #SourceFiles) notNil]) ifTrue: [ 
+	
+	((source includesSubstring: 'self error: ''No decompiler available''') not and: [((Smalltalk globals includesKey: #SourceFiles) and: [ (Smalltalk globals at: #SourceFiles) notNil])]) ifTrue: [ 
 		newMethod putSource: source
 			withPreamble: [:f | f cr; nextPut: $!; nextChunkPut: 'Trait method'; cr]].
 

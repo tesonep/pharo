@@ -705,12 +705,9 @@ CompiledMethod >> origin [
 
 { #category : #accessing }
 CompiledMethod >> originMethod [
-	| origin |
+	^ self methodClass originMethod: self.
 	
-	origin := self methodClass originOfMethod: self.
-	
-	^ (origin methodDict includesKey: self selector) 
-		ifTrue: [ origin >> self selector ] ifFalse: [ self ]
+
 ]
 
 { #category : #private }

@@ -142,6 +142,16 @@ TraitedClass >> localSelectors [
 ]
 
 { #category : #testing }
+TraitedClass >> originMethod: aMethod [
+	(self localMethodDict includesKey: aMethod selector)
+		ifTrue: [ ^ self localMethodDict at: aMethod selector ].
+
+	^ [ self traitComposition compiledMethodAt: aMethod selector ]
+		on: NotFound
+		do: [ aMethod ]
+]
+
+{ #category : #testing }
 TraitedClass >> originOfMethod: aMethod [
 	(self localMethodDict includesKey: aMethod selector)
 		ifTrue: [ ^ self ].

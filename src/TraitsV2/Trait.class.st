@@ -187,6 +187,11 @@ Trait class >> removeUser: aClass [
 ]
 
 { #category : #accessing }
+Trait class >> systemIconName [
+	^ #traitIcon
+]
+
+{ #category : #accessing }
 Trait class >> traitUsers [
 	^ self users
 ]

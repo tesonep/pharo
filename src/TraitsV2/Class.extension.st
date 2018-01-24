@@ -126,7 +126,7 @@ Class >> subclass: subclassName uses: aTraitComposition layout: aLayout slots: s
 				name: subclassName;
 				superclass: self;
 				slots: someSlots;
-				sharedVariables: someClassVariables;
+				sharedVariablesFromString: someClassVariables;
 				sharedPools: somePoolDictionaries;
 				traitComposition: aTraitComposition asTraitComposition;
 				classTraitComposition: aTraitComposition asTraitComposition classComposition;

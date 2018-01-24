@@ -1498,6 +1498,13 @@ Behavior >> obsoleteSubclasses [
 ]
 
 { #category : #testing }
+Behavior >> originMethod: aMethod [
+
+	^ aMethod
+
+]
+
+{ #category : #testing }
 Behavior >> originOfMethod: aMethod [
 
 	^ self	

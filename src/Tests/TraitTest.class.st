@@ -62,9 +62,9 @@ TraitTest >> testAllClassVarNames [
 TraitTest >> testComposedBy [
 	"tests the #isComposedBy: aTrait method"
 	
-	self assert: (Trait3x isComposedBy: Trait2x).
-	self deny: (Trait2x isComposedBy: Trait3x).
-	self deny: (Trait3x isComposedBy: Object).
+	self assert: (Trait3 isComposedBy: Trait2).
+	self deny: (Trait2 isComposedBy: Trait3).
+	self deny: (Trait3 isComposedBy: Object).
 	
 ]
 
@@ -262,9 +262,9 @@ TraitTest >> testLocalMethodWithSameCodeInTrait [
 		each hasTraitComposition ifTrue: [
 			each selectorsDo: [ :selector |
 				(each includesLocalSelector: selector) ifTrue: [
-					(each traitComposition traitDefining: selector) ifNotNil: [ :trait |
+					(each traitComposition traitDefining: selector ifNone: [nil] ) ifNotNil: [ :trait |
 						(trait selectors includes: selector) ifTrue: [
-							self deny: (trait >> selector = (each >> selector)) ] ] ] ] ] ]
+							self deny: ((trait compiledMethodAt: selector) = (each >> selector)) ] ] ] ] ] ]
 ]
 
 { #category : #testing }
@@ -284,7 +284,7 @@ TraitTest >> testMarkerMethods [
 
 { #category : #testing }
 TraitTest >> testOrigin [
-	| tr1 tr2 tr3 tr23 aMethodDescription |
+	| tr1 tr2 tr3 tr23 |
 	tr1 := self createTraitNamed: #TTT1 uses: {}.
 	tr2 := self createTraitNamed: #TTT2 uses: {tr1}.
 	tr3 := self createTraitNamed: #TTT3 uses: {tr1}.
@@ -297,33 +297,15 @@ TraitTest >> testOrigin [
 	
 	"-----------"
 	"For TR2"
-	aMethodDescription := tr2 traitComposition methodDescriptionForSelector: #foo.
-	self assert: (aMethodDescription locatedMethods size = 1).
-	self assert: (aMethodDescription locatedMethods includes: ( tr1 >>  #foo)).
-
-	self assert: (aMethodDescription providedLocatedMethod notNil).	
-	"The method is provided, it cannot be nil"
-	self assert: (aMethodDescription providedMethod notNil).	
-	self assert: (aMethodDescription isProvided).	
-		
-	self assert: (tr2 traitComposition traitProvidingSelector: #foo) == tr1.
+			
+	self assert: (tr2 traitComposition traitDefining: #foo) innerClass == tr1.
 	self assert: (tr2 >> #foo) origin == tr1.
 	"-----------"
 	
 	"-----------"
 	"For TR23"
-	aMethodDescription := tr23 traitComposition methodDescriptionForSelector: #foo.
-	self assert: (aMethodDescription locatedMethods size = 2).
-	self assert: (aMethodDescription locatedMethods includes: (tr2 >> #foo)).
-	self assert: (aMethodDescription locatedMethods includes: (tr3 >> #foo)).
-
-	self assert: (aMethodDescription providedLocatedMethod notNil).	
-	"The method is provided, it cannot be nil"
-	self assert: (aMethodDescription providedMethod notNil).	
-
-	self assert: (aMethodDescription isProvided).	
 		
-	self assert: (tr23 traitComposition traitProvidingSelector: #foo) == tr1.
+	self assert: (tr23 traitComposition traitDefining: #foo) innerClass == tr1.
 	self assert: (tr23 >> #foo) origin == tr1.
 	"----------"
 ]
