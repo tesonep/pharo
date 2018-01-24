@@ -59,6 +59,11 @@ MetaclassForTraits >> isClassTrait [
 	^ true
 ]
 
+{ #category : #testing }
+MetaclassForTraits >> isRejectedMethod: e [
+	^ (super isRejectedMethod: e) or: [ Trait class methodDict includesKey: e ]
+]
+
 { #category : #printing }
 MetaclassForTraits >> printOn: aStream [
 	aStream

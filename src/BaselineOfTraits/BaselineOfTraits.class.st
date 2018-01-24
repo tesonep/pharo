@@ -25,8 +25,8 @@ BaselineOfTraits >> baseline: spec [
 			package: 'Slot-Traits' with: [ spec requires: #('TraitsV2') ];
 			package: 'CodeExport-Traits' with: [ spec requires: #('TraitsV2') ];
 			package: 'System-Sources-Traits' with: [ spec requires: #('TraitsV2') ];
-			package: 'System-Support-Traits' with: [ spec requires: #('TraitsV2') ].
-
+			package: 'System-Support-Traits' with: [ spec requires: #('TraitsV2') ];
+			package: 'TraitsV2-Tests' with: [ spec requires: #('TraitsV2') ].
 
 		spec group: 'core' with: #('TraitsV2').
 					
@@ -44,7 +44,8 @@ BaselineOfTraits >> baseline: spec [
 					'System-Sources-Traits'
 					'System-Support-Traits' ).
 				
-		spec group: 'default' with: #(core 'traits-in-kernel'). 
+		spec group: 'default' with: #(core 'traits-in-kernel').
+		spec group: 'trait-tests' with: #('default' TraitsV2-Tests).		
 	 ].		
 
 ]

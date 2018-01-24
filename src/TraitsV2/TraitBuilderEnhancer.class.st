@@ -24,6 +24,7 @@ TraitBuilderEnhancer class >> isApplicableFor: aBuilder [
 
 { #category : #migrating }
 TraitBuilderEnhancer >> afterMigratingClass: aBuilder installer: anInstaller [
+
 	aBuilder newClass traitComposition addUser: aBuilder newClass.
 	aBuilder newMetaclass traitComposition addUser: aBuilder newMetaclass.
 	
@@ -38,6 +39,7 @@ TraitBuilderEnhancer >> beforeMigratingClass: aBuilder installer: anInstaller [
 
 { #category : #events }
 TraitBuilderEnhancer >> classCreated: aBuilder [
+
 	builder newMetaclass rebuildMethodDictionary.
 	builder newClass rebuildMethodDictionary.
 	
