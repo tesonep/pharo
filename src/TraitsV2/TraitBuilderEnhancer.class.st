@@ -124,6 +124,13 @@ TraitBuilderEnhancer >> eliminateDuplicates: aSlotCollection withSuperclassSlots
 	^ resultingSlots asArray
 ]
 
+{ #category : #initialization }
+TraitBuilderEnhancer >> fillBuilder: aBuilder from: aClass [ 
+	
+	aBuilder traitComposition: aClass traitComposition.
+	aBuilder classTraitComposition: aClass class traitComposition.
+]
+
 { #category : #migrating }
 TraitBuilderEnhancer >> hasToSkipSlot: aSlot [
 	^ Class hasSlotNamed: aSlot name
