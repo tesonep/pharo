@@ -192,16 +192,11 @@ Trait >> removeUser: aClass [
 ]
 
 { #category : #accessing }
-Trait >> systemIconName [
-	^ #traitIcon
-]
-
-{ #category : #accessing }
 Trait >> traitUsers [
 	^ self users
 ]
 
-{ #category : #TOBEREMOVE }
+{ #category : #users }
 Trait >> users [
 	^ users ifNil: [ users := IdentitySet new ]
 ]

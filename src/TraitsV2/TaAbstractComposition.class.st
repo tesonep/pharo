@@ -127,6 +127,14 @@ TaAbstractComposition >> compiledMethodAt: aSelector [
 	self subclassResponsibility 
 ]
 
+{ #category : #accessing }
+TaAbstractComposition >> compiledMethodAt: aSelector ifNone: aValuable [
+
+	^ [ self compiledMethodAt: aSelector ]
+		on: NotFound
+		do: [ ^ aValuable value ]
+]
+
 { #category : #operations }
 TaAbstractComposition >> copyMethod: aSelector into: aClass [ 
 

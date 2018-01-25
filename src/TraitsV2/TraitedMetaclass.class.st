@@ -180,10 +180,10 @@ TraitedMetaclass >> new [
 TraitedMetaclass >> originMethod: aMethod [
 	(localMethods includesKey: aMethod selector)
 		ifTrue: [ ^ localMethods at: aMethod selector ].
-	
-	^ [ self traitComposition compiledMethodAt: aMethod selector ]
-		on: NotFound
-		do: [ aMethod ]
+
+	^ self traitComposition
+		compiledMethodAt: aMethod selector
+		ifNone: [ self class traitedClassTrait compiledMethodAt: aMethod selector ifNone: [ aMethod ] ]
 ]
 
 { #category : #testing }
