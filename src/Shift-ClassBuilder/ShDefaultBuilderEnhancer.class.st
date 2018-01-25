@@ -48,6 +48,10 @@ ShDefaultBuilderEnhancer >> configureMetaclass: newMetaclass superclass: supercl
 	newMetaclass superclass: superclass withLayoutType: aLayoutType slots: classSlots.
 ]
 
+{ #category : #initialization }
+ShDefaultBuilderEnhancer >> fillBuilder: aBuilder from: aClass [ 
+]
+
 { #category : #migrating }
 ShDefaultBuilderEnhancer >> hasToSkipSlot: aSlot [
 	^ Class hasSlotNamed: aSlot name

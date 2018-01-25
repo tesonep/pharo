@@ -116,7 +116,7 @@ TraitChange >> update: aSelector into: aClass changes: changes [
 	"If the updated method is aliased, it should be updated also"
 	(aClass traitComposition reverseAlias: aSelector)
 		do: [ :aliased | 
-			aClass traitComposition installSelector: aSelector into: aClass.
+			aClass traitComposition installSelector: aliased into: aClass.
 			changes updatedSelectors add: aliased ]
 ]
 

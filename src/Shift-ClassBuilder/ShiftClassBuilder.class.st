@@ -29,7 +29,8 @@ Class {
 		'metaclassClass',
 		'extensibleProperties',
 		'changeComparers',
-		'changes'
+		'changes',
+		'metaSuperclass'
 	],
 	#classVars : [
 		'BuilderEnhancer'
@@ -225,7 +226,7 @@ ShiftClassBuilder >> createMetaclass [
 	
 	self builderEnhancer 
 		configureMetaclass: newMetaclass 	
-		superclass: (superclass ifNil: [ Class ] ifNotNil: [ superclass class ])
+		superclass: self metaSuperclass
 		withLayoutType: FixedLayout
 		slots: self layoutDefinition classSlots.
 		
@@ -339,6 +340,18 @@ ShiftClassBuilder >> layoutClass: aLayoutClass [
 { #category : #accessing }
 ShiftClassBuilder >> layoutDefinition [
 	^ layoutDefinition
+]
+
+{ #category : #accessing }
+ShiftClassBuilder >> metaSuperclass [
+
+	^ metaSuperclass ifNil:[ (superclass ifNil: [ Class ] ifNotNil: [ superclass class ]) ]
+]
+
+{ #category : #accessing }
+ShiftClassBuilder >> metaSuperclass: aClass [
+	
+	metaSuperclass := aClass
 ]
 
 { #category : #accessing }

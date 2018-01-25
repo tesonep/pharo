@@ -54,7 +54,7 @@ BaselineOfTraits >> baseline: spec [
 		
 		spec group: 'core-traits' with: #(core 'traits-in-kernel').		
 		spec group: 'default' with: #('core-traits' 'SUnit-Core-Traits').
-		spec group: 'trait-tests' with: #('default' TraitsV2-Tests).		
+		spec group: 'traits-tests' with: #('default' TraitsV2-Tests).		
 	 ].		
 
 ]

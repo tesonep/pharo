@@ -10,8 +10,8 @@ Class {
 { #category : #testing }
 TraitBuilderEnhancer class >> isApplicableFor: aBuilder [
 	
-	aBuilder superclassName = #Trait ifTrue: [ ^ true ].
-	aBuilder superclass = Trait ifTrue: [ ^ true ].
+	aBuilder metaSuperclass = Trait ifTrue: [ ^ true ].
+	aBuilder oldClass class superclass = Trait ifTrue: [ ^ true ].
 	
 	aBuilder oldClass class class = TraitedMetaclass ifTrue: [ ^ true ].
 	aBuilder superclass class class = TraitedMetaclass ifTrue: [ ^ true ].
@@ -93,7 +93,7 @@ TraitBuilderEnhancer >> configureClass: newClass superclass: superclass withLayo
 
 	resultingSlots := self
 		eliminateDuplicates: slots , self traitComposition slots
-		withSuperclassSlots: superclass allSlots.
+		withSuperclassSlots: (superclass ifNil: [#()] ifNotNil:[ :x | x allSlots]).
 
 	newClass superclass: superclass withLayoutType: layoutType slots: resultingSlots
 ]
@@ -127,6 +127,9 @@ TraitBuilderEnhancer >> eliminateDuplicates: aSlotCollection withSuperclassSlots
 { #category : #initialization }
 TraitBuilderEnhancer >> fillBuilder: aBuilder from: aClass [ 
 	
+	(aBuilder superclass isNil and: [ aClass superclass isNil ]) 
+		ifTrue: [ aBuilder metaSuperclass: aClass class superclass ].
+	
 	aBuilder traitComposition: aClass traitComposition.
 	aBuilder classTraitComposition: aClass class traitComposition.
 ]
@@ -144,8 +147,8 @@ TraitBuilderEnhancer >> initializeBuilder: aBuilder [
 
 	aBuilder addChangeComparer: TraitCompositionChangedDetector.
 	aBuilder addChangeComparer: ClassTraitCompositionChangedDetector.
-
-	aBuilder superclass = Trait
+	
+	aBuilder metaSuperclass = Trait
 		ifTrue: [ aBuilder metaclassClass: MetaclassForTraits ]
 		ifFalse: [ aBuilder metaclassClass: TraitedMetaclass ]
 ]

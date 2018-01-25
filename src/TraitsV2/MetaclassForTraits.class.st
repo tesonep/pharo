@@ -61,7 +61,7 @@ MetaclassForTraits >> isClassTrait [
 
 { #category : #testing }
 MetaclassForTraits >> isRejectedMethod: e [
-	^ (super isRejectedMethod: e) or: [ Trait class methodDict includesKey: e ]
+	^ (super isRejectedMethod: e) or: [ Trait methodDict includesKey: e ]
 ]
 
 { #category : #printing }
