@@ -183,11 +183,14 @@ TraitedMetaclass >> new [
 
 { #category : #testing }
 TraitedMetaclass >> originMethod: aMethod [
-	(aMethod hasProperty: #traitSource)
-		ifTrue: [ ^ (aMethod propertyAt: #traitSource) compiledMethodAt: aMethod selector ifAbsent: [aMethod] ].
 
 	(self localMethodDict includesKey: aMethod selector)
 		ifTrue: [ ^ self compiledMethodAt: aMethod selector].
+
+	(aMethod hasProperty: #traitSource)
+		ifTrue: [ |newSelector|
+			newSelector := self traitComposition originSelectorOf: aMethod selector.
+			^ (aMethod propertyAt: #traitSource) compiledMethodAt: newSelector ifAbsent: [aMethod] ].
 
 	^ (self traitComposition
 		traitDefining: aMethod selector
