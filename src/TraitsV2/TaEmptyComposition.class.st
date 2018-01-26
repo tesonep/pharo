@@ -14,7 +14,7 @@ TaEmptyComposition >> - anArrayOfSelectors [
 	self error:'Could not remove a selector from an empty composition'.
 ]
 
-{ #category : #operations }
+{ #category : #comparing }
 TaEmptyComposition >> = anotherTrait [
 	^ self class = anotherTrait class
 ]

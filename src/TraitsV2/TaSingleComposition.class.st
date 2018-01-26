@@ -7,7 +7,7 @@ Class {
 	#category : #'TraitsV2-Compositions'
 }
 
-{ #category : #accessing }
+{ #category : #comparing }
 TaSingleComposition >> = another [
 	^ (another class = self class) and: [ another inner = inner ]
 ]

@@ -14,7 +14,7 @@ TaCompositionElement class >> for: aClass [
 		yourself
 ]
 
-{ #category : #operations }
+{ #category : #comparing }
 TaCompositionElement >> = aTrait [
 	^ (aTrait species = self species)
 		ifTrue: [ aTrait innerClass = self innerClass ]

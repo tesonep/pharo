@@ -30,7 +30,7 @@ TaAbstractComposition >> -- anSlotName [
 	^ TaRemoveSlot named: anSlotName from: self.
 ]
 
-{ #category : #operations }
+{ #category : #comparing }
 TaAbstractComposition >> = anotherTrait [
 	^ self shouldBeImplemented
 ]
@@ -242,7 +242,7 @@ TaAbstractComposition >> needsRecompilation: aSelector [
 { #category : #querying }
 TaAbstractComposition >> originSelectorOf: aSelector [ 
 	
-	^ self subclassResponsibility
+	^ aSelector
 ]
 
 { #category : #printing }

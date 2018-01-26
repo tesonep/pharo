@@ -46,13 +46,13 @@ T2AbstractTest >> newTrait: aName with: slots uses: aComposition category: categ
 	^class.
 ]
 
-{ #category : #'instance creation' }
+{ #category : #running }
 T2AbstractTest >> setUp [
 	super setUp.
 	createdClasses := OrderedCollection new.
 ]
 
-{ #category : #'instance creation' }
+{ #category : #running }
 T2AbstractTest >> tearDown [
 	createdClasses reverse do:#removeFromSystem.
 	createdClasses := nil.

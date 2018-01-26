@@ -36,7 +36,7 @@ TaSequence >> , anotherTalent [
 
 ]
 
-{ #category : #operations }
+{ #category : #comparing }
 TaSequence >> = anotherTalent [
 	(anotherTalent class isKindOf: self class) ifFalse: [ ^false ].
 	^ self members = anotherTalent members
@@ -179,7 +179,7 @@ TaSequence >> name [
 { #category : #querying }
 TaSequence >> originSelectorOf: aSelector [
 
-	^ (self traitDefining: aSelector) originSelectorOf: aSelector
+	^ (self traitDefining: aSelector ifNone: [ ^aSelector ]) originSelectorOf: aSelector
 
 ]
 
