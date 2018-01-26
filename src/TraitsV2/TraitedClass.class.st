@@ -172,6 +172,13 @@ TraitedClass >> rebuildMethodDictionary [
 
 ]
 
+{ #category : #categories }
+TraitedClass >> recategorizeSelector: selector from: oldCategory to: newCategory [
+
+	self organization categoryOfElement: selector ifAbsent: [ ^ self ].
+	self organization classify: selector under: newCategory suppressIfDefault: true 
+]
+
 { #category : #'trait-composition' }
 TraitedClass >> removeFromComposition: aTrait [
 

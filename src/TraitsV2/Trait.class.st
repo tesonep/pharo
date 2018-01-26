@@ -163,6 +163,12 @@ Trait >> isTrait [
 	^ true
 ]
 
+{ #category : #'organization updating' }
+Trait >> notifyOfRecategorizedSelector: selector from: oldCategory to: newCategory [
+	super notifyOfRecategorizedSelector: selector from: oldCategory to: newCategory.
+	self traitUsers do: [ :e | e recategorizeSelector: selector from: oldCategory to: newCategory ].
+]
+
 { #category : #'accessing method dictionary' }
 Trait >> rebuildMethodDictionary [
 

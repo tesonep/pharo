@@ -64,6 +64,12 @@ MetaclassForTraits >> isRejectedMethod: e [
 	^ (super isRejectedMethod: e) or: [ Trait methodDict includesKey: e ]
 ]
 
+{ #category : #'organization updating' }
+MetaclassForTraits >> notifyOfRecategorizedSelector: selector from: oldCategory to: newCategory [
+	super notifyOfRecategorizedSelector: selector from: oldCategory to: newCategory.
+	self traitUsers do: [ :e | e recategorizeSelector: selector from: oldCategory to: newCategory ].
+]
+
 { #category : #printing }
 MetaclassForTraits >> printOn: aStream [
 	aStream

@@ -232,6 +232,13 @@ TraitedMetaclass >> rebuildMethodDictionary [
 
 ]
 
+{ #category : #categories }
+TraitedMetaclass >> recategorizeSelector: selector from: oldCategory to: newCategory [
+
+	self organization categoryOfElement: selector ifAbsent: [ ^ self ].
+	self organization classify: selector under: newCategory suppressIfDefault: true 
+]
+
 { #category : #'accessing method dictionary' }
 TraitedMetaclass >> removeSelector: aSelector [
 
@@ -259,7 +266,7 @@ TraitedMetaclass >> slots: slotCollection [
 	^ theClass theMetaClass
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 TraitedMetaclass >> slotsWithoutTraits [
 	^ self slots reject: [ :e | TraitedClass slots anySatisfy: [ :x | x name = e name ] ] 
 ]
