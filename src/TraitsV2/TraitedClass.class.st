@@ -42,17 +42,8 @@ TraitedClass >> addSlot: aSlot [
 
 	^self classInstaller update: self to: [ :builder |
 		builder
-			superclass: self superclass;
-			name: self getName;
-			layoutClass: self classLayout class;
-			slots: (self slots copyWith: aSlot);
-			classSlots: self class classLayout slots;
-			traitComposition: self traitComposition asTraitComposition;
-			classTraitComposition: self class traitComposition asTraitComposition;	
-			sharedVariablesFromString: self classVariablesString;
-			sharedPools: self sharedPoolsString;
-			category: self category;
-			environment: self environment].
+			fillFor: self;
+			slots: (self slots copyWith: aSlot)].
 ]
 
 { #category : #querying }
@@ -187,17 +178,8 @@ TraitedClass >> removeSlot: aSlot [
 		
 	^self classInstaller update: self to: [ :builder |
 		builder
-			superclass: self superclass;
-			name: self name;
-			layoutClass: self classLayout class;
-			slots: (self classLayout slots copyWithout: aSlot);
-			classSlots: self class classLayout slots;
-			sharedVariablesFromString: self classVariablesString;
-			sharedPools: self sharedPoolsString;
-			category: self category;
-			traitComposition: self traitComposition asTraitComposition;
-			classTraitComposition: self class traitComposition asTraitComposition;
-			environment: self environment]
+			fillFor: self;
+			slots: (self classLayout slots copyWithout: aSlot)]
 	
 ]
 

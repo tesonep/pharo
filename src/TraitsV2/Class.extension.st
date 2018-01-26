@@ -30,17 +30,11 @@ Class >> immediateSubclass: aName uses: aTraitComposition instanceVariableNames:
 Class >> setTraitComposition: aTraitComposition [
 		
 	^ self classInstaller
-		make: [ :builder | 
+		update: self to: [ :builder | 
 			builder
-				name: self name;
-				superclass: superclass;
-				slots: self slots;
-				sharedVariables: self classVariablesString;
-				sharedPools: self sharedPoolsString;
+				fillFor: self;
 				traitComposition: aTraitComposition asTraitComposition;
-				classTraitComposition: aTraitComposition asTraitComposition classComposition;
-				category: self category;
-				copyClassSlotsFromExistingClass ]
+				classTraitComposition: aTraitComposition asTraitComposition classComposition]
 ]
 
 { #category : #'*TraitsV2' }
