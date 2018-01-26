@@ -18,6 +18,9 @@ TraitedClass class >> traitComposition [
 { #category : #'accessing method dictionary' }
 TraitedClass >> addAndClassifySelector: selector withMethod: compiledMethod inProtocol: category notifying: requestor [
 	| r |
+	
+	self localMethodDict at: selector put: compiledMethod.
+	
 	r := super
 		addAndClassifySelector: selector
 		withMethod: compiledMethod
@@ -32,6 +35,8 @@ TraitedClass >> addAndClassifySelector: selector withMethod: compiledMethod inPr
 { #category : #'accessing method dictionary' }
 TraitedClass >> addSelector: selector withMethod: compiledMethod notifying: requestor [
 	| r |
+	self localMethodDict at: selector put: compiledMethod.
+
 	r := super addSelector: selector withMethod: compiledMethod notifying: requestor.
 	TraitChange addSelector: selector on: self..
 	^ r
@@ -57,7 +62,7 @@ TraitedClass >> doRebuildMethodDictionary [
 	| selectors removedSelectors |
 
 	self localMethodDict: MethodDictionary new.
-	self methodDict valuesDo: [ :m | (m propertyAt: #sourceTrait) ifNil: [ self localMethodDict at: m selector put: m ]].
+	self methodDict valuesDo: [ :m | (m propertyAt: #traitSource) ifNil: [ self localMethodDict at: m selector put: m ]].
 
 	selectors := self traitComposition selectors reject: [ :e | (self localMethodDict includesKey: e) ].
 	selectors do: [ :e | self traitComposition installSelector: e into: self ].
@@ -134,16 +139,23 @@ TraitedClass >> localSelectors [
 
 { #category : #testing }
 TraitedClass >> originMethod: aMethod [
-	(self localMethodDict includesKey: aMethod selector)
-		ifTrue: [ ^ self localMethodDict at: aMethod selector ].
+	(aMethod hasProperty: #traitSource)
+		ifTrue: [ ^ (aMethod propertyAt: #traitSource) compiledMethodAt: aMethod selector ifAbsent: [aMethod] ].
 
-	^ [ self traitComposition compiledMethodAt: aMethod selector ]
-		on: NotFound
-		do: [ aMethod ]
+	(self localMethodDict includesKey: aMethod selector)
+		ifTrue: [ ^ self compiledMethodAt: aMethod selector ].
+
+	^ (self traitComposition traitDefining: aMethod selector ifNone: [ self ])
+		compiledMethodAt: aMethod selector ifAbsent: [ ^ aMethod ]		
+
 ]
 
 { #category : #testing }
 TraitedClass >> originOfMethod: aMethod [
+
+	(aMethod hasProperty: #traitSource) 
+		ifTrue: [ ^ (aMethod propertyAt: #traitSource) innerClass ]. 
+
 	(self localMethodDict includesKey: aMethod selector)
 		ifTrue: [ ^ self ].
 
@@ -166,6 +178,8 @@ TraitedClass >> removeFromComposition: aTrait [
 
 { #category : #removing }
 TraitedClass >> removeSelector: aSelector [
+
+	self localMethodDict removeKey: aSelector ifAbsent: [  ].
 	super removeSelector: aSelector.	
 	TraitChange removeSelector: aSelector on: self.
 ]

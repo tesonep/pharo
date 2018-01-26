@@ -128,7 +128,7 @@ TaAbstractComposition >> compiledMethodAt: aSelector [
 ]
 
 { #category : #accessing }
-TaAbstractComposition >> compiledMethodAt: aSelector ifNone: aValuable [
+TaAbstractComposition >> compiledMethodAt: aSelector ifAbsent: aValuable [
 
 	^ [ self compiledMethodAt: aSelector ]
 		on: NotFound
@@ -202,7 +202,7 @@ TaAbstractComposition >> installSelector: aSelector into: aClass [
 			ifTrue:[ self compile: aSelector into: aClass	]
 			ifFalse:[ self copyMethod: aSelector into: aClass ].
 			
-	 	aClass >> aSelector propertyAt: #sourceTrait put: (self traitDefining: aSelector) ]
+	 	aClass >> aSelector propertyAt: #traitSource put: (self traitDefining: aSelector) ]
 		on: NotFound
 		do: [  ]
 ]

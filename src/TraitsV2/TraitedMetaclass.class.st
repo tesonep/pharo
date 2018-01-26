@@ -18,6 +18,9 @@ TraitedMetaclass class >> traitedClassTrait [
 { #category : #'accessing method dictionary' }
 TraitedMetaclass >> addAndClassifySelector: selector withMethod: compiledMethod inProtocol: category notifying: requestor [
 	| r |
+	
+	self localMethodDict at: selector put: compiledMethod.
+	
 	r := super
 		addAndClassifySelector: selector
 		withMethod: compiledMethod
@@ -32,6 +35,8 @@ TraitedMetaclass >> addAndClassifySelector: selector withMethod: compiledMethod 
 { #category : #'accessing method dictionary' }
 TraitedMetaclass >> addSelector: selector withMethod: compiledMethod notifying: requestor [
 	| r |
+	self localMethodDict at: selector put: compiledMethod.
+	
 	r := super addSelector: selector withMethod: compiledMethod notifying: requestor.
 	TraitChange addSelector: selector on: self.
 	^ r
@@ -178,16 +183,25 @@ TraitedMetaclass >> new [
 
 { #category : #testing }
 TraitedMetaclass >> originMethod: aMethod [
-	(localMethods includesKey: aMethod selector)
-		ifTrue: [ ^ localMethods at: aMethod selector ].
+	(aMethod hasProperty: #traitSource)
+		ifTrue: [ ^ (aMethod propertyAt: #traitSource) compiledMethodAt: aMethod selector ifAbsent: [aMethod] ].
 
-	^ self traitComposition
-		compiledMethodAt: aMethod selector
-		ifNone: [ self class traitedClassTrait compiledMethodAt: aMethod selector ifNone: [ aMethod ] ]
+	(self localMethodDict includesKey: aMethod selector)
+		ifTrue: [ ^ self compiledMethodAt: aMethod selector].
+
+	^ (self traitComposition
+		traitDefining: aMethod selector
+		ifNone: [ self class traitedClassTrait traitDefining: aMethod selector ifNone: [ self ] ]) 
+		compiledMethodAt: aMethod selector ifAbsent: [ ^ aMethod ]		
+
 ]
 
 { #category : #testing }
 TraitedMetaclass >> originOfMethod: aMethod [
+
+	(aMethod hasProperty: #traitSource) 
+		ifTrue: [ ^ (aMethod propertyAt: #traitSource) innerClass ]. 
+
 	(localMethods includesKey: aMethod selector)
 		ifTrue: [ ^ self ].
 
@@ -205,7 +219,7 @@ TraitedMetaclass >> rebuildMethodDictionary [
 		ifFalse: [ self traitComposition + self class traitedClassTrait ].
 
 	localMethods := MethodDictionary new.
-	methodDict valuesDo: [ :m | (m propertyAt: #sourceTrait) ifNil: [ localMethods at: m selector put: m ]].
+	methodDict valuesDo: [ :m | (m propertyAt: #traitSource) ifNil: [ localMethods at: m selector put: m ]].
 
 	selectors := toUse selectors reject: [ :e | self isRejectedMethod: e ].
 	selectors do: [ :e | toUse installSelector: e into: self ].
@@ -217,6 +231,8 @@ TraitedMetaclass >> rebuildMethodDictionary [
 
 { #category : #'accessing method dictionary' }
 TraitedMetaclass >> removeSelector: aSelector [
+
+	self localMethodDict removeKey: aSelector ifAbsent: [  ].
 	super removeSelector: aSelector.
 	TraitChange removeSelector: aSelector on: self.
 ]

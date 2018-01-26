@@ -68,20 +68,31 @@ TraitChange >> initialize [
 
 { #category : #operations }
 TraitChange >> remove: aSelector into: aClass changes: results [
-	| isLocal inTrait |
+	| isLocal inTrait priorMethod selector priorProtocol |
 	isLocal := aClass localSelectors includes: aSelector.
 	inTrait := aClass traitComposition traitDefining: aSelector ifNone: [ nil ].
 
-	aClass methodDict removeKey: aSelector ifAbsent: [  ].
-
-	isLocal
-		ifTrue: [ aClass localMethodDict removeKey: aSelector ].
-
+	"This is only true when the method is propagated, so we have to avoid destroying a locally defined method"
+	isLocal ifTrue: [ ^ self ].	
+	
 	inTrait 
 		ifNotNil: [ 
 			inTrait installSelector: aSelector into: aClass.
 			results updatedSelectors add: aSelector.
 			^ self ].
+
+
+	"We have to remove the method that was removed in a used trait."
+
+	(aClass methodDict includesKey: aSelector) ifTrue:[
+		priorMethod := aClass methodDict at: aSelector.
+		priorProtocol := aClass whichCategoryIncludesSelector: aSelector.
+
+		aClass methodDict removeKey: aSelector.
+		aClass organization removeElement: aSelector.	
+		
+		SystemAnnouncer uniqueInstance methodRemoved: priorMethod protocol: priorProtocol origin: aClass	
+	].
 
 	results removedSelectors add: aSelector.
 	
