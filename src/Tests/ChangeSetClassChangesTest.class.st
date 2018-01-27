@@ -69,7 +69,8 @@ ChangeSetClassChangesTest >> tearDown [
 	(Smalltalk globals classNamed: #JunkClass) ifNotNil: [ :c | c removeFromSystem: true ].
 	SystemOrganization removeCategory: #'DeleteMe-1'.
 	SystemOrganization removeCategory: #'DeleteMe-2'.
-	ChangeSet current removeClassChanges: 'JunkClass'
+	ChangeSet current removeClassChanges: 'JunkClass'.
+	super tearDown
 ]
 
 { #category : #testing }
@@ -244,8 +245,6 @@ ChangeSetClassChangesTest >> testInitialChangeSet [
 
 { #category : #support }
 ChangeSetClassChangesTest >> testRenaming [
-	"self debug: #testRenaming"
-
 	"self run: #testRenaming"
 
 	| oldName newMetaclassName class |
