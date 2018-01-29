@@ -177,16 +177,15 @@ Trait >> rebuildMethodDictionary [
 
 ]
 
-{ #category : #accessing }
+{ #category : #'initialize-release' }
 Trait >> removeFromSystem: logged [
-
-	self flag: #todo.
-
-	self users do: [ :e | 
-		(e canUnderstand: #removeFromComposition) ifTrue:[
-		e removeFromComposition: self ]].
-	super removeFromSystem: logged.
-
+	
+	self traitComposition removeUser: self.
+	self class traitComposition removeUser: self class.
+	
+	self traitUsers do: [ :e | e isObsolete ifFalse: [ e removeFromComposition: self ]].
+	self class traitUsers do: [ :e | e isObsolete ifFalse: [e removeFromComposition: self class ]].
+	^ super removeFromSystem: logged
 ]
 
 { #category : #removing }

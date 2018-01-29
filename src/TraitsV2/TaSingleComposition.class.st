@@ -44,6 +44,14 @@ TaSingleComposition >> compiledMethodAt: aSelector [
 	^ inner compiledMethodAt: aSelector.
 ]
 
+{ #category : #copying }
+TaSingleComposition >> copyWithoutTrait: aTrait [
+	(self = aTrait or: [ inner = aTrait ])
+		ifTrue: [ ^ inner copyWithoutTrait: aTrait ].
+		
+	^ self copy
+]
+
 { #category : #accessing }
 TaSingleComposition >> initializeSelectorForMe [
 	^ inner initializeSelectorForMe.

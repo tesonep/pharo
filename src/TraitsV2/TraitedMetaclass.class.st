@@ -229,6 +229,8 @@ TraitedMetaclass >> rebuildMethodDictionary [
 	
 	removedSelectors := methodDict keys reject: [ :aSelector | (selectors includes: aSelector) or: [ localMethods includesKey: aSelector] ].
 	removedSelectors do: [ :aSelector | methodDict removeKey: aSelector ].
+	removedSelectors do: [ :aSelector | self organization removeElement: aSelector ].
+	
 
 ]
 
@@ -236,7 +238,16 @@ TraitedMetaclass >> rebuildMethodDictionary [
 TraitedMetaclass >> recategorizeSelector: selector from: oldCategory to: newCategory [
 
 	self organization categoryOfElement: selector ifAbsent: [ ^ self ].
+	
+	"If it is nil is because it is a removal. It will removed when the method is removed."
+	newCategory ifNil: [ ^ self ].
+	
 	self organization classify: selector under: newCategory suppressIfDefault: true 
+]
+
+{ #category : #traits }
+TraitedMetaclass >> removeFromComposition: aTrait [ 
+	self setTraitComposition: (self traitComposition copyWithoutTrait: aTrait asTraitComposition)
 ]
 
 { #category : #'accessing method dictionary' }

@@ -15,6 +15,11 @@ TraitedClass class >> traitComposition [
 	^ TaEmptyComposition new
 ]
 
+{ #category : #accessing }
+TraitedClass class >> traitUsers [
+	^ #()
+]
+
 { #category : #'accessing method dictionary' }
 TraitedClass >> addAndClassifySelector: selector withMethod: compiledMethod inProtocol: category notifying: requestor [
 	| r |
@@ -59,7 +64,7 @@ TraitedClass >> allTraits [
 
 { #category : #initialization }
 TraitedClass >> doRebuildMethodDictionary [
-	| selectors removedSelectors |
+	| selectors removedSelectors removeFromOrganization|
 
 	self localMethodDict: MethodDictionary new.
 	self methodDict valuesDo: [ :m | (m propertyAt: #traitSource) ifNil: [ self localMethodDict at: m selector put: m ]].
@@ -69,6 +74,9 @@ TraitedClass >> doRebuildMethodDictionary [
 
 	removedSelectors := self methodDict keys reject: [ :aSelector | (selectors includes: aSelector) or: [ self localMethodDict includesKey: aSelector] ].
 	removedSelectors do: [ :aSelector | self methodDict removeKey: aSelector ].
+
+	removeFromOrganization := self organization allMethodSelectors reject: [:e | self methodDict includesKey: e ].
+	removeFromOrganization do: [ :aSelector | self organization removeElement: aSelector ].
 
 	self theMetaClass rebuildMethodDictionary
 ]
@@ -176,6 +184,10 @@ TraitedClass >> rebuildMethodDictionary [
 TraitedClass >> recategorizeSelector: selector from: oldCategory to: newCategory [
 
 	self organization categoryOfElement: selector ifAbsent: [ ^ self ].
+	
+	"If it is nil is because it is a removal. It will removed when the method is removed."
+	newCategory ifNil: [ ^ self ].
+	
 	self organization classify: selector under: newCategory suppressIfDefault: true 
 ]
 
@@ -183,6 +195,15 @@ TraitedClass >> recategorizeSelector: selector from: oldCategory to: newCategory
 TraitedClass >> removeFromComposition: aTrait [
 
 	self setTraitComposition: (self traitComposition copyWithoutTrait: aTrait asTraitComposition)
+]
+
+{ #category : #removing }
+TraitedClass >> removeFromSystem: logged [
+
+	self traitComposition removeUser: self.
+	self class traitComposition removeUser: self class.
+
+	super removeFromSystem: logged.
 ]
 
 { #category : #removing }

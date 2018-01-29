@@ -106,7 +106,7 @@ ShiftClassInstaller >> installInEnvironment: newClass [
 
 { #category : #building }
 ShiftClassInstaller >> installSubclassInSuperclass: newClass [
-       newClass superclass addSubclass: newClass
+	newClass superclass addSubclass: newClass
 ]
 
 { #category : #building }

@@ -37,6 +37,12 @@ Behavior >> localSelectors [
 ]
 
 { #category : #'*TraitsV2' }
+Behavior >> setTraitComposition: aComposition [
+
+	^ self subclassResponsibility 
+]
+
+{ #category : #'*TraitsV2' }
 Behavior >> traitCompositionString [
 	^ '{}'
 ]
