@@ -217,9 +217,7 @@ TraitedMetaclass >> originOfMethod: aMethod [
 TraitedMetaclass >> rebuildMethodDictionary [
 	| selectors toUse removedSelectors |
 
-	toUse := (superclass isKindOf: self class)
-		ifTrue: [ self traitComposition ]
-		ifFalse: [ self traitComposition + self class traitedClassTrait ].
+	toUse := self traitComposition + self class traitedClassTrait.
 
 	localMethods := MethodDictionary new.
 	methodDict valuesDo: [ :m | (m propertyAt: #traitSource) ifNil: [ localMethods at: m selector put: m ]].
@@ -236,13 +234,21 @@ TraitedMetaclass >> rebuildMethodDictionary [
 
 { #category : #categories }
 TraitedMetaclass >> recategorizeSelector: selector from: oldCategory to: newCategory [
-
-	self organization categoryOfElement: selector ifAbsent: [ ^ self ].
+	| original |
 	
+	original := self organization categoryOfElement: selector ifAbsent: [ ^ self ].
+
 	"If it is nil is because it is a removal. It will removed when the method is removed."
 	newCategory ifNil: [ ^ self ].
+
+	original = oldCategory
+		ifTrue: [ self organization classify: selector under: newCategory suppressIfDefault: true ].
+
+	(self traitComposition reverseAlias: selector) do: [ :e | 
+		self recategorizeSelector: e from: oldCategory to: newCategory. 
+		self notifyOfRecategorizedSelector: e from: oldCategory to: newCategory ].
 	
-	self organization classify: selector under: newCategory suppressIfDefault: true 
+	self organization removeEmptyCategories
 ]
 
 { #category : #traits }

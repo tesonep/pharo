@@ -148,7 +148,7 @@ TraitedClass >> localSelectors [
 { #category : #testing }
 TraitedClass >> originMethod: aMethod [
 	(self localMethodDict includesKey: aMethod selector)
-		ifTrue: [ ^ self compiledMethodAt: aMethod selector ].
+		ifTrue: [ ^ aMethod ].
 
 	(aMethod hasProperty: #traitSource)
 		ifTrue: [ |newSelector|
@@ -182,13 +182,21 @@ TraitedClass >> rebuildMethodDictionary [
 
 { #category : #categories }
 TraitedClass >> recategorizeSelector: selector from: oldCategory to: newCategory [
-
-	self organization categoryOfElement: selector ifAbsent: [ ^ self ].
+	| original |
 	
+	original := self organization categoryOfElement: selector ifAbsent: [ ^ self ].
+
 	"If it is nil is because it is a removal. It will removed when the method is removed."
 	newCategory ifNil: [ ^ self ].
+
+	original = oldCategory
+		ifTrue: [ self organization classify: selector under: newCategory suppressIfDefault: true ].
+
+	(self traitComposition reverseAlias: selector) do: [ :e | 
+		self recategorizeSelector: e from: oldCategory to: newCategory. 
+		self notifyOfRecategorizedSelector: e from: oldCategory to: newCategory ].
 	
-	self organization classify: selector under: newCategory suppressIfDefault: true 
+	self organization removeEmptyCategories
 ]
 
 { #category : #'trait-composition' }
@@ -209,8 +217,9 @@ TraitedClass >> removeFromSystem: logged [
 { #category : #removing }
 TraitedClass >> removeSelector: aSelector [
 
+	super removeSelector: aSelector.
 	self localMethodDict removeKey: aSelector ifAbsent: [  ].
-	super removeSelector: aSelector.	
+
 	TraitChange removeSelector: aSelector on: self.
 ]
 

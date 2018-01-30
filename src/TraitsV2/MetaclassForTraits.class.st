@@ -64,6 +64,18 @@ MetaclassForTraits >> isRejectedMethod: e [
 	^ (super isRejectedMethod: e) or: [ Trait methodDict includesKey: e ]
 ]
 
+{ #category : #operations }
+MetaclassForTraits >> isTrait [
+	^ true
+]
+
+{ #category : #accessing }
+MetaclassForTraits >> name [
+	^ thisClass isNil
+		ifTrue: [ 'a MetaclassForTraits' ]
+		ifFalse: [ thisClass name asString, ' classTrait' ]
+]
+
 { #category : #'organization updating' }
 MetaclassForTraits >> notifyOfRecategorizedSelector: selector from: oldCategory to: newCategory [
 	super notifyOfRecategorizedSelector: selector from: oldCategory to: newCategory.

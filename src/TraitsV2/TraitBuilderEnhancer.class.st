@@ -34,7 +34,7 @@ TraitBuilderEnhancer >> afterMigratingClass: aBuilder installer: anInstaller [
 { #category : #migrating }
 TraitBuilderEnhancer >> beforeMigratingClass: aBuilder installer: anInstaller [
 	aBuilder oldClass ifNil: [ ^ self ].
-
+	
 	aBuilder oldClass traitComposition removeUser: aBuilder oldClass.
 	aBuilder oldMetaclass traitComposition removeUser: aBuilder oldMetaclass.
 	
@@ -75,7 +75,7 @@ TraitBuilderEnhancer >> classTraitCompositionOf: aBuilder [
 { #category : #utils }
 TraitBuilderEnhancer >> classTraitCompositionOfClass: aClass [ 
 	
-	^ aClass class traitComposition
+	^ aClass class traitComposition asTraitComposition
 ]
 
 { #category : #'class modifications' }
@@ -146,7 +146,6 @@ TraitBuilderEnhancer >> initializeBuilder: aBuilder [
 	builder := aBuilder.
 
 	aBuilder addChangeComparer: TraitCompositionChangedDetector.
-	aBuilder addChangeComparer: ClassTraitCompositionChangedDetector.
 	
 	aBuilder metaSuperclass = Trait
 		ifTrue: [ aBuilder metaclassClass: MetaclassForTraits ]
@@ -167,7 +166,7 @@ TraitBuilderEnhancer >> traitCompositionOf: aBuilder [
 { #category : #utils }
 TraitBuilderEnhancer >> traitCompositionOfClass: aClass [ 
 	
-	^ aClass traitComposition
+	^ aClass traitComposition asTraitComposition
 ]
 
 { #category : #validating }

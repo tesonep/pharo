@@ -158,6 +158,8 @@ TaAbstractComposition >> copyMethod: aSelector into: aClass [
 		classify: aSelector
 		inProtocolNamed: aCompiledMethod category.		
 	
+	aClass organization removeEmptyCategories.
+	
 	^ newMethod
 ]
 
