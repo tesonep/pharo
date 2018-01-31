@@ -86,6 +86,7 @@ ShiftClassInstaller >> copyObject: oldObject to: newClass [
 { #category : #building }
 ShiftClassInstaller >> fixSlotScope: newClass [
 	newClass superclass ifNil: [ ^ self ].
+	(newClass classLayout slotScope isKindOf: LayoutEmptyScope) ifTrue: [ ^ self ].
 
 	self assert: newClass superclass classLayout slotScope = newClass classLayout slotScope parentScope.
 
