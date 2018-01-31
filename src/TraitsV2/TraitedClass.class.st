@@ -262,7 +262,7 @@ TraitedClass >> removeFromSystem: logged [
 	self traitComposition removeUser: self.
 	self class traitComposition removeUser: self class.
 
-	TraitedClass removeUser: self.
+	TraitedClass removeUser: self class.
 
 	super removeFromSystem: logged.
 ]
