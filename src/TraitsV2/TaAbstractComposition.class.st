@@ -156,7 +156,7 @@ TaAbstractComposition >> copyMethod: aSelector into: aClass [
 
 	aClass organization protocolOrganizer
 		classify: aSelector
-		inProtocolNamed: aCompiledMethod category.		
+		inProtocolNamed: aCompiledMethod category asSymbol.		
 	
 	aClass organization removeEmptyCategories.
 	

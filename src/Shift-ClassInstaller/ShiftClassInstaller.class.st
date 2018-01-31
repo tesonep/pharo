@@ -83,6 +83,19 @@ ShiftClassInstaller >> copyObject: oldObject to: newClass [
 	^ newObject
 ]
 
+{ #category : #building }
+ShiftClassInstaller >> fixSlotScope: newClass [
+	newClass superclass ifNil: [ ^ self ].
+
+	self assert: newClass superclass classLayout slotScope = newClass classLayout slotScope parentScope.
+
+	newClass superclass classLayout slotScope == newClass classLayout slotScope parentScope
+		ifFalse: [ newClass classLayout slotScope parentScope: newClass superclass classLayout slotScope ].
+		
+	self assert: newClass superclass classLayout slotScope == newClass classLayout slotScope parentScope.
+
+]
+
 { #category : #initialization }
 ShiftClassInstaller >> initialize [
 	super initialize.
@@ -142,7 +155,7 @@ ShiftClassInstaller >> make: aBlock [
 		self installInEnvironment: newClass.
 
 		self installSubclassInSuperclass: newClass.
-		
+	
 		builder builderEnhancer beforeMigratingClass: builder installer: self.
 
 		self migrateClassTo: newClass.
@@ -154,6 +167,8 @@ ShiftClassInstaller >> make: aBlock [
 		"If there are no changes in the building, I am not building or replacing nothing"
 		newClass := oldClass.
 	].
+
+	self fixSlotScope: newClass.
 
 	self recategorize: newClass to: builder category.
 	self comment: newClass.
