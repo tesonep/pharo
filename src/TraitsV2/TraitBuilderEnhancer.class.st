@@ -28,6 +28,8 @@ TraitBuilderEnhancer >> afterMigratingClass: aBuilder installer: anInstaller [
 	aBuilder newClass traitComposition addUser: aBuilder newClass.
 	aBuilder newMetaclass traitComposition addUser: aBuilder newMetaclass.
 	
+	TraitedClass addUser: aBuilder newClass.
+	
 	aBuilder newClass rebuildMethodDictionary.
 ]
 
@@ -37,6 +39,8 @@ TraitBuilderEnhancer >> beforeMigratingClass: aBuilder installer: anInstaller [
 	
 	aBuilder oldClass traitComposition removeUser: aBuilder oldClass.
 	aBuilder oldMetaclass traitComposition removeUser: aBuilder oldMetaclass.
+	
+	TraitedClass removeUser: aBuilder newClass.	
 	
 	"If it is a Trait we should migrate the users "
 	aBuilder newClass isTrait ifFalse: [ ^ self ].	

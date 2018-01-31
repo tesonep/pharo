@@ -170,6 +170,7 @@ ShiftClassInstaller >> make: aBlock [
 	].
 
 	self fixSlotScope: newClass.
+	self fixSlotScope: newClass class.
 
 	self recategorize: newClass to: builder category.
 	self comment: newClass.

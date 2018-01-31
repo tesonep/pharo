@@ -1,12 +1,63 @@
 Class {
 	#name : #TraitedClass,
 	#superclass : #Object,
+	#classInstVars : [
+		'users'
+	],
 	#category : #TraitsV2
 }
+
+{ #category : #'accessing method dictionary' }
+TraitedClass class >> addAndClassifySelector: selector withMethod: compiledMethod inProtocol: aCategory notifying: requestor [
+
+	| r |
+	r := super
+		addAndClassifySelector: selector
+		withMethod: compiledMethod
+		inProtocol: aCategory
+		notifying: requestor.
+
+	self propagateChangeOf: selector.
+
+	^ r
+	
+]
+
+{ #category : #'accessing method dictionary' }
+TraitedClass class >> addSelector: selector withMethod: compiledMethod notifying: requestor [
+	| r |
+	r := super addSelector: selector withMethod: compiledMethod notifying: requestor.
+	self propagateChangeOf: selector.
+	
+	^ r
+]
+
+{ #category : #users }
+TraitedClass class >> addUser: aClass [
+
+	self traitUsers add: aClass.
+]
 
 { #category : #accessing }
 TraitedClass class >> isTrait [
 	^ true
+]
+
+{ #category : #changes }
+TraitedClass class >> propagateChangeOf: aSelector [
+	| change |
+
+	change := TraitChange new
+		updatedSelectors: {aSelector};
+		yourself.
+		
+	self traitUsers do: [ :e | change applyOn: e ]
+]
+
+{ #category : #users }
+TraitedClass class >> removeUser: aClass [
+
+	self traitUsers remove: aClass ifAbsent: [ ].
 ]
 
 { #category : #accessing }
@@ -15,9 +66,9 @@ TraitedClass class >> traitComposition [
 	^ TaEmptyComposition new
 ]
 
-{ #category : #accessing }
+{ #category : #users }
 TraitedClass class >> traitUsers [
-	^ #()
+	^ users ifNil: [ users := WeakSet new ]
 ]
 
 { #category : #'accessing method dictionary' }
@@ -210,6 +261,8 @@ TraitedClass >> removeFromSystem: logged [
 
 	self traitComposition removeUser: self.
 	self class traitComposition removeUser: self class.
+
+	TraitedClass removeUser: self.
 
 	super removeFromSystem: logged.
 ]

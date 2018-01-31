@@ -55,6 +55,9 @@ T2TraitTest >> testIndirectSequence [
 	obj := c1 new.
 	obj setValues.
 	obj setValues2.
+	
+	self assert: (TraitedClass traitUsers includesAll:  { t1. t2. t3. c1 }).
+	
 	self assert: obj getValues equals: 6.
 	self assert: obj getValues2 equals: 12
 ]
@@ -70,6 +73,10 @@ T2TraitTest >> testSequence [
 	obj := c1 new.
 	obj setValues.
 	obj setValues2.
+	
+	
+	self assert: (TraitedClass traitUsers includesAll:  { t1. t2. c1 }).
+	
 	self assert: obj getValues equals: 6.
 	self assert: obj getValues2 equals: 12
 ]
