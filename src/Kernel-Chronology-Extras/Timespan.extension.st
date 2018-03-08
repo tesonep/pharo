@@ -25,12 +25,6 @@ Timespan >> asYear [
 ]
 
 { #category : #'*Kernel-Chronology-Extras' }
-Timespan class >> current [ 
-
-	^ self starting: DateAndTime now 
-]
-
-{ #category : #'*Kernel-Chronology-Extras' }
 Timespan >> dates [
 
 

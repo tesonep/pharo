@@ -13,6 +13,12 @@ Class {
 }
 
 { #category : #'instance creation' }
+Timespan class >> current [ 
+
+	^ self starting: DateAndTime now 
+]
+
+{ #category : #'instance creation' }
 Timespan class >> new [
 	"Answer a Timespan starting on the Squeak epoch: 1 January 1901"
 
