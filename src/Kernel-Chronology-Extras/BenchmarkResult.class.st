@@ -22,7 +22,7 @@ Class {
 		'iterations',
 		'elapsedTime'
 	],
-	#category : #'Kernel-Chronology'
+	#category : #'Kernel-Chronology-Extras'
 }
 
 { #category : #accessing }

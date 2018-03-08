@@ -7,7 +7,7 @@ Class {
 	#pools : [
 		'ChronologyConstants'
 	],
-	#category : #'Kernel-Chronology'
+	#category : #'Kernel-Chronology-Extras'
 }
 
 { #category : #'instance creation' }

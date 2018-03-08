@@ -30,7 +30,7 @@ Class {
 		'day',
 		'invalidPattern'
 	],
-	#category : #'Kernel-Chronology'
+	#category : #'Kernel-Chronology-Extras'
 }
 
 { #category : #'instance creation' }

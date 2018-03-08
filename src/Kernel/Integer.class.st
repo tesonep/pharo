@@ -555,12 +555,6 @@ Integer >> asWords [
 	^minus,answer
 ]
 
-{ #category : #converting }
-Integer >> asYear [
-
- 	^ Year year: self  
-]
-
 { #category : #benchmarks }
 Integer >> benchFib [  "Handy send-heavy benchmark"
 	"(result // seconds to run) = approx calls per second"

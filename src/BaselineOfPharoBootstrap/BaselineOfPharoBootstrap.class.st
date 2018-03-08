@@ -72,6 +72,8 @@ BaselineOfPharoBootstrap >> baseline: spec [
 		spec package: 'Jobs'.
 		spec package: 'Kernel'.
 		spec package: 'Kernel-BytecodeEncoders'.
+		spec package: 'Kernel-Chronology-Extras'.
+
 		spec package: 'Network-UUID'.
 		spec package: 'Transcript-NonInteractive'.
 		spec package: 'PharoBootstrap-Initialization'.
@@ -159,6 +161,7 @@ BaselineOfPharoBootstrap >> baseline: spec [
 
 		spec group: 'AdditionalPackages' with: {
 			'InitializePackagesCommandLineHandler'.
+			'Kernel-Chronology-Extras'
 		}.
 
 		spec group: 'MultilingualGroup' with: {
