@@ -189,6 +189,16 @@ Number >> // aNumber [
 ]
 
 { #category : #arithmetic }
+Number >> @ y [ 
+	"Primitive. Answer a Point whose x value is the receiver and whose y 
+	value is the argument. Optional. No Lookup. See Object documentation 
+	whatIsAPrimitive."
+
+	<primitive: 18>
+	^Point x: self y: y
+]
+
+{ #category : #arithmetic }
 Number >> \\ aNumber [ 
 	"modulo. Remainder defined in terms of //. Answer a Number with the 
 	same sign as aNumber. e.g. 9\\4 = 1, -9\\4 = 3, 9\\-4 = -3, 0.9\\0.4 = 0.1."
@@ -308,6 +318,11 @@ Number >> asInteger [
 	"Answer an Integer nearest the receiver toward zero."
 
 	^self truncated
+]
+
+{ #category : #converting }
+Number >> asMargin [
+	^ Margin fromNumber: self.
 ]
 
 { #category : #converting }

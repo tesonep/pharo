@@ -37,25 +37,11 @@ BaselineOfDisplay >> baseline: spec [
 ]
 
 { #category : #actions }
-BaselineOfDisplay >> installBitmapAndPoint [
-
-	"install new Bitmap class to special objects array"
-
-	| array |
-	
-	array := Smalltalk specialObjectsArray copy.
-	array at: 5 put: Bitmap.
-	array at: 13 put: Point.
-
-	Smalltalk specialObjectsArray becomeForward: array.
-]
-
-{ #category : #actions }
 BaselineOfDisplay >> postload: loader package: packageSpec [
 
 	| display |
 	
-	self installBitmapAndPoint.
+	self installBitmap.
 
 	display := (Smalltalk classNamed: #DisplayScreen) new.
 	display setExtent: (Smalltalk classNamed: #DisplayScreen) actualScreenSize depth: 2.
