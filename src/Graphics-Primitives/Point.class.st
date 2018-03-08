@@ -39,7 +39,7 @@ Class {
 		'x',
 		'y'
 	],
-	#category : #'Kernel-BasicObjects'
+	#category : #'Graphics-Primitives'
 }
 
 { #category : #'instance creation' }

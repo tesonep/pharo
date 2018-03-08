@@ -138,6 +138,13 @@ DateAndTime class >> localTimeZone: aTimeZone [
 
 ]
 
+{ #category : #'instance creation' }
+DateAndTime class >> midnight [
+
+	^ self now midnight
+
+]
+
 { #category : #primitives }
 DateAndTime class >> millisecondClockValue [
 
@@ -342,6 +349,22 @@ DateAndTime >> julianDayOffset [
 DateAndTime >> localSeconds [
 	" Return the seconds since the epoch in local time."
 	^ seconds + self offset asSeconds
+]
+
+{ #category : #accessing }
+DateAndTime >> midnight [
+	"Answer a DateAndTime starting at midnight (towards the end of the day) local time"
+
+	self dayMonthYearDo: [ :day :month :year | 
+			^ self class
+				basicYear: year
+				month: month
+				day: day
+				hour: 0
+				minute: 0
+				second: 0
+				nanoSecond: 0
+				offset: offset ]
 ]
 
 { #category : #accessing }

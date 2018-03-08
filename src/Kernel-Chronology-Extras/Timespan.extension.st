@@ -224,29 +224,6 @@ Timespan >> monthsDo: aBlock [
 ]
 
 { #category : #'*Kernel-Chronology-Extras' }
-Timespan class >> starting: aDateAndTime [ 
-
-	^ self starting: aDateAndTime duration: Duration zero 
-]
-
-{ #category : #'*Kernel-Chronology-Extras' }
-Timespan class >> starting: aDateAndTime duration: aDuration [
-
-	^ self basicNew
-  		start: aDateAndTime asDateAndTime;
- 		duration: aDuration;
-		yourself.
-]
-
-{ #category : #'*Kernel-Chronology-Extras' }
-Timespan class >> starting: startDateAndTime ending: endDateAndTime [
-
-	^ self 
-		starting: startDateAndTime 
-		duration: (endDateAndTime asDateAndTime - startDateAndTime). 
-]
-
-{ #category : #'*Kernel-Chronology-Extras' }
 Timespan >> to: anEnd [
 	"Answer an Timespan. anEnd must be aDateAndTime or a Timespan" 
 	| end |

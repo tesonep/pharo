@@ -26,6 +26,29 @@ Timespan class >> new [
 
 ]
 
+{ #category : #'instance creation' }
+Timespan class >> starting: aDateAndTime [ 
+
+	^ self starting: aDateAndTime duration: Duration zero 
+]
+
+{ #category : #'instance creation' }
+Timespan class >> starting: aDateAndTime duration: aDuration [
+
+	^ self basicNew
+  		start: aDateAndTime asDateAndTime;
+ 		duration: aDuration;
+		yourself.
+]
+
+{ #category : #'instance creation' }
+Timespan class >> starting: startDateAndTime ending: endDateAndTime [
+
+	^ self 
+		starting: startDateAndTime 
+		duration: (endDateAndTime asDateAndTime - startDateAndTime). 
+]
+
 { #category : #arithmetic }
 Timespan >> + operand [
 	"operand conforms to protocol Duration" 	

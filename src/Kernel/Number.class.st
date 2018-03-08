@@ -188,16 +188,6 @@ Number >> // aNumber [
 	^(self / aNumber) floor
 ]
 
-{ #category : #converting }
-Number >> @ y [ 
-	"Primitive. Answer a Point whose x value is the receiver and whose y 
-	value is the argument. Optional. No Lookup. See Object documentation 
-	whatIsAPrimitive."
-
-	<primitive: 18>
-	^Point x: self y: y
-]
-
 { #category : #arithmetic }
 Number >> \\ aNumber [ 
 	"modulo. Remainder defined in terms of //. Answer a Number with the 
@@ -318,11 +308,6 @@ Number >> asInteger [
 	"Answer an Integer nearest the receiver toward zero."
 
 	^self truncated
-]
-
-{ #category : #converting }
-Number >> asMargin [
-	^ Margin fromNumber: self.
 ]
 
 { #category : #converting }

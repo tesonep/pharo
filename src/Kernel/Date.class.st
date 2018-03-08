@@ -64,6 +64,13 @@ Date class >> fromSeconds: seconds [
 ]
 
 { #category : #'instance creation' }
+Date class >> starting: aDateAndTime [
+
+	^ super starting: (aDateAndTime midnight) duration: (Duration days: 1)
+
+]
+
+{ #category : #'instance creation' }
 Date class >> today [
 
 	^ self current
@@ -73,6 +80,13 @@ Date class >> today [
 Date >> asDate [
 
 	^ self
+]
+
+{ #category : #accessing }
+Date >> dayMonthYearDo: aBlock [ 
+	"Supply integers for day, month and year to aBlock and return the result"
+
+	^ start dayMonthYearDo: aBlock
 ]
 
 { #category : #'comparing - ignore timezone' }

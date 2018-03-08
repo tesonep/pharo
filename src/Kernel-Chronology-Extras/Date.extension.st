@@ -17,13 +17,6 @@ Date >> addMonths: monthCount [
 ]
 
 { #category : #'*Kernel-Chronology-Extras' }
-Date >> dayMonthYearDo: aBlock [ 
-	"Supply integers for day, month and year to aBlock and return the result"
-
-	^ start dayMonthYearDo: aBlock
-]
-
-{ #category : #'*Kernel-Chronology-Extras' }
 Date class >> dayNames [
 	"Return a collection of english day names"
 	^ DayNames copy
@@ -288,13 +281,6 @@ Date class >> readFrom: aStringOrStream pattern: pattern [
 	DateParser comment"
 
 	^ (DateParser readingFrom: aStringOrStream readStream pattern: pattern) parse
-
-]
-
-{ #category : #'*Kernel-Chronology-Extras' }
-Date class >> starting: aDateAndTime [
-
-	^ super starting: (aDateAndTime midnight) duration: (Duration days: 1)
 
 ]
 

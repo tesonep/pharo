@@ -67,6 +67,34 @@ DateAndTime >> asYear [
 ]
 
 { #category : #'*Kernel-Chronology-Extras' }
+DateAndTime class >> basicYear: year month: month day: day hour: hour minute: minute second: second nanoSecond: nanoCount offset: utcOffset [
+	"Return a DateAndTime with the values in the given TimeZone (UTCOffset)"
+
+	| p q r s julianDayNumber localSeconds utcSeconds|
+
+	p := (month - 14) quo: 12.
+	q := year + 4800 + p.
+	r := month - 2 - (12 * p).
+	s := (year + 4900 + p) quo: 100.
+
+	julianDayNumber :=
+		((1461 * q) quo: 4) +
+			((367 * r) quo: 12) -
+			((3 * s) quo: 4) +
+			(day - 32075).
+			
+	localSeconds :=  hour * 60 + minute * 60 + second.
+	utcSeconds := localSeconds - utcOffset asSeconds.
+	
+	^self basicNew
+		setJdn: julianDayNumber
+		seconds: utcSeconds
+		nano: nanoCount
+		offset: utcOffset;
+		yourself
+]
+
+{ #category : #'*Kernel-Chronology-Extras' }
 DateAndTime class >> date: aDate time: aTime [
 
 	^ self 
@@ -307,24 +335,6 @@ DateAndTime >> middleOf: aDuration [
 	duration := aDuration asDuration.
 	^ Timespan starting: (self - (duration / 2)) duration: duration.
 		
-]
-
-{ #category : #'*Kernel-Chronology-Extras' }
-DateAndTime >> midnight [
-	"Answer a DateAndTime starting at midnight (towards the end of the day) local time"
-	self dayMonthYearDo: [ :day :month :year|
-		^self class 
-			year: year
-			month: month
-			day: day 
-			offset: offset ].
-]
-
-{ #category : #'*Kernel-Chronology-Extras' }
-DateAndTime class >> midnight [
-
-	^ self now midnight
-
 ]
 
 { #category : #'*Kernel-Chronology-Extras' }
