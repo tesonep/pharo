@@ -66,6 +66,7 @@ BaselineOfPharoBootstrap >> baseline: spec [
 		spec package: 'Collections-Support'.
 		spec package: 'Collections-Unordered'.
 		spec package: 'Collections-Weak'.
+		spec package: 'Debugging-Core'.
 		spec package: 'Files'.
 		spec package: 'FileSystem-Path'.
 		spec package: 'Hermes'.
