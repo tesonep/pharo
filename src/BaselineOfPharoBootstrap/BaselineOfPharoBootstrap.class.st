@@ -41,6 +41,26 @@ BaselineOfPharoBootstrap class >> multilingualPackageNames [
 	^ self packagesOfGroupNamed: #MultilingualGroup
 ]
 
+{ #category : #traversing }
+BaselineOfPharoBootstrap class >> packagesRecursiveIn: aGroupName [
+
+	| allMembers allPackagesInBaseline packages groups |
+	allMembers := self version groups detect: [ :g | g name = aGroupName ].
+	allPackagesInBaseline := self version packages collect: #name.
+	
+	packages := allMembers includes select: [ :aName | allPackagesInBaseline includes: aName ].
+	groups := allMembers includes reject: [ :aName | allPackagesInBaseline includes: aName ].
+		
+	^ packages , (groups flatCollect: [:aInnerGroupName | self packagesRecursiveIn: aInnerGroupName]).
+
+]
+
+{ #category : #accessing }
+BaselineOfPharoBootstrap class >> packagesToExportWithHermes [
+
+	^ self packagesRecursiveIn: 'ToLoadByHermes'
+]
+
 { #category : #accessing }
 BaselineOfPharoBootstrap class >> sUnitPackageNames [
 
@@ -70,10 +90,16 @@ BaselineOfPharoBootstrap >> baseline: spec [
 		spec package: 'Files'.
 		spec package: 'FileSystem-Path'.
 		spec package: 'Hermes'.
+		spec package: 'Hermes-Extensions'.
+
 		spec package: 'Jobs'.
 		spec package: 'Kernel'.
 		spec package: 'Kernel-BytecodeEncoders'.
 		spec package: 'Kernel-Chronology-Extras'.
+
+		spec package: 'Multilingual-Languages'.
+		spec package: 'Multilingual-Encodings'.
+		spec package: 'Multilingual-TextConversion'.
 
 		spec package: 'Network-UUID'.
 		spec package: 'Numbers-Extensions'.
@@ -194,6 +220,7 @@ BaselineOfPharoBootstrap >> baseline: spec [
 			'MultilingualGroup'.
 			'CompilerGroup'.
 			'FileSystemGroup'.
+			'Hermes-Extensions'.
 		}.
 
 		spec group: 'SUnitGroup' with: {
