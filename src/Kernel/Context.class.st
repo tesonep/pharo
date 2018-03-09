@@ -369,6 +369,25 @@ Context >> basicSize [
 	^self primitiveFail
 ]
 
+{ #category : #interpreting }
+Context >> blockReturnConstant: value [ 
+	"Simulate the interpreter's action when a ReturnConstantToCaller
+	bytecode is 
+	encountered in the receiver. This should only happen in a closure
+	activation. "
+	self assert: closureOrNil isClosure.
+	^ self return: value from: self
+
+]
+
+{ #category : #interpreting }
+Context >> blockReturnTop [
+	"Simulate the interpreter's action when a ReturnTopOfStackToCaller bytecode is 
+	 encountered in the receiver.  This should only happen in a closure activation."
+	[closureOrNil isClosure] assert.
+	^self return: self pop from: self
+]
+
 { #category : #accessing }
 Context >> bottomContext [
 	"Return the last context (the first context invoked) in my sender chain"
@@ -514,6 +533,26 @@ Context >> depthBelow: aContext [
 			context := context sender.
 			depth := depth + 1 ].
 	^ depth
+]
+
+{ #category : #interpreting }
+Context >> doDup [
+	"Simulate the action of a 'duplicate top of stack' bytecode."
+
+	self push: self top
+]
+
+{ #category : #interpreting }
+Context >> doNop [
+
+	"do nothing"
+]
+
+{ #category : #interpreting }
+Context >> doPop [
+	"Simulate the action of a 'remove top of stack' bytecode."
+
+	self pop
 ]
 
 { #category : #private }
@@ -703,6 +742,16 @@ Context >> exceptionHandlerBlock [
 	"handlercontext only. access temporaries from BlockClosure>>#on:do:"
 	^self tempAt: 2
 
+]
+
+{ #category : #interpreting }
+Context >> failPrimitiveWith: maybePrimFailToken [
+	"The receiver is a freshly-created context on a primitive method.  Skip the callPrimitive:
+	 bytecode and store the primitive fail code if there is one and the method consumes it."
+	self skipCallPrimitive.
+	((self isPrimFailToken: maybePrimFailToken)
+	  and: [method encoderClass isStoreAt: pc in: method]) ifTrue:
+		[self at: stackp put: maybePrimFailToken last]
 ]
 
 { #category : #query }
@@ -947,6 +996,30 @@ Context >> jump [
 	^ top
 ]
 
+{ #category : #interpreting }
+Context >> jump: distance [ 
+	"Simulate the action of a 'unconditional jump' bytecode whose offset is 
+	the argument, distance."
+
+	pc := pc + distance
+]
+
+{ #category : #interpreting }
+Context >> jump: distance if: condition [ 
+	"Simulate the action of a 'conditional jump' bytecode whose offset is the 
+	argument, distance, and whose condition is the argument, condition."
+
+	| bool |
+	bool := self pop.
+	(bool == true or: [bool == false]) ifFalse: [
+		^self
+			send: #mustBeBoolean
+			to: bool
+			with: {}
+			super: false].
+	(bool eqv: condition) ifTrue: [self jump: distance]
+]
+
 { #category : #'debugger access' }
 Context >> longStack [
 	"Answer a String showing the top 100 contexts on my sender chain."
@@ -981,6 +1054,22 @@ Context >> methodReturnContext [
 	closureOrNil == nil ifTrue:
 		[^self].
 	^closureOrNil outerContext methodReturnContext
+]
+
+{ #category : #interpreting }
+Context >> methodReturnReceiver [
+	"Simulate the action of a 'return receiver' bytecode. This corresponds to
+	 the source expression '^self'."
+
+	^self return: self receiver from: self methodReturnContext
+]
+
+{ #category : #interpreting }
+Context >> methodReturnTop [
+	"Simulate the action of a 'return top of stack' bytecode. This corresponds
+	 to source expressions like '^something'."
+
+	^self return: self pop from: self methodReturnContext
 ]
 
 { #category : #accessing }
@@ -1145,13 +1234,45 @@ Context >> outerMostContext [
 		ifNotNil: [ self outerContext ]
 ]
 
-{ #category : #controlling }
+{ #category : #interpreting }
 Context >> pop [
 	"Answer the top of the receiver's stack and remove the top of the stack."
 	| value |
 	value := self at: stackp.
 	self stackp: stackp - 1.
 	^ value
+]
+
+{ #category : #interpreting }
+Context >> popIntoLiteralVariable: value [ 
+	"Simulate the action of bytecode that removes the top of the stack and 
+	stores it into a literal variable of my method."
+
+	value value: self pop
+]
+
+{ #category : #interpreting }
+Context >> popIntoReceiverVariable: offset [ 
+	"Simulate the action of bytecode that removes the top of the stack and 
+	stores it into an instance variable of my receiver."
+
+	self object: self receiver instVarAt: offset + 1 put: self pop
+]
+
+{ #category : #interpreting }
+Context >> popIntoRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
+	"Simulate the action of bytecode that removes the top of the stack and  stores
+	 it into an offset in one of my local variables being used as a remote temp vector."
+
+	(self at: tempVectorIndex + 1) at: remoteTempIndex + 1 put: self pop
+]
+
+{ #category : #interpreting }
+Context >> popIntoTemporaryVariable: offset [ 
+	"Simulate the action of bytecode that removes the top of the stack and 
+	stores it into one of my temporary variables."
+
+	self at: offset + 1 put: self pop
 ]
 
 { #category : #'debugger access' }
@@ -1277,12 +1398,146 @@ Context >> privSender: aContext [
 	sender := aContext
 ]
 
-{ #category : #controlling }
+{ #category : #interpreting }
 Context >> push: value [ 
 	"Push value on the receiver's stack."
 
 	self stackp: stackp + 1.
 	self at: stackp put: value
+]
+
+{ #category : #interpreting }
+Context >> pushActiveContext [
+	"Simulate the action of bytecode that pushes the the active context on the 
+	top of its own stack."
+
+	self push: self
+]
+
+{ #category : #interpreting }
+Context >> pushActiveProcess [
+	"Simulate the action of bytecode that pushes the the active Process on the 
+	top of its own stack."
+
+	self push: Processor activeProcess
+]
+
+{ #category : #interpreting }
+Context >> pushArgs: arguments from: senderContext [
+	"Helps simulate action of the value primitive for closures.
+	 This is used by Context>>runSimulated:contextAtEachStep:"
+
+	closureOrNil
+		ifNil: [self error: 'context needs a closure!']
+		ifNotNil: [
+			"See BlockClosure>>asContextWithSender:"
+			 stackp ~= (closureOrNil numArgs + closureOrNil numCopiedValues) 
+				ifTrue: [ self error: 'stack pointer is incorrect!' ]].
+
+	1 to: closureOrNil numArgs do: [:i |
+		self at: i put: (arguments at: i)].
+	sender := senderContext
+]
+
+{ #category : #interpreting }
+Context >> pushClosureCopyNumCopiedValues: numCopied numArgs: numArgs blockSize: blockSize [
+	"Simulate the action of a 'closure copy' bytecode whose result is the
+	 new BlockClosure for the following code"
+	| copiedValues |
+	numCopied > 0
+		ifTrue: [
+			copiedValues := Array new: numCopied.
+			numCopied to: 1 by: -1 do: [ :i |
+				copiedValues at: i put: self pop ]]
+		ifFalse: [ copiedValues := nil ].
+	self push: (BlockClosure
+				outerContext: self
+				startpc: pc
+				numArgs: numArgs
+				copiedValues: copiedValues).
+	self jump: blockSize
+]
+
+{ #category : #interpreting }
+Context >> pushClosureTemps: numTemps [
+	numTemps timesRepeat: [ self push: nil ]
+]
+
+{ #category : #interpreting }
+Context >> pushConsArrayWithElements: numElements [ 
+	| array |
+	array := Array new: numElements.
+	numElements to: 1 by: -1 do: [ :i |
+		array at: i put: self pop ].
+	self push: array
+]
+
+{ #category : #interpreting }
+Context >> pushConstant: value [ 
+	"Simulate the action of bytecode that pushes the constant, value, on the 
+	top of the stack."
+
+	self push: value
+]
+
+{ #category : #interpreting }
+Context >> pushFullClosure: compiledBlock numCopied: numCopied receiverOnStack: onStack ignoreOuterContext: ignore [
+	| copiedValues cls |
+	copiedValues := (1 to: numCopied) collect: [ :i | self pop ].
+	self push: (cls := (FullBlockClosure new: numCopied) 
+		outerContext: (ignore ifFalse: [self]);
+		receiver: (onStack ifTrue: [ self pop ] ifFalse: [ receiver ]);
+		numArgs: compiledBlock numArgs;
+		compiledBlock: compiledBlock;
+		yourself).
+	copiedValues size to: 1 by: -1 do: [ :i |
+		 cls at: copiedValues size - i + 1 put: (copiedValues at: i) ]
+]
+
+{ #category : #interpreting }
+Context >> pushLiteralVariable: value [ 
+	"Simulate the action of bytecode that pushes the contents of the literal 
+	variable whose index is the argument, index, on the top of the stack."
+
+	self push: value value
+]
+
+{ #category : #interpreting }
+Context >> pushNewArrayOfSize: arraySize [ 
+	self push: (Array new: arraySize)
+]
+
+{ #category : #interpreting }
+Context >> pushReceiver [
+	"Simulate the action of bytecode that pushes the active context's receiver 
+	on the top of the stack."
+
+	self push: self receiver
+]
+
+{ #category : #interpreting }
+Context >> pushReceiverVariable: offset [ 
+	"Simulate the action of bytecode that pushes the contents of the receiver's 
+	instance variable whose index is the argument, index, on the top of the 
+	stack."
+
+	self push: (self object: self receiver instVarAt: offset + 1)
+]
+
+{ #category : #interpreting }
+Context >> pushRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
+	"Simulate the action of bytecode that pushes the value at remoteTempIndex
+	 in one of my local variables being used as a remote temp vector."
+	self push: ((self at: tempVectorIndex + 1) at: remoteTempIndex + 1)
+]
+
+{ #category : #interpreting }
+Context >> pushTemporaryVariable: offset [ 
+	"Simulate the action of bytecode that pushes the contents of the 
+	temporary variable whose index is the argument, index, on the top of 
+	the stack."
+
+	self push: (self at: offset + 1)
 ]
 
 { #category : #accessing }
@@ -1683,6 +1938,24 @@ Context >> startpc [
 ]
 
 { #category : #controlling }
+Context >> step [
+	"Simulate the execution of the receiver's next bytecode. Answer the 
+	context that would be the active context after this bytecode."
+
+	^self interpretNextInstructionFor: self
+]
+
+{ #category : #controlling }
+Context >> stepToCallee [
+	"Step to callee or sender"
+
+	| context |
+	context := self.
+	[ (context := context step) == self ] whileTrue.
+	^ context
+]
+
+{ #category : #controlling }
 Context >> stepUntilSomethingOnStack [
 	"Simulate the execution of bytecodes until either sending a message or 
 	returning a value to the receiver (that is, until switching contexts)."
@@ -1695,6 +1968,38 @@ Context >> stepUntilSomethingOnStack [
 			context == self ifFalse: [
 				"Caused by mustBeBoolean handling"
 				^context ]]
+]
+
+{ #category : #interpreting }
+Context >> storeIntoLiteralVariable: value [ 
+	"Simulate the action of bytecode that stores the top of the stack into a 
+	literal variable of my method."
+
+	value value: self top
+]
+
+{ #category : #interpreting }
+Context >> storeIntoReceiverVariable: offset [ 
+	"Simulate the action of bytecode that stores the top of the stack into an 
+	instance variable of my receiver."
+
+	self object: self receiver instVarAt: offset + 1 put: self top
+]
+
+{ #category : #interpreting }
+Context >> storeIntoRemoteTemp: remoteTempIndex inVectorAt: tempVectorIndex [
+	"Simulate the action of bytecode that stores the top of the stack at
+	 an offset in one of my local variables being used as a remote temp vector."
+
+	(self at: tempVectorIndex + 1) at: remoteTempIndex + 1 put: self top
+]
+
+{ #category : #interpreting }
+Context >> storeIntoTemporaryVariable: offset [ 
+	"Simulate the action of bytecode that stores the top of the stack into one 
+	of my temporary variables."
+
+	self at: offset + 1 put: self top
 ]
 
 { #category : #'private-exceptions' }
