@@ -36,6 +36,5 @@ InstVarRefLocator >> pushReceiverVariable: offset [
 
 { #category : #'instruction decoding' }
 InstVarRefLocator >> storeIntoReceiverVariable: offset [ 
-
 	bingo := true
 ]
