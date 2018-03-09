@@ -490,6 +490,14 @@ Number >> negative [
 	^ self < 0
 ]
 
+{ #category : #testing }
+Number >> positive [
+	"Answer whether the receiver is positive or equal to 0. (ST-80 protocol).
+	See also strictlyPositive"
+
+	^ self >= 0
+]
+
 { #category : #printing }
 Number >> printOn: aStream [
 	self printOn: aStream base: 10

@@ -172,14 +172,6 @@ Number >> percent [
 ]
 
 { #category : #'*Numbers-Extensions' }
-Number >> positive [
-	"Answer whether the receiver is positive or equal to 0. (ST-80 protocol).
-	See also strictlyPositive"
-
-	^ self >= 0
-]
-
-{ #category : #'*Numbers-Extensions' }
 Number >> radiansToDegrees [
 	"The receiver is assumed to represent radians. Answer the conversion to 
 	degrees."
