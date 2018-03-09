@@ -93,12 +93,6 @@ Integer >> factorial [
 ]
 
 { #category : #'*Numbers-Extensions' }
-Integer >> isPowerOfTwo [
-	"Return true if the receiver is an integral power of two."
-	^ self ~= 0 and: [(self bitAnd: self-1) = 0]
-]
-
-{ #category : #'*Numbers-Extensions' }
 Integer >> isPrime [
 	"Answer true if the receiver is a prime number. See isProbablyPrime for a probabilistic
 	implementation that is much faster for large integers, and that is correct to an extremely

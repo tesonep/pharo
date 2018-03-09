@@ -1058,6 +1058,12 @@ Integer >> isLiteral [
 	^true
 ]
 
+{ #category : #testing }
+Integer >> isPowerOfTwo [
+	"Return true if the receiver is an integral power of two."
+	^ self ~= 0 and: [(self bitAnd: self-1) = 0]
+]
+
 { #category : #'system primitives' }
 Integer >> lastDigit [
 	"Answer the last digit of the integer base 256.  LargePositiveInteger uses bytes of base two number, and each is a 'digit'."
