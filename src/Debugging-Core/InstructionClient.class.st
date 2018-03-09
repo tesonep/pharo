@@ -5,7 +5,7 @@ as an example.
 Class {
 	#name : #InstructionClient,
 	#superclass : #Object,
-	#category : #'Kernel-Methods'
+	#category : #'Debugging-Core'
 }
 
 { #category : #'instruction decoding' }

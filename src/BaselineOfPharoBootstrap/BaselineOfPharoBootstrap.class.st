@@ -129,6 +129,7 @@ BaselineOfPharoBootstrap >> baseline: spec [
 			'Collections-Support'.
 			'Collections-Unordered'.
 			'Collections-Weak'.
+			'Debugging-Core'.
 			'Files'.
 			'FileSystem-Path'.
 			'Hermes'.
@@ -161,7 +162,8 @@ BaselineOfPharoBootstrap >> baseline: spec [
 
 		spec group: 'AdditionalPackages' with: {
 			'InitializePackagesCommandLineHandler'.
-			'Kernel-Chronology-Extras'
+			'Kernel-Chronology-Extras'.
+			'Debugging-Core'
 		}.
 
 		spec group: 'MultilingualGroup' with: {
