@@ -76,6 +76,8 @@ BaselineOfPharoBootstrap >> baseline: spec [
 		spec package: 'Kernel-Chronology-Extras'.
 
 		spec package: 'Network-UUID'.
+		spec package: 'Numbers-Extensions'.
+		
 		spec package: 'Transcript-NonInteractive'.
 		spec package: 'PharoBootstrap-Initialization'.
 		spec package: 'RPackage-Core'.
@@ -163,7 +165,8 @@ BaselineOfPharoBootstrap >> baseline: spec [
 		spec group: 'AdditionalPackages' with: {
 			'InitializePackagesCommandLineHandler'.
 			'Kernel-Chronology-Extras'.
-			'Debugging-Core'
+			'Numbers-Extensions'.
+			'Debugging-Core'.
 		}.
 
 		spec group: 'MultilingualGroup' with: {
