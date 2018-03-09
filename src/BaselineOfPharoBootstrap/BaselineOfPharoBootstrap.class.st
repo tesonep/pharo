@@ -184,11 +184,17 @@ BaselineOfPharoBootstrap >> baseline: spec [
 			'Jobs'.
 			'OpalCompiler-Core'}.
 		
-		"These packages are added using the compiler after bootstrap"
 		spec group: 'FileSystemGroup' with: {
 			'FileSystem-Core'.
 			'FileSystem-Disk'.
 			'DeprecatedFileStream' }.
+
+		spec group: 'ToLoadByHermes' with: {
+			'AdditionalPackages'.
+			'MultilingualGroup'.
+			'CompilerGroup'.
+			'FileSystemGroup'.
+		}.
 
 		spec group: 'SUnitGroup' with: {
 			'SUnit-Core'.
