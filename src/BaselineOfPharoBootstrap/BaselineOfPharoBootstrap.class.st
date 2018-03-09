@@ -130,7 +130,6 @@ BaselineOfPharoBootstrap >> baseline: spec [
 			'Collections-Support'.
 			'Collections-Unordered'.
 			'Collections-Weak'.
-			'Debugging-Core'.
 			'Files'.
 			'FileSystem-Path'.
 			'Hermes'.
