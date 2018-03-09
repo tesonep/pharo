@@ -15,11 +15,6 @@ Class {
 	#category : #'Kernel-Methods'
 }
 
-{ #category : #accessing }
-CompiledBlock >> debuggerMap [
-	^self compilerClass debuggerMethodMapForMethod: self.
-]
-
 { #category : #scanning }
 CompiledBlock >> hasMethodReturn [
 	"Answer whether the receiver has a method-return ('^') in its code."

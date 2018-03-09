@@ -53,28 +53,6 @@ Context >> completeCallee: aContext [
 ]
 
 { #category : #'*Debugging-Core' }
-Context class >> contextEnsure: block [
-	"Create an #ensure: context that is ready to return from executing its receiver"
-
-	| ctxt chain |
-	ctxt := thisContext.
-	[chain := thisContext sender cut: ctxt. ctxt jump] ensure: block.
-	"jump above will resume here without unwinding chain"
-	^ chain
-]
-
-{ #category : #'*Debugging-Core' }
-Context class >> contextOn: exceptionClass do: block [
-	"Create an #on:do: context that is ready to return from executing its receiver"
-
-	| ctxt chain |
-	ctxt := thisContext.
-	[chain := thisContext sender cut: ctxt. ctxt jump] on: exceptionClass do: block.
-	"jump above will resume here without unwinding chain"
-	^ chain
-]
-
-{ #category : #'*Debugging-Core' }
 Context >> doDup [
 	"Simulate the action of a 'duplicate top of stack' bytecode."
 
@@ -423,58 +401,6 @@ Context >> restartWithNewReceiver: obj [
 ]
 
 { #category : #'*Debugging-Core' }
-Context >> resume [
-	"Roll back thisContext to self and resume.  Execute unwind blocks when rolling back.  ASSUMES self is a sender of thisContext"
-
-	self resume: nil
-]
-
-{ #category : #'*Debugging-Core' }
-Context >> resume: value [
-	"Unwind thisContext to self and resume with value as result of last send.  Execute unwind blocks when unwinding.  ASSUMES self is a sender of thisContext"
-	
-	self resume: value through: (thisContext findNextUnwindContextUpTo: self)
-	
-]
-
-{ #category : #'*Debugging-Core' }
-Context >> resume: value through: firstUnwindContext [
-	"Unwind thisContext to self and resume with value as result of last send.
-	 Execute any unwind blocks while unwinding.
-	 ASSUMES self is a sender of thisContext."
-
-	| context unwindBlock |
-	self isDead 
-		ifTrue: [ self cannotReturn: value to: self ].
-	context := firstUnwindContext.
-	[ context isNil ] whileFalse: [	
-		context unwindComplete ifNil:[
-			context unwindComplete: true.
-			unwindBlock := context unwindBlock.
-			thisContext terminateTo: context.
-			unwindBlock value].
-		context := context findNextUnwindContextUpTo: self].
-	thisContext terminateTo: self.
-	^value
-
-]
-
-{ #category : #'*Debugging-Core' }
-Context >> return [
-	"Unwind until my sender is on top"
-
-	self return: self receiver
-]
-
-{ #category : #'*Debugging-Core' }
-Context >> return: value [
-	"Unwind thisContext to self and return value to self's sender.  Execute any unwind blocks while unwinding.  ASSUMES self is a sender of thisContext"
-
-	sender ifNil: [^self cannotReturn: value to: sender].
-	sender resume: value
-]
-
-{ #category : #'*Debugging-Core' }
 Context >> return: value to: aSender [
 	"Simulate the return of value to aSender."
 
@@ -554,31 +480,6 @@ Context >> send: selector super: superFlag numArgs: numArgs [
 		QuickStep := nil.
 		^ self quickSend: selector to: currentReceiver with: arguments super: superFlag].
 	^ self send: selector to: currentReceiver with: arguments super: superFlag
-]
-
-{ #category : #'*Debugging-Core' }
-Context >> send: selector to: rcvr with: arguments lookupIn: lookupClass [
-	"Simulate the action of sending a message with selector and arguments
-	 to rcvr. The argument, lookupClass, is the class in which to lookup the
-	 message.  This is the receiver's class for normal messages, but for super
-	 messages it will be some specific class related to the source method."
-
-	| meth primIndex val ctxt |
-	(meth := lookupClass lookupSelector: selector) ifNil:
-		[^self send: #doesNotUnderstand:
-				to: rcvr
-				with: {Message selector: selector arguments: arguments}
-				lookupIn: lookupClass].
-	(primIndex := meth primitive) > 0 ifTrue:
-		[val := self doPrimitive: primIndex method: meth receiver: rcvr args: arguments.
-		 (self isPrimFailToken: val) ifFalse:
-			[^val]].
-	(selector == #doesNotUnderstand: and: [lookupClass == ProtoObject]) ifTrue:
-		[^self error: 'Simulated message ', arguments first selector, ' not understood'].
-	ctxt := Context sender: self receiver: rcvr method: meth arguments: arguments.
-	primIndex > 0 ifTrue:
-		[ctxt failPrimitiveWith: val].
-	^ctxt
 ]
 
 { #category : #'*Debugging-Core' }
@@ -753,6 +654,77 @@ Context class >> tallyMethods: aBlock [
 	^ tallies sortedCounts
 
 	"Contex tallyMethods: [3.14159 printString]"
+]
+
+{ #category : #'*Debugging-Core' }
+Context >> tempNamed: aName [
+	"Returns the value of the temporaries, aName."
+
+	"Implementation notes: temporary initialization in blocks simply uses pushNil to allocate and initialize each temp.  So if one inspects [|a|a:=2] and sends it self method symbolic you get:
+
+	13 <8F 00 00 05> closureNumCopied: 0 numArgs: 0 bytes 17 to 21
+	17 	<73> pushConstant: nil
+	18 	<77> pushConstant: 2
+	19 	<81 40> storeIntoTemp: 0
+	21 	<7D> blockReturn
+	22 <7C> returnTop
+
+	And when we check self asContext pc we get 17, which is *before* the nil is pushed. Therefore we should pay attention when querying a temporary if the temporary allocation was executed."
+
+	| index |
+	index := self tempNames indexOf: aName.
+	^ self namedTempAt: index
+]
+
+{ #category : #'*Debugging-Core' }
+Context >> tempNamed: aName put: anObject [
+	^self namedTempAt: (self tempNames indexOf: aName) put: anObject
+]
+
+{ #category : #'*Debugging-Core' }
+Context >> tempNames [
+	"Answer a SequenceableCollection of the names of the receiver's temporary 
+	 variables, which are strings."
+
+	^ self debuggerMap tempNamesForContext: self
+]
+
+{ #category : #'*Debugging-Core' }
+Context >> temporaryVariableNamed: aName [
+	(self hasTemporaryVariableNamed: aName)
+		ifFalse: [ ^ nil ].
+	^TemporaryVariable name: aName context: self
+
+]
+
+{ #category : #'*Debugging-Core' }
+Context >> temporaryVariables [
+	^self tempNames collect: [ :name | TemporaryVariable new name: name ]
+
+]
+
+{ #category : #'*Debugging-Core' }
+Context >> tempsAndValues [
+	"Return a string of the temporary variabls and their current values"
+	
+	^ String streamContents: [ :aStream |
+		self tempNames doWithIndex: [ :title :index |
+			 aStream nextPutAll: title; nextPut: $:; space; tab.
+			 self print: (self namedTempAt: index) on: aStream.
+			 aStream cr ]].
+]
+
+{ #category : #'*Debugging-Core' }
+Context >> tempsAndValuesLimitedTo: sizeLimit indent: indent [
+	"Return a string of the temporary variabls and their current values"
+
+	^ String streamContents: [ :aStream |
+		self tempNames doWithIndex: [ :title :index |
+			indent timesRepeat: [ aStream tab ].
+			aStream nextPutAll: title; nextPut: $:; space; tab.
+			aStream nextPutAll: 
+				((self namedTempAt: index) printStringLimitedTo: (sizeLimit -3 -title size max: 1)).
+			aStream cr ]].
 ]
 
 { #category : #'*Debugging-Core' }
