@@ -6,13 +6,12 @@
 	"pools" : [ ],
 	"classvars" : [ ],
 	"instvars" : [
-		"architecture",
-		"imageReference",
+		"repository",
+		"commitHash",
 		"buildNumber",
-		"originRepository",
-		"ringEnvironment",
-		"versionFetcher"
+		"major",
+		"minor"
 	],
-	"name" : "PBBootstrap",
+	"name" : "PBRepositoryVersionReader",
 	"type" : "normal"
 }
