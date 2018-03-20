@@ -71,6 +71,7 @@ CairoFontMetricsProvider >> extentsOf: aString [
 { #category : #accessing }
 CairoFontMetricsProvider >> font: aFont [
 	font := aFont asFreetypeFont.
+	self halt.
 	cairoFont :=	CairoScaledFont fromFreetypeFont: font.
 	extents := cairoFont extents.
 ]
