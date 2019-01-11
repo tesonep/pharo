@@ -71,7 +71,7 @@ FFICallback class >> signature: aSignature block: aBlock [
 
 { #category : #evaluation }
 FFICallback >> argumentsFor: stackPointer context: callbackContext [
-	| index architecture intRegisterCount intRegisterSize intRegisterIndex floatRegisterCount floatRegisterSize floatRegisterIndex floatRegisters intRegisters structureRegisterLayout |
+	| index architecture intRegisterCount intRegisterSize intRegisterIndex floatRegisterCount floatRegisterSize floatRegisters intRegisters structureRegisterLayout |
 	self flag: 'TODO: Refactor and improve this code.'.
 	architecture := FFIArchitecture forCurrentArchitecture.
 	
@@ -81,7 +81,6 @@ FFICallback >> argumentsFor: stackPointer context: callbackContext [
 	
 	floatRegisterCount := architecture floatRegisterCountForParameterPassing.
 	floatRegisterSize := architecture floatRegisterSize.
-	floatRegisterIndex := 0.
 	
 	floatRegisters := callbackContext floatregargsp.
 	intRegisters := callbackContext intregargsp.
@@ -94,14 +93,14 @@ FFICallback >> argumentsFor: stackPointer context: callbackContext [
 				value := each callbackValueFor: intRegisters at: intRegisterIndex*intRegisterSize + 1.
 				intRegisterIndex := intRegisterIndex + 1
 			] ifFalse: [ 
-				(parameterClass == #float and: [ floatRegisterIndex < floatRegisterCount and: [each typeSize <= floatRegisterSize ]]) ifTrue: [
-					value := each callbackValueFor: floatRegisters at: floatRegisterIndex*floatRegisterSize + 1.
-					floatRegisterIndex := floatRegisterIndex + 1
+				(parameterClass == #float and: [ intRegisterIndex < floatRegisterCount and: [each typeSize <= floatRegisterSize ]]) ifTrue: [
+					value := each callbackValueFor: floatRegisters at: intRegisterIndex*floatRegisterSize + 1.
+					intRegisterIndex := intRegisterIndex + 1
 				] ifFalse: [
 					(parameterClass == #structure and:
 					[ (structureRegisterLayout := architecture computeStructureRegisterPassingLayout: each objectClass) isNotNil and:
 					[intRegisterIndex + structureRegisterLayout integerRegisterCount <= intRegisterSize and:
-					[floatRegisterIndex + structureRegisterLayout floatRegisterCount <= floatRegisterSize]]]) ifTrue: [
+					[intRegisterIndex + structureRegisterLayout floatRegisterCount <= floatRegisterSize]]]) ifTrue: [
 						"This is structure whose content was splitted in registers."
 						value := each objectClass new.
 						structureRegisterLayout fields do: [ :structureField |
@@ -114,13 +113,14 @@ FFICallback >> argumentsFor: stackPointer context: callbackContext [
 								self assert: structureField registerClass == #float.
 								1 to: structureField size do: [ :i |
 									value getHandle byteAt: structureField offset + i put:
-										(floatRegisters unsignedByteAt: floatRegisterIndex*floatRegisterSize + i)
+										(floatRegisters unsignedByteAt: intRegisterIndex*floatRegisterSize + i)
 								].
-								floatRegisterIndex := floatRegisterIndex + 1
+								intRegisterIndex := intRegisterIndex + 1
 							] 
 						]
 					] ifFalse: [ 
-						"Memory parameter" 
+						"Memory parameter"
+						1 haltOnce.
 						value := each callbackValueFor: stackPointer at: index.
 						index := index + each typeSize.
 					]
