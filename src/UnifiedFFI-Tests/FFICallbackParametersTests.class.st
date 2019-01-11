@@ -27,6 +27,26 @@ FFICallbackParametersTests >> callCallback: aFFICallback withArgs: aCollection [
 ]
 
 { #category : #running }
+FFICallbackParametersTests >> testCharacterParameters [
+	
+	| params |
+	params := (1 to: 6) collect: [ :i | i asCharacter ].	
+	
+	callback := FFICallback 
+		signature: #(void (char, char, char, char, char, char))
+		block: [ :a :b :c :d :e :f  | 
+			self assert: a value equals: 1 asCharacter.
+			self assert: b value equals: 2 asCharacter.
+			self assert: c value equals: 3 asCharacter.
+			self assert: d value equals: 4 asCharacter.
+			self assert: e value equals: 5 asCharacter.
+			self assert: f value equals: 6 asCharacter.
+		].
+
+	self callCallback: callback withArgs: params.
+]
+
+{ #category : #running }
 FFICallbackParametersTests >> testFloatParameters [ 
 	
 	callback := FFICallback 
@@ -47,7 +67,7 @@ FFICallbackParametersTests >> testFloatParameters [
 FFICallbackParametersTests >> testIntegerParameters [ 
 	
 	callback := FFICallback 
-		signature: #(int (int, int, int, int, int, int))
+		signature: #(void (int, int, int, int, int, int))
 		block: [ :a :b :c :d :e :f  | 
 			self assert: a equals: 1.
 			self assert: b equals: 2.
@@ -86,15 +106,16 @@ FFICallbackParametersTests >> testIntegerPointerParameters [
 FFICallbackParametersTests >> testMixingParameters [ 
 	
 	callback := FFICallback 
-		signature: #(void (int a, float b, float c, int d, double e, int f))
-		block: [ :a :b :c :d :e :f  | 
+		signature: #(void (int a, float b, char c, int d, double e, int f, char g))
+		block: [ :a :b :c :d :e :f :g | 
 			self assert: a value equals: 1.
 			self assert: b value equals: 2.0.
-			self assert: c value equals: 3.0.
+			self assert: c value equals: $c.
 			self assert: d value equals: 4.
 			self assert: e value equals: 5.0.
 			self assert: f value equals: 6.
+			self assert: g value equals: $g.
 		].
 
-	self callCallback: callback withArgs: {1. 2.0. 3.0. 4. 5.0. 6}.
+	self callCallback: callback withArgs: {1. 2.0. $c. 4. 5.0. 6. $g}.
 ]
