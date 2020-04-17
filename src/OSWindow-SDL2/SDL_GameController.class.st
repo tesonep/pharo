@@ -15,22 +15,53 @@ Class {
 
 { #category : #closing }
 SDL_GameController >> close [
+	
+	^ SDL2Library defer: [ self ffiClose ]
+]
+
+{ #category : #closing }
+SDL_GameController >> ffiClose [
 	^ self ffiCall: #( void SDL_GameControllerClose(self ) )
 ]
 
 { #category : #accessing }
-SDL_GameController >> getAttached [
+SDL_GameController >> ffiGetAttached [
 	^ self ffiCall: #( SDL_bool SDL_GameControllerGetAttached(self) )
 ]
 
 { #category : #accessing }
-SDL_GameController >> getAxis: axis [
+SDL_GameController >> ffiGetAxis: axis [
 	^ self ffiCall: #( Sint16 SDL_GameControllerGetAxis(self , int axis) )
 ]
 
 { #category : #accessing }
-SDL_GameController >> getButton: button [
+SDL_GameController >> ffiGetButton: button [
 	^ self ffiCall: #( Uint8 SDL_GameControllerGetButton(self , int button) )
+]
+
+{ #category : #accessing }
+SDL_GameController >> ffiName [
+	^ self ffiCall: #( String SDL_GameControllerName(self) )
+]
+
+{ #category : #accessing }
+SDL_GameController >> getAttached [
+	
+	^ SDL2Library defer: [ self ffiGetAttached ]
+]
+
+{ #category : #accessing }
+SDL_GameController >> getAxis: axis [
+
+	^ SDL2Library defer: [ self ffiGetAxis: axis ]
+
+]
+
+{ #category : #accessing }
+SDL_GameController >> getButton: button [
+
+	^ SDL2Library defer: [ self ffiGetButton: button ]
+
 ]
 
 { #category : #testing }
@@ -40,5 +71,6 @@ SDL_GameController >> isGameController [
 
 { #category : #accessing }
 SDL_GameController >> name [
-	^ self ffiCall: #( String SDL_GameControllerName(self) )
+
+	^ SDL2Library defer: [ self ffiName ]
 ]

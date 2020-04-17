@@ -178,12 +178,13 @@ OSSDL2Driver >> eventLoopProcessWithoutPlugin [
 	event := SDL_Event new.
 	session := Smalltalk session.
 	
+	SDL2SameThreadLibrary uniqueInstance registerEvent.
+
 	[ session == Smalltalk session] 
 	whileTrue: [
-		[ (SDL2 pollEvent: event) > 0 ] 
-		whileTrue: [ self processEvent: event ].
-		
-		(Delay forMilliseconds: 5) wait ]
+		[ (SDL2Library uniqueInstance waitEvent: event) > 0 ] 
+		whileTrue: [ 
+			self processEvent: event ] ]
 ]
 
 { #category : #initialization }
@@ -195,11 +196,11 @@ OSSDL2Driver >> initialize [
 		initializeWindowMap;
 		initializeJoystickMap.
 	SDL2
-"		initVideo;
-		initJoystick;
+		initVideo.
+"		initJoystick;
 		initGameController;
-"		initEverything.
-	self setupEventLoop.
+		initEverything.
+"	self setupEventLoop.
 ]
 
 { #category : #'window creation and deletion' }

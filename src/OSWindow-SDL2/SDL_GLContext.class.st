@@ -13,5 +13,11 @@ Class {
 
 { #category : #deleting }
 SDL_GLContext >> delete [
+
+	^ SDL2Library defer: [ self ffiDelete ]
+]
+
+{ #category : #deleting }
+SDL_GLContext >> ffiDelete [
 	^ self ffiCall: #( void SDL_GL_DeleteContext ( self ) )
 ]

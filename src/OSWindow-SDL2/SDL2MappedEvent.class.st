@@ -19,7 +19,8 @@ SDL2MappedEvent class >> eventType [
 
 { #category : #'instance creation' }
 SDL2MappedEvent class >> fromSdlEvent: event [
-	^  self new setHandle: event getHandle
+	
+	^ self new setHandle: event getHandle
 ]
 
 { #category : #'event type' }

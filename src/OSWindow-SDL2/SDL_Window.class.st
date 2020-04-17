@@ -37,85 +37,234 @@ SDL_Window >> createDefaultRenderer [
 { #category : #rendering }
 SDL_Window >> createRenderer: driverIndex flags: flags [
 
-	^ (self primCreateRenderer: driverIndex flags: flags) initialize.
+	^ (SDL2Library defer: [ self ffiCreateRenderer: driverIndex flags: flags ]) initialize
+
 ]
 
 { #category : #initialize }
 SDL_Window >> destroy [
 	OSSDL2Driver current unregisterWindowWithId: self windowID.
-	self primDestroy.
+	SDL2Library defer: [ self ffiDestroy ].
 	handle beNull
 ]
 
-{ #category : #accessing }
-SDL_Window >> fullscreen: flags [
-	^ self ffiCall: #( int SDL_SetWindowFullscreen ( self , Uint32 flags ) )
-]
-
-{ #category : #surface }
-SDL_Window >> getFlags [
-	^ self ffiCall: #( Uint32 SDL_GetWindowFlags ( self ) )
-]
-
-{ #category : #accessing }
-SDL_Window >> getPositionX: x y: y [
-	^ self ffiCall: #( void SDL_GetWindowPosition ( self , int* x , int* y ) )
-]
-
-{ #category : #accessing }
-SDL_Window >> getSizeW: w h: h [
-	^ self ffiCall: #( void SDL_GetWindowSize ( self , int* w , int* h ) )
-]
-
-{ #category : #'window management' }
-SDL_Window >> getWMInfo: infos [
-	^ self ffiCall: #( bool SDL_GetWindowWMInfo( self, SDL_SysWMinfo* infos) )
-]
-
-{ #category : #surface }
-SDL_Window >> getWindowSurface [
-	^ self ffiCall: #( SDL_Surface* SDL_GetWindowSurface( self ) )
-]
-
-{ #category : #'window management' }
-SDL_Window >> hide [
-	^ self ffiCall: #( void SDL_HideWindow( self ) )
-]
-
-{ #category : #accessing }
-SDL_Window >> icon: surface [
-	^ self ffiCall: #( void SDL_SetWindowIcon ( self , SDL_Surface* surface ) )
-]
-
-{ #category : #'text input' }
-SDL_Window >> isTextInputActive [
-	^ self ffiCall: #(bool SDL_IsTextInputActive(void))
-]
-
-{ #category : #'window management' }
-SDL_Window >> maximize [
-	^ self ffiCall: #( void SDL_MaximizeWindow( self ) )
-]
-
-{ #category : #'window management' }
-SDL_Window >> minimize [
-	^ self ffiCall: #( void SDL_MinimizeWindow( self ) )
-]
-
 { #category : #private }
-SDL_Window >> primCreateRenderer: driverIndex flags: flags [
+SDL_Window >> ffiCreateRenderer: driverIndex flags: flags [
 	^ self ffiCall: #( SDL_Renderer SDL_CreateRenderer ( self , int driverIndex , Uint32 flags ) )
 ]
 
 { #category : #private }
-SDL_Window >> primDestroy [
+SDL_Window >> ffiDestroy [
 	^ self ffiCall: #( void SDL_DestroyWindow ( self ) )
+]
+
+{ #category : #accessing }
+SDL_Window >> ffiFullscreen: flags [
+	^ self ffiCall: #( int SDL_SetWindowFullscreen ( self , Uint32 flags ) )
+]
+
+{ #category : #surface }
+SDL_Window >> ffiGetFlags [
+	^ self ffiCall: #( Uint32 SDL_GetWindowFlags ( self ) )
+]
+
+{ #category : #accessing }
+SDL_Window >> ffiGetPositionX: x y: y [
+	^ self ffiCall: #( void SDL_GetWindowPosition ( self , int* x , int* y ) )
+]
+
+{ #category : #accessing }
+SDL_Window >> ffiGetSizeW: w h: h [
+	^ self ffiCall: #( void SDL_GetWindowSize ( self , int* w , int* h ) )
+]
+
+{ #category : #'window management' }
+SDL_Window >> ffiGetWMInfo: infos [
+	^ self ffiCall: #( bool SDL_GetWindowWMInfo( self, SDL_SysWMinfo* infos) )
+]
+
+{ #category : #surface }
+SDL_Window >> ffiGetWindowSurface [
+	^ self ffiCall: #( SDL_Surface* SDL_GetWindowSurface( self ) )
+]
+
+{ #category : #'window management' }
+SDL_Window >> ffiHide [
+	^ self ffiCall: #( void SDL_HideWindow( self ) )
+]
+
+{ #category : #accessing }
+SDL_Window >> ffiIcon: surface [
+	^ self ffiCall: #( void SDL_SetWindowIcon ( self , SDL_Surface* surface ) )
+]
+
+{ #category : #'text input' }
+SDL_Window >> ffiIsTextInputActive [
+	^ self ffiCall: #(bool SDL_IsTextInputActive(void))
+]
+
+{ #category : #'window management' }
+SDL_Window >> ffiMaximize [
+	^ self ffiCall: #( void SDL_MaximizeWindow( self ) )
+]
+
+{ #category : #'window management' }
+SDL_Window >> ffiMinimize [
+	^ self ffiCall: #( void SDL_MinimizeWindow( self ) )
+]
+
+{ #category : #'window management' }
+SDL_Window >> ffiRaise [
+
+	^ self ffiCall: #( void SDL_RaiseWindow( self ) )
+]
+
+{ #category : #'window management' }
+SDL_Window >> ffiRestore [
+	^ self ffiCall: #( void SDL_RestoreWindow( self ) )
+]
+
+{ #category : #'window management' }
+SDL_Window >> ffiSetHitTest: callback [
+	^ self ffiCall: #( int SDL_SetWindowHitTest( self , DraggableCallback callback, nil ) )
+]
+
+{ #category : #accessing }
+SDL_Window >> ffiSetPositionX: x y: y [
+	^ self ffiCall: #( void SDL_SetWindowPosition ( self , int x , int y ) )
+]
+
+{ #category : #accessing }
+SDL_Window >> ffiSetSizeW: w h: h [
+	^ self ffiCall: #( void SDL_SetWindowSize ( self , int w , int h ) )
+]
+
+{ #category : #'window management' }
+SDL_Window >> ffiShow [
+	^ self ffiCall: #( void SDL_ShowWindow( self ) )
+]
+
+{ #category : #'text input' }
+SDL_Window >> ffiStartTextInput [
+	^ self ffiCall: #(void SDL_StartTextInput(void))
+]
+
+{ #category : #'text input' }
+SDL_Window >> ffiStopTextInput [
+	^ self ffiCall: #(void SDL_StopTextInput(void))
+]
+
+{ #category : #accessing }
+SDL_Window >> ffiTitle [
+	^ self ffiCall: #( String SDL_GetWindowTitle ( self ) )
+]
+
+{ #category : #accessing }
+SDL_Window >> ffiTitle: title [
+	^ self ffiCall: #( void SDL_SetWindowTitle ( self , String title ) )
+]
+
+{ #category : #'window management' }
+SDL_Window >> ffiToggleBorder: bordered [
+	^ self ffiCall: #( void SDL_SetWindowBordered( self, bool bordered ) )
+]
+
+{ #category : #surface }
+SDL_Window >> ffiUpdateWindowSurface [
+	^ self ffiCall: #( int SDL_UpdateWindowSurface( self ) )
+]
+
+{ #category : #surface }
+SDL_Window >> ffiUpdateWindowSurfaceRects: rects num: numrects [
+	^ self ffiCall: #( int SDL_UpdateWindowSurfaceRects( self , void* rects , int numrects) )
+]
+
+{ #category : #accessing }
+SDL_Window >> ffiWindowID [
+	^ self ffiCall: #( Uint32 SDL_GetWindowID ( self ) )
+]
+
+{ #category : #accessing }
+SDL_Window >> fullscreen: flags [
+
+	^ SDL2Library defer: [ self ffiFullscreen: flags ]
+
+]
+
+{ #category : #surface }
+SDL_Window >> getFlags [
+
+	^ SDL2Library defer: [ self ffiGetFlags ]
+
+]
+
+{ #category : #accessing }
+SDL_Window >> getPositionX: x y: y [
+	
+	^ SDL2Library defer: [ self ffiGetPositionX: x y: y ]
+
+]
+
+{ #category : #accessing }
+SDL_Window >> getSizeW: w h: h [
+
+	^ SDL2Library defer: [ self ffiGetSizeW: w h: h ]
+
+]
+
+{ #category : #'window management' }
+SDL_Window >> getWMInfo: infos [
+
+	^ SDL2Library defer: [ self ffiGetWMInfo: infos ]
+
+]
+
+{ #category : #surface }
+SDL_Window >> getWindowSurface [
+
+	^ SDL2Library defer: [ self ffiGetWindowSurface ]
+
+]
+
+{ #category : #'window management' }
+SDL_Window >> hide [
+
+	^ SDL2Library defer: [ self ffiHide ]
+
+]
+
+{ #category : #accessing }
+SDL_Window >> icon: surface [
+
+	^ SDL2Library defer: [ self ffiIcon: surface ]
+
+]
+
+{ #category : #'text input' }
+SDL_Window >> isTextInputActive [
+
+	^ SDL2Library defer: [ self ffiIsTextInputActive ]
+
+]
+
+{ #category : #'window management' }
+SDL_Window >> maximize [
+
+	^ SDL2Library defer: [ self ffiMaximize ]
+
+]
+
+{ #category : #'window management' }
+SDL_Window >> minimize [
+
+	^ SDL2Library defer: [ self ffiMinimize ]
+
 ]
 
 { #category : #'window management' }
 SDL_Window >> raise [
 
-	^ self ffiCall: #( void SDL_RaiseWindow( self ) )
+	^ SDL2Library defer: [ self ffiRaise ].
 ]
 
 { #category : #'external resource management' }
@@ -125,65 +274,79 @@ SDL_Window >> resourceData [
 
 { #category : #'window management' }
 SDL_Window >> restore [
-	^ self ffiCall: #( void SDL_RestoreWindow( self ) )
+	
+	^ SDL2Library defer: [ self ffiRestore ].
 ]
 
 { #category : #'window management' }
 SDL_Window >> setHitTest: callback [
-	^ self ffiCall: #( int SDL_SetWindowHitTest( self , DraggableCallback callback, nil ) )
+
+	^ SDL2Library defer: [ self ffiSetHitTest: callback ].
 ]
 
 { #category : #accessing }
 SDL_Window >> setPositionX: x y: y [
-	^ self ffiCall: #( void SDL_SetWindowPosition ( self , int x , int y ) )
+
+	^ SDL2Library defer: [ self ffiSetPositionX: x y: y ].
 ]
 
 { #category : #accessing }
 SDL_Window >> setSizeW: w h: h [
-	^ self ffiCall: #( void SDL_SetWindowSize ( self , int w , int h ) )
+
+	^ SDL2Library defer: [ self ffiSetSizeW: w h: h ].
 ]
 
 { #category : #'window management' }
 SDL_Window >> show [
-	^ self ffiCall: #( void SDL_ShowWindow( self ) )
+
+	^ SDL2Library defer: [ self ffiShow ].
 ]
 
 { #category : #'text input' }
 SDL_Window >> startTextInput [
-	^ self ffiCall: #(void SDL_StartTextInput(void))
+
+	^ SDL2Library defer: [ self ffiStartTextInput ].
 ]
 
 { #category : #'text input' }
 SDL_Window >> stopTextInput [
-	^ self ffiCall: #(void SDL_StopTextInput(void))
+
+	^ SDL2Library defer: [ self ffiStopTextInput ].
 ]
 
 { #category : #accessing }
 SDL_Window >> title [
-	^ self ffiCall: #( String SDL_GetWindowTitle ( self ) )
+
+	^ SDL2Library defer: [ self ffiTitle ].
 ]
 
 { #category : #accessing }
 SDL_Window >> title: title [
-	^ self ffiCall: #( void SDL_SetWindowTitle ( self , String title ) )
+
+	^ SDL2Library defer: [ self ffiTitle: title ].
 ]
 
 { #category : #'window management' }
 SDL_Window >> toggleBorder: bordered [
-	^ self ffiCall: #( void SDL_SetWindowBordered( self, bool bordered ) )
+	
+	^ SDL2Library defer: [ self ffiToggleBorder: bordered ].
 ]
 
 { #category : #surface }
 SDL_Window >> updateWindowSurface [
-	^ self ffiCall: #( int SDL_UpdateWindowSurface( self ) )
+
+	^ SDL2Library defer: [ self ffiUpdateWindowSurface  ].
 ]
 
 { #category : #surface }
 SDL_Window >> updateWindowSurfaceRects: rects num: numrects [
-	^ self ffiCall: #( int SDL_UpdateWindowSurfaceRects( self , void* rects , int numrects) )
+
+	^ SDL2Library defer: [ self ffiUpdateWindowSurfaceRects: rects num: numrects ].
+
 ]
 
 { #category : #accessing }
 SDL_Window >> windowID [
-	^ self ffiCall: #( Uint32 SDL_GetWindowID ( self ) )
+
+	^ SDL2Library defer: [ self ffiWindowID ].
 ]

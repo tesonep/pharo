@@ -58,6 +58,12 @@ OSSDL2FormRenderer >> destroy [
 	renderer destroy
 ]
 
+{ #category : #accessing }
+OSSDL2FormRenderer >> drawDuring: aBlock [
+	
+	SDL2Library defer: [ aBlock value: self getCanvas ]
+]
+
 { #category : #initialization }
 OSSDL2FormRenderer >> initialize [
 	super initialize.

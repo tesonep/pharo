@@ -491,7 +491,7 @@ WorldState >> doOneCycleNowFor: aWorld [
 	"Immediately do one cycle of the interaction loop.
 	This should not be called directly, but only via doOneCycleFor:"
 
-	self worldRenderer checkForNewScreenSize.
+	"self worldRenderer checkForNewScreenSize."
 
 	"process user input events"
 	LastCycleTime := Time millisecondClockValue.

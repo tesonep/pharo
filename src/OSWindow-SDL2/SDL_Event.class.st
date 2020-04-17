@@ -32,7 +32,8 @@ SDL_Event class >> initializeEventTypeMap [
 { #category : #initialization }
 SDL_Event >> initialize [
 	super initialize.
-	self setHandle: (ByteArray new: 56)
+	self setHandle: (ByteArray new: 56).
+	handle pinInMemory.
 ]
 
 { #category : #accessing }

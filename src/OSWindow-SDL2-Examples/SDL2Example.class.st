@@ -75,7 +75,8 @@ SDL2Example >> simpleDrawDisplay [
 	"Render"
 	renderer copy: texture;
 			  present.
-	SDL2 delay: 3000.
+	
+	3 seconds wait.
 	
 	"Quit"
 	texture destroy.

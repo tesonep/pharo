@@ -26,8 +26,33 @@ SDL_Texture class >> finalizeResourceData: aHandle [
 { #category : #initialization }
 SDL_Texture >> destroy [
 	handle isNull ifTrue: [ ^ self ].
-	self primDestroy.
+	SDL2Library defer: [ self ffiDestroy ].
 	handle beNull
+]
+
+{ #category : #private }
+SDL_Texture >> ffiDestroy [
+	^ self ffiCall: #( void SDL_DestroyTexture ( self ) )
+]
+
+{ #category : #'pixels handling' }
+SDL_Texture >> ffiLockPixels: pixels pitch: pitch [
+	^ self ffiCall: #( int SDL_LockTexture ( self , nil , void** pixels , int* pitch ) )
+]
+
+{ #category : #'pixels handling' }
+SDL_Texture >> ffiUnlock [
+	^ self ffiCall: #( void SDL_UnlockTexture ( self ) )
+]
+
+{ #category : #initialization }
+SDL_Texture >> ffiUpdateTexturePixels: pixels pitch: pitch [
+	^ self ffiCall: #( int SDL_UpdateTexture ( self , nil , void* pixels , int pitch ) )
+]
+
+{ #category : #initialization }
+SDL_Texture >> ffiUpdateTextureRect: rect pixels: pixels pitch: pitch [
+	^ self ffiCall: #( int SDL_UpdateTexture ( self , SDL_Rect* rect , void* pixels , int pitch ) )
 ]
 
 { #category : #initialization }
@@ -37,25 +62,25 @@ SDL_Texture >> initialize [
 
 { #category : #'pixels handling' }
 SDL_Texture >> lockPixels: pixels pitch: pitch [
-	^ self ffiCall: #( int SDL_LockTexture ( self , nil , void** pixels , int* pitch ) )
-]
-
-{ #category : #private }
-SDL_Texture >> primDestroy [
-	^ self ffiCall: #( void SDL_DestroyTexture ( self ) )
+	
+	^ SDL2Library defer: [ self ffiLockPixels: pixels pitch: pitch ]
 ]
 
 { #category : #'pixels handling' }
 SDL_Texture >> unlock [
-	^ self ffiCall: #( void SDL_UnlockTexture ( self ) )
+	
+	^ SDL2Library defer: [ self ffiUnlock ]
 ]
 
 { #category : #initialization }
 SDL_Texture >> updateTexturePixels: pixels pitch: pitch [
-	^ self ffiCall: #( int SDL_UpdateTexture ( self , nil , void* pixels , int pitch ) )
+
+	^ SDL2Library defer: [ self ffiUpdateTexturePixels: pixels pitch: pitch ]
 ]
 
 { #category : #initialization }
 SDL_Texture >> updateTextureRect: rect pixels: pixels pitch: pitch [
-	^ self ffiCall: #( int SDL_UpdateTexture ( self , SDL_Rect* rect , void* pixels , int pitch ) )
+
+	^ SDL2Library defer: [ self ffiUpdateTextureRect: rect pixels: pixels pitch: pitch ]
+
 ]

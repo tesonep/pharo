@@ -10,13 +10,3 @@ Class {
 	],
 	#category : #'OSWindow-SDL2-Bindings'
 }
-
-{ #category : #native }
-SDL2Structure class >> ffiLibraryName [
-	^ SDL2 ffiLibraryName
-]
-
-{ #category : #native }
-SDL2Structure >> ffiLibraryName [
-	^self class ffiLibraryName
-]

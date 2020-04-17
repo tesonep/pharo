@@ -7,17 +7,22 @@ Class {
 	#category : #'OSWindow-SDL2-Bindings'
 }
 
+{ #category : #resources }
+SDLOSXPlatformInitializer >> ffiLibrary [ 
+
+	^ SDLOSXPlatformInitializerLibrary 
+]
+
 { #category : #running }
 SDLOSXPlatformInitializer >> lookupClass: aString [
 
-	^ self ffiCall: #(void* objc_lookUpClass(char *aString)) module: 'libobjc.dylib'
+	^ self ffiCall: #(void* objc_lookUpClass(char *aString))
 ]
 
 { #category : #running }
 SDLOSXPlatformInitializer >> lookupSelector: aString [
 
-	^ self ffiCall: #(void* sel_registerName(const char *aString)) module: 'libobjc.dylib'
-
+	^ self ffiCall: #(void* sel_registerName(const char *aString))
 ]
 
 { #category : #running }
@@ -32,5 +37,5 @@ SDLOSXPlatformInitializer >> run [
 { #category : #running }
 SDLOSXPlatformInitializer >> sendMessage: sel to: cls [
 
-	^ self ffiCall: #(void* objc_msgSend(void* cls, void* sel)) module: 'libobjc.dylib'
+	^ self ffiCall: #(void* objc_msgSend(void* cls, void* sel))
 ]
