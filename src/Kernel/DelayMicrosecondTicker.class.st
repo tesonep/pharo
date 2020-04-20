@@ -65,7 +65,7 @@ DelayMicrosecondTicker >> waitForUserSignalled: timingSemaphore orExpired: activ
 	"Sleep until the active delay is due, or timingSemaphore signalled by DelayScheduler user-api."
 	
 	"We sleep at most 1sec here as a soft busy-loop so that we don't accidentally miss signals."
-	nextTick := self nowTick + (1"sec" * 1000"msecs" * 1000"usecs").
+	nextTick := self nowTick + (60"sec" * 1000"msecs" * 1000"usecs").
 	activeDelay ifNotNil: [
 		nextTick := nextTick min: activeDelay resumptionTick ].
 		
