@@ -349,6 +349,7 @@ OSSDL2Driver >> shutDown [
 	WindowMap := nil.
 	JoystickMap := nil.
 	EventLoopProcess ifNotNil: [ EventLoopProcess terminate ].	
+	EventLoopProcess := nil
 ]
 
 { #category : #'global events' }
