@@ -382,6 +382,12 @@ OpalCompiler >> compileMethod [
 ]
 
 { #category : #accessing }
+OpalCompiler >> compiledMethodClass: aClass [ 
+	
+	self compilationContext compiledMethodClass: aClass
+]
+
+{ #category : #accessing }
 OpalCompiler >> compiledMethodTrailer: bytes [
 	self compilationContext compiledMethodTrailer: bytes
 ]

@@ -8,7 +8,7 @@ Class {
 	#category : #'Hermes-Model'
 }
 
-{ #category : #accessing }
+{ #category : #'as yet unclassified' }
 HEFraction class >> tag [ 
 	^ 24
 ]
