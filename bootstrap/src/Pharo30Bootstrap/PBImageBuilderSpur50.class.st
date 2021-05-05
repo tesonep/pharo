@@ -8,7 +8,7 @@ Class {
 		'nextOrdinaryClassIndex',
 		'freeListsOop'
 	],
-	#category : 'Pharo30Bootstrap'
+	#category : #Pharo30Bootstrap
 }
 
 { #category : #examples }
@@ -263,8 +263,6 @@ PBImageBuilderSpur50 >> firstOrdinaryClassIndex [
 PBImageBuilderSpur50 >> flushNewSpace [
 
 	| newHeap |
-	self checkpoint: 'created_vm_objects'.
-	
 	newHeap := espellBackend objectMemory.
 	newHeap initializePostBootstrap.
 	
